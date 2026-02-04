@@ -1,0 +1,6 @@
+@TadaWy.API_HostAddress = http://localhost:5000
+
+GET {{TadaWy.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
