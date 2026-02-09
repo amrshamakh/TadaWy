@@ -12,15 +12,13 @@ namespace TadaWy.Domain.Entities
     public class Doctor
     {
         public int Id { get; set; }
+        public string Name { get; set; } = default!;
         public bool IsApproved { get; set; }
-        public string Specialization { get; set; }
+        public string Specialization { get; set; }=default!;
         public Address Address { get; set; } = default!;
         public double rating { get; set; }
 
-        public ApplicationUser ApplicationUser { get; set; }
-
-        [ForeignKey(nameof(ApplicationUser))]
-        public string UserID { get; set; }
+        public string UserID { get; set; } = default!;
 
         public ICollection<Appointment> Appointments { get; private set; }= new List<Appointment>();
 

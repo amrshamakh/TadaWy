@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.NewFolder;
 using TadaWy.Infrastructure.IServices;
 using TadaWy.Infrastructure.Presistence;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
+using TadaWy.Infrastructure.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,13 @@ builder.Services
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
+
+//role seeding
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleSeeder.SeedRolesAsync(roleManager);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
