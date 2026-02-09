@@ -21,8 +21,9 @@ namespace TadaWy.Domain.Entities
         public string UserID { get; set; }
         public Gendre Gendre { get; set; }
         public DateOnly DateOfBirth { get; set; }
-        public Address? Address { get; set; }
-        
+        public string? AddressDescription { get; set; }
+        public GeoLocation? Location { get; set; }
+
         public ICollection<ChronicDisease> ChronicDiseases { get; set; } = new List<ChronicDisease>();
         public ICollection <Appointment> Appointments { get; set; } = new List<Appointment>();
     }

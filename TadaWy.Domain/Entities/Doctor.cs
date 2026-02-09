@@ -12,10 +12,12 @@ namespace TadaWy.Domain.Entities
     public class Doctor
     {
         public int Id { get; set; }
-        public string Name { get; set; } = default!;
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
         public bool IsApproved { get; set; }
         public string Specialization { get; set; }=default!;
-        public Address Address { get; set; } = default!;
+        public string AddressDescription { get; set; } = default!;
+        public GeoLocation? Location { get; set; }
         public double rating { get; set; }
 
         public string UserID { get; set; } = default!;
