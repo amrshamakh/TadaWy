@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Domain.Entities.Identity;
+using TadaWy.Applicaation.IServices;
+
 
 namespace TadaWy.Infrastructure.Presistence
 {

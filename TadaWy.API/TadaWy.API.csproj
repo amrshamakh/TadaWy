@@ -18,10 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TadaWy.Applicaation\TadaWy.Applicaation.csproj" />
     <ProjectReference Include="..\TadaWy.Infrastructure\TadaWy.Infrastructure.csproj" />
   </ItemGroup>
