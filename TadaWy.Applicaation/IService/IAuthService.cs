@@ -16,9 +16,6 @@ namespace TadaWy.Applicaation.IServices
     {
         Task<AuthModel> RegisterDoctorAsync(AuthRegisterDoctorDTO authRegisterDoctorDTO);
         Task<AuthModel> AuthLogin(AuthLoginDTO authLoginDTO);
-
-        //Task<JwtSecurityToken> CreateJwtToken(ApplicationUser applicationUser);
-
         Task<AuthModel> RegisterPatientAsync(AuthRegisterPatientDTO authRegisterPatientDTO);
     }
 }

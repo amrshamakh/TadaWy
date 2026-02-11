@@ -15,17 +15,19 @@ using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Presistence;
 
+
 namespace TadaWy.Infrastructure.service
 {
     public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JWT _Jwt;
-
-        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt)
+        TadaWyDbContext _tadaWyDbContext;
+        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt,TadaWyDbContext tadaWyDbContext)
         {
             _userManager = userManager;
             _Jwt=Jwt.Value;
+            _tadaWyDbContext = tadaWyDbContext;
         }
 
 
@@ -37,13 +39,9 @@ namespace TadaWy.Infrastructure.service
             var user = new ApplicationUser
             {
                 Email = authRegisterDoctorDTO.Email,
-                FirstName = authRegisterDoctorDTO.FirstName,
-                LastName = authRegisterDoctorDTO.LastName,
+             
                 PhoneNumber = authRegisterDoctorDTO.PhoneNumber,
-                Address = authRegisterDoctorDTO.Address,
-                
-                
-                
+                   
             };
            var result= await _userManager.CreateAsync(user, authRegisterDoctorDTO.password);
 
@@ -63,18 +61,21 @@ namespace TadaWy.Infrastructure.service
 
             var doctor = new Doctor
             {
-                ApplicationUser = user,
+                FirstName = authRegisterDoctorDTO.FirstName,
+                LastName = authRegisterDoctorDTO.LastName,
                 UserID = user.Id,
                IsApproved=false,
-               Specialization=authRegisterDoctorDTO.Specialization
+               Specialization=authRegisterDoctorDTO.Specialization,
+               
+               
             };
-
+             _tadaWyDbContext.Add(doctor);
+            _tadaWyDbContext.SaveChanges();
+;
             return new AuthModel
             {
                 Messege = "Data send to Admin"
             };
-           
-            
         }
         //var JWTSecurityToken = await CreateJwtToken(user);
         //var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
@@ -96,10 +97,9 @@ namespace TadaWy.Infrastructure.service
             var user = new ApplicationUser
             {
                 Email = RegisterPatientAsync.Email,
-                //FirstName = RegisterPatientAsync.FirstName,
-                //LastName = RegisterPatientAsync.LastName,
+              
                 PhoneNumber = RegisterPatientAsync.PhoneNumber,
-                //Address = RegisterPatientAsync.Address,
+              
             };
             var result = await _userManager.CreateAsync(user, RegisterPatientAsync.password);
 
@@ -117,7 +117,8 @@ namespace TadaWy.Infrastructure.service
 
             var patient = new Patient
             {
-                ApplicationUser = user,
+                FirstName = RegisterPatientAsync.FirstName,
+                LastName = RegisterPatientAsync.LastName,
                 UserID = user.Id,
                 DateOfBirth = RegisterPatientAsync.DateOfBirth,
                 Gendre = RegisterPatientAsync.Gendre,
