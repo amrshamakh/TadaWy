@@ -16,10 +16,8 @@ namespace TadaWy.Domain.Entities
         public string LastName { get; set; } = default!;
         public bool IsApproved { get; set; }
 
-
         public string Specialization { get; set; }=default!;
-        public string AddressDescription { get; set; } = default!;
-        public GeoLocation? Location { get; set; }
+        public string Address { get; set; } = default!;
         public double rating { get; set; }
 
         public string UserID { get; set; } = default!;
