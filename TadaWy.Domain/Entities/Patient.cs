@@ -16,18 +16,17 @@ namespace TadaWy.Domain.Entities
     public class Patient
     {
         public int Id { get; set; }
-
-        public ApplicationUser ApplicationUser { get; set; }
-
-        [ForeignKey(nameof(ApplicationUser))]
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
         public string UserID { get; set; }
         public Gendre Gendre { get; set; }
         public DateOnly DateOfBirth { get; set; }
-       
 
-        [Required, MinLength(11), MaxLength(13)]
-        
-        public ICollection<ChronicDisease> ChronicDiseases { get; set; } = new List<ChronicDisease>(); 
+        public string? AddressDescription { get; set; }
+        public GeoLocation? Location { get; set; }
+
+        public ICollection<ChronicDisease> ChronicDiseases { get; set; } = new List<ChronicDisease>();
+
         public ICollection <Appointment> Appointments { get; set; } = new List<Appointment>();
     }
 
