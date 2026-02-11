@@ -45,11 +45,14 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
-//role seeding
+//role ,admin seeding
 using (var scope = app.Services.CreateScope())
 {
+    
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
     await RoleSeeder.SeedRolesAsync(roleManager);
+    await AdminSeeder.SeedAdminAsync(userManager);
 }
 
 // Configure the HTTP request pipeline.
