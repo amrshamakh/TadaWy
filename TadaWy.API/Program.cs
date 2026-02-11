@@ -8,10 +8,7 @@ using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
-
-using TadaWy.Infrastructure.service;
-
-
+using TadaWy.Infrastructure.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,11 +47,11 @@ builder.Services.AddScoped<IAuthService,AuthService>();
 var app = builder.Build();
 
 //role seeding
-//using (var scope = app.Services.CreateScope())
-//{
-//    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-//    await RoleSeeder.SeedRolesAsync(roleManager);
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleSeeder.SeedRolesAsync(roleManager);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
