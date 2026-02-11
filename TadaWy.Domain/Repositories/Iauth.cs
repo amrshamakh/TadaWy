@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TadaWy.Infrastructure.IServices
+namespace TadaWy.Domain.Repositories
 {
-    public class AuthService:IAuthService
+    internal interface Iauth
     {
     }
 }

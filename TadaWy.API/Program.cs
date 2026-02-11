@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TadaWy.Domain.Entities.Identity;
-using TadaWy.Domain.NewFolder;
-using TadaWy.Infrastructure.IServices;
+
+using TadaWy.Domain.Helpers;
+using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
 
@@ -41,7 +42,7 @@ builder.Services
                        ValidateIssuerSigningKey=true
                    };
                });
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 
 var app = builder.Build();
 
