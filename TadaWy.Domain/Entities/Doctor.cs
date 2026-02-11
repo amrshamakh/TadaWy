@@ -16,11 +16,13 @@ namespace TadaWy.Domain.Entities
         public string LastName { get; set; } = default!;
         public bool IsApproved { get; set; }
 
+
         public string Specialization { get; set; }=default!;
         public string Address { get; set; } = default!;
         public double rating { get; set; }
 
         public string UserID { get; set; } = default!;
+
 
 
         public ICollection<Appointment> Appointments { get; private set; }= new List<Appointment>();
