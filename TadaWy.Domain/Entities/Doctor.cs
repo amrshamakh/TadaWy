@@ -20,7 +20,6 @@ namespace TadaWy.Domain.Entities
         public double rating { get; set; }
 
         public string UserID { get; set; } = default!;
-        public string UserID { get; set; }
 
         public ICollection<Appointment> Appointments { get; private set; }= new List<Appointment>();
 

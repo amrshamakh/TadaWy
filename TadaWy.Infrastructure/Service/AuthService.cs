@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AuthDTO;
@@ -89,7 +90,7 @@ namespace TadaWy.Infrastructure.service
         //        Token = stringtoken,
         //        Role = new List<string> { "Doctor" },
         //    };
-    public async Task<AuthModel> RegisterPatientAsync(AuthRegisterPatientDTO RegisterPatientAsync)
+        public async Task<AuthModel> RegisterPatientAsync(AuthRegisterPatientDTO RegisterPatientAsync)
         {
             if (await _userManager.FindByEmailAsync(RegisterPatientAsync.Email) is not null)
                 return new AuthModel { Messege = "This Email IS Already Registered" };
@@ -97,9 +98,9 @@ namespace TadaWy.Infrastructure.service
             var user = new ApplicationUser
             {
                 Email = RegisterPatientAsync.Email,
-              
+
                 PhoneNumber = RegisterPatientAsync.PhoneNumber,
-              
+
             };
             var result = await _userManager.CreateAsync(user, RegisterPatientAsync.password);
 
@@ -124,19 +125,25 @@ namespace TadaWy.Infrastructure.service
                 Gendre = RegisterPatientAsync.Gendre,
             };
 
-            
+
 
             var JWTSecurityToken = await CreateJwtToken(user);
             var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
 
+            var refreshToken = GenerateRefreshToken();
+            user.RefreshTokens.Add(refreshToken);
+            await _userManager.UpdateAsync(user);
+
             return new AuthModel
             {
                 Email = user.Email,
-                ExpireOn = JWTSecurityToken.ValidTo,
                 IsAuthenticated = true,
                 Username = user.UserName,
                 Token = stringtoken,
                 Role = new List<string> { "Patient" },
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpireOn = refreshToken.ExpireOn,
+                ExpireOn = JWTSecurityToken.ValidTo
             };
 
         }
@@ -154,9 +161,9 @@ namespace TadaWy.Infrastructure.service
 
             var Claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Email,applicationUser.Email),
-                new Claim(JwtRegisteredClaimNames.Sub,applicationUser.PhoneNumber),
-            }
+            new Claim(JwtRegisteredClaimNames.Email,applicationUser.Email),
+            new Claim(JwtRegisteredClaimNames.Sub,applicationUser.PhoneNumber),
+        }
             .Union(roleClaims)
             .Union(UserClaims);
 
@@ -178,24 +185,59 @@ namespace TadaWy.Infrastructure.service
 
         public async Task<AuthModel> AuthLogin(AuthLoginDTO authLoginDTO)
         {
+            AuthModel authModel = new AuthModel();
             var User = (await _userManager.FindByEmailAsync(authLoginDTO.Email));
 
-            if(User is null || !await _userManager.CheckPasswordAsync(User, authLoginDTO.Password))
+            if (User is null || !await _userManager.CheckPasswordAsync(User, authLoginDTO.Password))
             {
-                return new AuthModel { Messege = "Email Or Password is Incorrect" };
+                authModel.Messege = "Email Or Password is Incorrect";
+                return authModel;
             }
 
             var JWTSecurityToken = await CreateJwtToken(User);
             var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
 
-            return new AuthModel
+
+            authModel.Email = User.Email;
+            authModel.IsAuthenticated = true;
+            authModel.Username = User.UserName;
+            authModel.Token = stringtoken;
+            authModel.Role = (await _userManager.GetRolesAsync(User)).ToList();
+            authModel.ExpireOn = JWTSecurityToken.ValidTo;
+
+            if (User.RefreshTokens.Any(t => t.IsActive))
             {
-                Email = User.Email,
-                ExpireOn = JWTSecurityToken.ValidTo,
-                IsAuthenticated = true,
-                Username = User.UserName,
-                Token = stringtoken,
-                Role =(await _userManager.GetRolesAsync(User)).ToList()
+                var activeRefreshToken = User.RefreshTokens.FirstOrDefault(t => t.IsActive);
+                authModel.RefreshToken = activeRefreshToken.Token;
+                authModel.RefreshTokenExpireOn = activeRefreshToken.ExpireOn;
+            }
+            else
+            {
+                var refreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpireOn = refreshToken.ExpireOn;
+                User.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(User);
+            }
+
+            return authModel;
+
+        }
+
+        private RefreshToken GenerateRefreshToken()
+        {
+            var RAndomNumber = new byte[32];
+
+            using var generator = new RNGCryptoServiceProvider();
+
+            generator.GetBytes(RAndomNumber);
+
+            return new RefreshToken
+            {
+                Token = Convert.ToBase64String(RAndomNumber),
+                ExpireOn = DateTime.UtcNow.AddDays(10),
+                CreatedOn = DateTime.UtcNow
+
             };
         }
     }

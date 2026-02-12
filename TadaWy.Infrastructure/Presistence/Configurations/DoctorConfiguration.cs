@@ -21,7 +21,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.HasIndex(d => d.UserID)
                    .IsUnique();
 
-            builder.Property(d => d.Name)
+            builder.Property(d => d.FirstName)
                    .IsRequired()
                    .HasMaxLength(100);
 
