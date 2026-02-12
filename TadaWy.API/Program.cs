@@ -9,6 +9,9 @@ using TadaWy.Domain.Helpers;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
+using TadaWy.Infrastructure.service;
+using TadaWy.Infrastructure.Service;
+using TadaWy.Applicaation.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,7 +46,7 @@ builder.Services
                    };
                });
 builder.Services.AddScoped<IAuthService,AuthService>();
-
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 var app = builder.Build();
 
 //role ,admin seeding
@@ -62,7 +65,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

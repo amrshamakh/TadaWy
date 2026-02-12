@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AuthDTO;
+using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities;
 using TadaWy.Domain.Entities.Identity;
@@ -22,13 +23,18 @@ namespace TadaWy.Infrastructure.service
     public class AuthService : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IOptions<JWT> jwt;
         private readonly JWT _Jwt;
         TadaWyDbContext _tadaWyDbContext;
-        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt,TadaWyDbContext tadaWyDbContext)
+        private readonly IFileStorageService fileStorage;
+
+        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt,TadaWyDbContext tadaWyDbContext,IFileStorageService fileStorage)
         {
             _userManager = userManager;
-            _Jwt=Jwt.Value;
+            jwt = Jwt;
+            _Jwt =Jwt.Value;
             _tadaWyDbContext = tadaWyDbContext;
+            this.fileStorage = fileStorage;
         }
 
 
@@ -59,7 +65,7 @@ namespace TadaWy.Infrastructure.service
             }
             await _userManager.AddToRoleAsync(user, "Doctor");
 
-
+            var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
             var doctor = new Doctor
             {
                 FirstName = authRegisterDoctorDTO.FirstName,
@@ -67,8 +73,8 @@ namespace TadaWy.Infrastructure.service
                 UserID = user.Id,
                IsApproved=false,
                Specialization=authRegisterDoctorDTO.Specialization,
-               
-               
+               VerificationDocumentPath=filePath
+
             };
              _tadaWyDbContext.Add(doctor);
             _tadaWyDbContext.SaveChanges();

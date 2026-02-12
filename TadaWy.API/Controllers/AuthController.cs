@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TadaWy.API.Requests;
 using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
@@ -18,14 +20,23 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpPost("RegisterDoctor")]
-        public async Task<IActionResult> RegisterDoctorAsync([FromBody] AuthRegisterDoctorDTO authRegisterDoctorDTO)
+        [Consumes("")]
+        public async Task<IActionResult> RegisterDoctorAsync([FromForm] RegisterDoctorRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-
-            var result = await _authService.RegisterDoctorAsync(authRegisterDoctorDTO);
+            var dto = new AuthRegisterDoctorDTO
+            {
+                Email = request.Email,
+                password = request.password,
+                PhoneNumber = request.PhoneNumber,
+                Specialization = request.Specialization,
+                FileName = request.VerificationDocument.FileName,
+                FileStream = request.VerificationDocument.OpenReadStream()
+            };
+            var result = await _authService.RegisterDoctorAsync(dto);
 
             if (!result.IsAuthenticated)
             {
