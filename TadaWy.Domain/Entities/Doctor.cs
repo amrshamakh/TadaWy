@@ -22,6 +22,7 @@ namespace TadaWy.Domain.Entities
 
         public Address Address { get; set; } = default!;
         public GeoLocation? Location { get; set; }
+        public string? AddressDescription { get; set; }
 
         public double rating { get; set; }
 
