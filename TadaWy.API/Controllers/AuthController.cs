@@ -20,7 +20,7 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpPost("RegisterDoctor")]
-        [Consumes("")]
+        [Consumes("multipart/form-data")]
         public async Task<IActionResult> RegisterDoctorAsync([FromForm] RegisterDoctorRequest request)
         {
             if (!ModelState.IsValid)

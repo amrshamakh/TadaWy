@@ -73,7 +73,7 @@ namespace TadaWy.Infrastructure.service
                 UserID = user.Id,
                IsApproved=false,
                Specialization=authRegisterDoctorDTO.Specialization,
-               VerificationDocumentPath=filePath
+                VerificationDocumentPath=filePath
 
             };
              _tadaWyDbContext.Add(doctor);
