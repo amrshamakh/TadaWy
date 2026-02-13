@@ -23,12 +23,30 @@ namespace TadaWy.Domain.Entities
 
         public Gendre Gendre { get; set; }
         public DateOnly DateOfBirth { get; set; }
+        public string? BloodType { get; set; }
 
         public Address? Address { get; set; }
         public GeoLocation? Location { get; set; }
 
-        public ICollection<ChronicDisease> ChronicDiseases { get; set; } = new List<ChronicDisease>();
         public ICollection <Appointment> Appointments { get; set; } = new List<Appointment>();
+
+        private readonly List<ChronicDisease> _chronicDiseases = new();
+        public IReadOnlyCollection<ChronicDisease> ChronicDiseases => _chronicDiseases;
+
+        private readonly List<Allergy> _allergies = new();
+        public IReadOnlyCollection<Allergy> Allergies => _allergies;
+
+        public void AddDisease(ChronicDisease disease)
+        {
+            if (!_chronicDiseases.Any(d => d.Id == disease.Id))
+                _chronicDiseases.Add(disease);
+        }
+
+        public void AddAllergy(Allergy allergy)
+        {
+            if (!_allergies.Any(a => a.Id == allergy.Id))
+                _allergies.Add(allergy);
+        }
 
     }
 
