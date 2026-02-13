@@ -20,12 +20,15 @@ namespace TadaWy.Infrastructure.Presistence
         {
 
         }
-        public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<Patient> Patients => Set<Patient>();
+        public DbSet<ChronicDisease> ChronicDiseases => Set<ChronicDisease>();
+        public DbSet<Allergy> Allergies => Set<Allergy>();
         public DbSet<Appointment> Appointments => Set<Appointment>();
+        public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<Doctor> Doctors => Set<Doctor>();
+        public DbSet<Specialization> Specializations => Set<Specialization>();
         public DbSet<DoctorSchedule> DoctorSchedules => Set<DoctorSchedule>();
         public DbSet<DoctorReview> DoctorReviews => Set<DoctorReview>();
-        public DbSet<Payment> Payments => Set<Payment>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

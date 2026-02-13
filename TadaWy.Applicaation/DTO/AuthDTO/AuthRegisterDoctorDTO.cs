@@ -21,9 +21,9 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
         public string? AddressDescription { get; set; }
 
         public string FirstName { get; set; }
-        [Required, MaxLength(50)]
         public string LastName { get; set; }
-
+        public Stream FileStream { get; set; }
+        public string FileName { get; set; }
         public string PhoneNumber { get; set; }
 
     }

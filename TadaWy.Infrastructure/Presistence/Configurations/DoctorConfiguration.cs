@@ -56,6 +56,11 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .WithOne(r => r.Doctor)
                    .HasForeignKey(r => r.DoctorId)
                    .OnDelete(DeleteBehavior.Cascade);
+            builder
+            .HasOne(x => x.Specialization)
+            .WithMany()
+            .HasForeignKey(x => x.SpecializationId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

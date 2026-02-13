@@ -40,6 +40,15 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .WithOne(a => a.Patient)
                    .HasForeignKey(a => a.PatientId)
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany<ChronicDisease>("_chronicDiseases")
+                    .WithMany()
+                    .UsingEntity(j =>j.ToTable("PatientChronicDiseases"));
+
+            builder.HasMany<Allergy>("_allergies")
+                   .WithMany()
+                   .UsingEntity(j => j.ToTable("PatientAllergies"));
+
         }
     }
 }

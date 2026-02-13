@@ -13,12 +13,20 @@ namespace TadaWy.Domain.Entities
     {
         public int Id { get; set; }
         public string UserID { get; set; } = default!;
+        public int SpecializationId { get; private set; }
 
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
 
-        public bool IsApproved { get; set; }
-        public string Specialization { get; set; }=default!;
+        public bool IsApproved { get; set; } = false;
+
+        public Specialization Specialization { get; set; } = default!;
+        public void SetSpecialization(Specialization specialization)
+        {
+            Specialization = specialization;
+            SpecializationId = specialization.Id;
+        }
+
 
         public Address Address { get; set; } = default!;
         public GeoLocation? Location { get; set; }
@@ -26,6 +34,8 @@ namespace TadaWy.Domain.Entities
 
         public double rating { get; set; }
 
+        public string VerificationDocumentPath { get; set; } = default!;
+    
         public ICollection<Appointment> Appointments { get; private set; }= new List<Appointment>();
 
         public ICollection<DoctorSchedule> Schedules { get; private set; }= new List<DoctorSchedule>();
