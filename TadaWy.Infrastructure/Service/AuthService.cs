@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -29,6 +31,7 @@ namespace TadaWy.Infrastructure.service
             _userManager = userManager;
             _Jwt=Jwt.Value;
             _tadaWyDbContext = tadaWyDbContext;
+          
         }
 
 
@@ -163,7 +166,7 @@ namespace TadaWy.Infrastructure.service
             {
             new Claim(JwtRegisteredClaimNames.Email,applicationUser.Email),
             new Claim(JwtRegisteredClaimNames.Sub,applicationUser.PhoneNumber),
-        }
+            }
             .Union(roleClaims)
             .Union(UserClaims);
 
@@ -209,13 +212,13 @@ namespace TadaWy.Infrastructure.service
             {
                 var activeRefreshToken = User.RefreshTokens.FirstOrDefault(t => t.IsActive);
                 authModel.RefreshToken = activeRefreshToken.Token;
-                authModel.RefreshTokenExpireOn = activeRefreshToken.ExpireOn;
+                authModel.RefreshTokenExpireOn = activeRefreshToken.ExpireOn.ToLocalTime();
             }
             else
             {
                 var refreshToken = GenerateRefreshToken();
                 authModel.RefreshToken = refreshToken.Token;
-                authModel.RefreshTokenExpireOn = refreshToken.ExpireOn;
+                authModel.RefreshTokenExpireOn = refreshToken.ExpireOn.ToLocalTime();
                 User.RefreshTokens.Add(refreshToken);
                 await _userManager.UpdateAsync(User);
             }
@@ -240,5 +243,7 @@ namespace TadaWy.Infrastructure.service
 
             };
         }
+
+      
     }
 }

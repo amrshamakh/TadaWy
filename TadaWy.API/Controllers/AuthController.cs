@@ -50,6 +50,9 @@ namespace TadaWy.API.Controllers
                 return BadRequest(result.Messege);
             }
 
+            if (!string.IsNullOrEmpty(result.RefreshToken))
+                SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpireOn);
+
             return Ok(new { token = result.Token, expireOn = result.ExpireOn, Role = result.Role });
         }
 
@@ -67,7 +70,23 @@ namespace TadaWy.API.Controllers
             {
                 return BadRequest(result.Messege);
             }
+
+            if (!string.IsNullOrEmpty(result.RefreshToken))
+                SetRefreshTokenInCookie(result.RefreshToken, result.RefreshTokenExpireOn);
+
+
             return Ok(new { token = result.Token, expireOn = result.ExpireOn, Role = result.Role });
+        }
+
+        private void SetRefreshTokenInCookie(string RefreshToken, DateTime Expires)
+        {
+            var cookieOption = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = Expires
+            };
+
+            Response.Cookies.Append("refreshToken", RefreshToken, cookieOption);
         }
     }
 }

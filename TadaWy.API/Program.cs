@@ -9,6 +9,7 @@ using TadaWy.Domain.Helpers;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
+using TadaWy.Infrastructure.service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,16 +31,18 @@ builder.Services
                .AddAuthentication(op => op.DefaultAuthenticateScheme = "myschema")
                .AddJwtBearer("myschema", option =>
                {
-                  
+
                    option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                    {
                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:Key"])),
                        ValidateIssuer = true,
                        ValidateAudience = true,
-                       ValidateLifetime=true,
+                       ValidateLifetime = true,
                        ValidIssuer = builder.Configuration["JWT:Issuer"],
                        ValidAudience = builder.Configuration["JWT:Audience"],
-                       ValidateIssuerSigningKey=true
+                       ValidateIssuerSigningKey = true,
+                       ClockSkew = TimeSpan.Zero
+
                    };
                });
 builder.Services.AddScoped<IAuthService,AuthService>();
