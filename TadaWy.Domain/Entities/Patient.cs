@@ -29,24 +29,9 @@ namespace TadaWy.Domain.Entities
         public GeoLocation? Location { get; set; }
 
         public ICollection <Appointment> Appointments { get; set; } = new List<Appointment>();
+        public ICollection<PatientChronicDisease> PatientChronicDiseases { get; set; } = new List<PatientChronicDisease>();
 
-        private readonly List<ChronicDisease> _chronicDiseases = new();
-        public IReadOnlyCollection<ChronicDisease> ChronicDiseases => _chronicDiseases;
-
-        private readonly List<Allergy> _allergies = new();
-        public IReadOnlyCollection<Allergy> Allergies => _allergies;
-
-        public void AddDisease(ChronicDisease disease)
-        {
-            if (!_chronicDiseases.Any(d => d.Id == disease.Id))
-                _chronicDiseases.Add(disease);
-        }
-
-        public void AddAllergy(Allergy allergy)
-        {
-            if (!_allergies.Any(a => a.Id == allergy.Id))
-                _allergies.Add(allergy);
-        }
+        public ICollection<PatientAllergy> PatientAllergies = new List<PatientAllergy>();
 
     }
 

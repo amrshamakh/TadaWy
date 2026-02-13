@@ -1,28 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TadaWy.Domain.Entities;
 
-namespace TadaWy.Infrastructure.Presistence.Configurations
-{
-    public class SpecializationConfiguration
+public class SpecializationConfiguration
     : IEntityTypeConfiguration<Specialization>
+{
+    public void Configure(EntityTypeBuilder<Specialization> builder)
     {
-        public void Configure(EntityTypeBuilder<Specialization> builder)
-        {
-            builder.HasKey(x => x.Id);
+        builder.ToTable("Specializations");
 
-            builder.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(150);
+        builder.HasKey(s => s.Id);
 
-            builder.HasIndex(x => x.Name)
-                .IsUnique();
-        }
+        builder.Property(s => s.Name)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasIndex(s => s.Name)
+            .IsUnique();
     }
 }
-

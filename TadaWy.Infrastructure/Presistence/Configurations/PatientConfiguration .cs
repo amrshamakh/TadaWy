@@ -35,19 +35,17 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                 a.Property(p => p.City).HasMaxLength(50);
                 a.Property(p => p.State).HasMaxLength(50);
             });
+            builder.OwnsOne(p=>p.Location, l =>
+            {
+                l.Property(p => p.Latitude);
+                l.Property(p => p.Longitude);
+            });
 
             builder.HasMany(p => p.Appointments)
                    .WithOne(a => a.Patient)
                    .HasForeignKey(a => a.PatientId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasMany<ChronicDisease>("_chronicDiseases")
-                    .WithMany()
-                    .UsingEntity(j =>j.ToTable("PatientChronicDiseases"));
-
-            builder.HasMany<Allergy>("_allergies")
-                   .WithMany()
-                   .UsingEntity(j => j.ToTable("PatientAllergies"));
 
         }
     }

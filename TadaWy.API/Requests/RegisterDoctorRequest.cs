@@ -8,7 +8,7 @@ namespace TadaWy.API.Requests
 
         public string password { get; set; }
 
-        public string Specialization { get; set; }
+        public int SpecializationId { get; set; }
         public Address Address { get; set; } = default!;
 
         public string FirstName { get; set; }

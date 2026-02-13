@@ -16,7 +16,7 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
 
         public string password { get; set; }
        
-        public string Specialization { get; set; }
+        public int SpecializationId { get; set; }
         public GeoLocation? Location { get; set; }
         public string? AddressDescription { get; set; }
 

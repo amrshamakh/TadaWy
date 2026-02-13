@@ -1,28 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TadaWy.Domain.Entities;
 
-namespace TadaWy.Infrastructure.Presistence.Configurations
-{
-    public class AllergyConfiguration
+public class AllergyConfiguration
     : IEntityTypeConfiguration<Allergy>
+{
+    public void Configure(EntityTypeBuilder<Allergy> builder)
     {
-        public void Configure(EntityTypeBuilder<Allergy> builder)
-        {
-            builder.HasKey(x => x.Id);
+        builder.ToTable("Allergies");
 
-            builder.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(150);
+        builder.HasKey(a => a.Id);
 
-            builder.HasIndex(x => x.Name)
-                .IsUnique();
-        }
+        builder.Property(a => a.Name)
+            .IsRequired()
+            .HasMaxLength(150);
+
+        builder.HasIndex(a => a.Name)
+            .IsUnique();
     }
-
 }

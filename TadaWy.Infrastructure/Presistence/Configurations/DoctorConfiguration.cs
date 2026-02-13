@@ -25,14 +25,10 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(d => d.Specialization)
-                   .IsRequired()
-                   .HasMaxLength(100);
-
             builder.Property(d => d.IsApproved)
                    .IsRequired();
 
-            builder.Property(d => d.rating)
+            builder.Property(d => d.Rating)
                    .HasDefaultValue(0);
 
             builder.OwnsOne(d => d.Address, a =>
@@ -41,7 +37,11 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                 a.Property(p => p.City).HasMaxLength(50);
                 a.Property(p => p.State).HasMaxLength(50);
             });
-
+            builder.OwnsOne(d => d.Location, l =>
+            {
+                l.Property(p => p.Latitude);
+                l.Property(p => p.Longitude);
+            });
             builder.HasMany(d => d.Appointments)
                    .WithOne(a => a.Doctor)
                    .HasForeignKey(a => a.DoctorId)
@@ -58,7 +58,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .OnDelete(DeleteBehavior.Cascade);
             builder
             .HasOne(x => x.Specialization)
-            .WithMany()
+            .WithMany(s=>s.Doctors)
             .HasForeignKey(x => x.SpecializationId)
             .OnDelete(DeleteBehavior.Restrict);
         }

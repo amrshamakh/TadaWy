@@ -74,7 +74,7 @@ namespace TadaWy.Infrastructure.service
                 LastName = authRegisterDoctorDTO.LastName,
                 UserID = user.Id,
                IsApproved=false,
-               Specialization=authRegisterDoctorDTO.Specialization,
+               SpecializationId=authRegisterDoctorDTO.SpecializationId,
                 VerificationDocumentPath=filePath
 
             };

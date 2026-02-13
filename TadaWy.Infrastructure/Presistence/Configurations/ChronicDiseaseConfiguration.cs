@@ -1,27 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TadaWy.Domain.Entities;
 
-namespace TadaWy.Infrastructure.Presistence.Configurations
-{
-    public class ChronicDiseaseConfiguration
+public class ChronicDiseaseConfiguration
     : IEntityTypeConfiguration<ChronicDisease>
+{
+    public void Configure(EntityTypeBuilder<ChronicDisease> builder)
     {
-        public void Configure(EntityTypeBuilder<ChronicDisease> builder)
-        {
-            builder.HasKey(x => x.Id);
+        builder.ToTable("ChronicDiseases");
 
-            builder.Property(x => x.Name)
-                .IsRequired()
-                .HasMaxLength(150);
+        builder.HasKey(cd => cd.Id);
 
-            builder.HasIndex(x => x.Name)
-                .IsUnique();
-        }
+        builder.Property(cd => cd.Name)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasIndex(cd => cd.Name)
+            .IsUnique();
     }
 }
