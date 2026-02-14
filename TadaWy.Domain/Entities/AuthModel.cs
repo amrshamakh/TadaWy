@@ -26,6 +26,6 @@ namespace TadaWy.Domain.Entities
         [JsonIgnore]
         public string RefreshToken { get; set; }
         public DateTime RefreshTokenExpireOn { get; set; }
-
+        public bool Success { get; set; }
     }
 }

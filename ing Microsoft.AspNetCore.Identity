@@ -1,0 +1,38 @@
+* [33mcb4fa78[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fluent validation added
+* [33mdbd8122[m edit the Doctor , initil migration Lookup service and endpoint to get the chronic diseases
+*   [33m89ef029[m edit ibrahim zena
+[32m|[m[33m\[m  
+[32m|[m * [33m57e024f[m Missing Enities Added(ChronicDisease, Allergy,Specialization ) with Configrations and TaDawyDBcontext Modification
+[32m|[m * [33mb1ef65d[m force the front to send a multipart/form-data request
+[32m|[m * [33m13f6779[m file storage and in the registerdoctor controller mapping the form data to the dto
+* [33m|[m [33m521e8d8[m add setRefreshTokenToCookie Function
+[33m|[m[33m/[m  
+* [33m3d08fd2[m Addressdescription added to doctor
+* [33m4dc220e[m Geolocation Added
+[33m|[m *   [33m3082f8b[m[33m ([m[1;35mrefs/stash[m[33m)[m On main: g
+[33m|[m[33m/[m[35m|[m[36m\[m  
+[33m|[m [35m|[m * [33me0d746e[m untracked files on main: b3cb8db add refreshToken
+[33m|[m * [33mf2ccbab[m index on main: b3cb8db add refreshToken
+[33m|[m[33m/[m  
+* [33mb3cb8db[m add refreshToken
+*   [33m7262c76[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[1;31m|[m[1;32m\[m  
+[1;31m|[m *   [33m9de13a0[m of ah
+[1;31m|[m [1;33m|[m[1;34m\[m  
+[1;31m|[m [1;33m|[m * [33m4acb67c[m All returned Address here
+[1;31m|[m [1;33m|[m * [33m0ded049[m Added Location value object istead of address and the address is changed with AddressDescription Patient and Doctor modified
+[1;31m|[m * [1;34m|[m [33m594b037[m jkj
+[1;31m|[m * [1;34m|[m [33m4b3c8eb[m kkaaa
+[1;31m|[m * [1;34m|[m [33mae93403[m auth
+[1;31m|[m * [1;34m|[m [33m1c0e857[m a
+[1;31m|[m * [1;34m|[m [33md9b1fa4[m add authmodel and endpoint
+[1;31m|[m * [1;34m|[m [33m8784fc7[m ibrahim sheta
+* [1;34m|[m [1;34m|[m [33m92ad0e7[m admin seeding
+[1;34m|[m [1;34m|[m[1;34m/[m  
+[1;34m|[m[1;34m/[m[1;34m|[m   
+* [1;34m|[m [33ma115951[m fleuentApi ,remove direct ref to ApplicationUser from domain entities,remove Admin entity its for only authorization,roles seeding , admin  seeding , next step will be the initial migration
+[1;34m|[m[1;34m/[m  
+* [33m13fdfc5[m add Identity service and conncection string
+* [33m798d06a[m add Doctor entity with Reviews and Schedules
+* [33m8ffffa9[m Patient Entities added
+* [33m0eb7191[m initial commit
