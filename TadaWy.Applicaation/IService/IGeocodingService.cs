@@ -9,6 +9,6 @@ namespace TadaWy.Applicaation.IService
 {
     public interface IGeocodingService
     {
-            Task<AddressDto?> GetAddressAsync(double latitude, double longitude);
+            Task<AddressDto?> GetAddressAsync(double? latitude, double? longitude);
     }
 }

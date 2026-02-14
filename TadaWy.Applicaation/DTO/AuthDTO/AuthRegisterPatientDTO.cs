@@ -18,7 +18,9 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
         public string Confirmpassword { get; set; }
         public Gendre Gendre { get; set; }
 
-        public GeoLocation? Location { get; set; }
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
 
         public string FirstName { get; set; }
      

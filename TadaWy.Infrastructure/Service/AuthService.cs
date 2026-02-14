@@ -14,6 +14,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using TadaWy.Applicaation.DTO.AddressDto;
 using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
@@ -143,6 +144,13 @@ namespace TadaWy.Infrastructure.service
             }
             await _userManager.AddToRoleAsync(user, "Patient");
 
+            var addressDto = new AddressDto();
+            if ((RegisterPatientAsync.Latitude is not null) && (RegisterPatientAsync.Longitude is not null)) { 
+                 addressDto = await geocodingService.GetAddressAsync(RegisterPatientAsync.Latitude, RegisterPatientAsync.Longitude);
+                if (addressDto is null)
+                    throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
+            }
+           
             var patient = new Patient
             {
                 FirstName = RegisterPatientAsync.FirstName,
@@ -150,8 +158,10 @@ namespace TadaWy.Infrastructure.service
                 UserID = user.Id,
                 DateOfBirth = RegisterPatientAsync.DateOfBirth,
                 Gendre = RegisterPatientAsync.Gendre,
+                Location = new GeoLocation(RegisterPatientAsync.Latitude, RegisterPatientAsync.Longitude),
+                Address=new Address(addressDto.Street?? "UnKnown",addressDto.City?? "UnKnown",addressDto.State?? "UnKnown")
+                
             };
-
             _tadaWyDbContext.Add(patient);
             _tadaWyDbContext.SaveChanges();
             ;

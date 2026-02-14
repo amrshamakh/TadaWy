@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace TadaWy.Domain.ValueObjects
 {
     
-    public record GeoLocation(double Latitude, double Longitude)
+    public record GeoLocation(double? Latitude, double? Longitude)
     {
         
         public bool IsValid =>

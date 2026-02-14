@@ -18,7 +18,7 @@ namespace TadaWy.Infrastructure.Service
             _httpClient = httpClient;
         }
 
-        public async Task<AddressDto?> GetAddressAsync(double latitude, double longitude)
+        public async Task<AddressDto?> GetAddressAsync(double? latitude, double? longitude)
         {
             var url = $"https://nominatim.openstreetmap.org/reverse?format=json&lat={latitude}&lon={longitude}&addressdetails=1";
 
