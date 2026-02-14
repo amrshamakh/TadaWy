@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using TadaWy.Domain.Entities.AuthModels;
 
 namespace TadaWy.Domain.Entities.Identity
 {

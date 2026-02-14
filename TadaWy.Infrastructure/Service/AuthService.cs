@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -15,6 +16,7 @@ using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities;
+using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
 using TadaWy.Domain.ValueObjects;
@@ -39,7 +41,7 @@ namespace TadaWy.Infrastructure.service
             _tadaWyDbContext = tadaWyDbContext;
             this.fileStorage = fileStorage;
         }
-
+        
 
         public async Task<AuthModel> RegisterDoctorAsync(AuthRegisterDoctorDTO authRegisterDoctorDTO)
         {
@@ -95,18 +97,7 @@ namespace TadaWy.Infrastructure.service
                 Messege = "Data send to Admin"
             };
         }
-        //var JWTSecurityToken = await CreateJwtToken(user);
-        //var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
 
-        //    return new AuthModel
-        //    {
-        //        Email = user.Email,
-        //        ExpireOn = JWTSecurityToken.ValidTo,
-        //        IsAuthenticated = true,
-        //        Username = user.UserName,
-        //        Token = stringtoken,
-        //        Role = new List<string> { "Doctor" },
-        //    };
         public async Task<AuthModel> RegisterPatientAsync(AuthRegisterPatientDTO RegisterPatientAsync)
         {
             if (await _userManager.FindByEmailAsync(RegisterPatientAsync.Email) is not null)
@@ -246,6 +237,63 @@ namespace TadaWy.Infrastructure.service
 
         }
 
+        public async Task<AuthModel> RefreshTokenAsync(string refreshtoken)
+        {
+            var authModel = new AuthModel();
+            var user=await _userManager.Users.SingleOrDefaultAsync(u=>u.RefreshTokens.Any(t=>t.Token== refreshtoken));
+
+            if (user == null) {
+
+                authModel.Messege="Invalid Token";
+                return authModel;
+            }
+            var refreshToken=user.RefreshTokens.Single(t=>t.Token== refreshtoken);
+
+            if(!refreshToken.IsActive)
+            {
+                authModel.Messege = "Invalid Token";
+                return authModel;
+            }
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            var newRefreshToken=GenerateRefreshToken();
+            user.RefreshTokens.Add(newRefreshToken);
+            await _userManager.UpdateAsync(user);
+
+            var jwtToken = await CreateJwtToken(user);
+
+
+            authModel.IsAuthenticated = true;
+            authModel.RefreshToken = newRefreshToken.Token;
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+            authModel.Email = user.Email;
+            authModel.Username = user.Email;
+            var Roles=await _userManager.GetRolesAsync(user);
+            authModel.Role = Roles.ToList();
+            authModel.RefreshTokenExpireOn = newRefreshToken.ExpireOn;
+
+            return authModel;
+        }
+
+        public async Task<bool> RevokeTokenAsync(string token)
+        {
+           
+            var user = await _userManager.Users.SingleOrDefaultAsync(u => u.RefreshTokens.Any(t => t.Token == token));
+
+            if (user == null)
+            
+                return false;
+               
+            var refreshToken = user.RefreshTokens.Single(t => t.Token == token);
+
+            if (!refreshToken.IsActive)
+                return false;
+        
+            refreshToken.RevokedOn = DateTime.UtcNow;
+
+            await _userManager.UpdateAsync(user);
+            return true;
+        }
         private RefreshToken GenerateRefreshToken()
         {
             var RAndomNumber = new byte[32];

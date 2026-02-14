@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TadaWy.Domain.Entities
+namespace TadaWy.Domain.Entities.AuthModels
 {
     [Owned]
     public class RefreshToken
@@ -15,7 +15,7 @@ namespace TadaWy.Domain.Entities
         public DateTime ExpireOn { get; set; }
         public bool IsExpired => DateTime.UtcNow >= ExpireOn;
         public DateTime CreatedOn { get; set; }
-        public DateTime? RevokedOn { get; set;}
+        public DateTime? RevokedOn { get; set; }
         public bool IsActive => RevokedOn == null && !IsExpired;
     }
 }

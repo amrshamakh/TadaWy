@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TadaWy.API.Requests;
 using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.IServices;
+using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.API.Controllers
@@ -96,6 +97,37 @@ namespace TadaWy.API.Controllers
             return Ok(new { token = result.Token, expireOn = result.ExpireOn, Role = result.Role });
         }
 
+        [HttpGet("refreshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            var result=await _authService.RefreshTokenAsync(refreshToken);
+
+            if (!result.IsAuthenticated)
+                return BadRequest(result);
+
+            SetRefreshTokenInCookie(result.RefreshToken,result.RefreshTokenExpireOn);
+
+            return Ok(result); 
+
+        }
+
+        [HttpPost("RevokeToken")]
+        public async Task<IActionResult> RevokeToken([FromBody]RevokeToken model)
+        {
+            var token = model.Token ?? Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(token))
+                return BadRequest("Token is requred!");
+
+            var result=await _authService.RevokeTokenAsync(token);
+
+            if(!result)
+                return BadRequest("Token is invalid!");
+
+            return Ok();
+        }
         private void SetRefreshTokenInCookie(string RefreshToken, DateTime Expires)
         {
             var cookieOption = new CookieOptions
