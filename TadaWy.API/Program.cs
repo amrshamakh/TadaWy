@@ -10,6 +10,7 @@ using TadaWy.Infrastructure.Seeders;
 using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
 using TadaWy.Applicaation.IService;
+using TadaWy.Applicaation.IServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,12 +43,9 @@ builder.Services
 
                    };
                });
-<<<<<<< Updated upstream
-
-=======
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
->>>>>>> Stashed changes
+
 var app = builder.Build();
 
 //role ,admin seeding

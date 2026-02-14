@@ -20,11 +20,8 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpPost("RegisterDoctor")]
-<<<<<<< Updated upstream
+
         [Consumes("multipart/form-data")]
-=======
-        [Consumes("")]
->>>>>>> Stashed changes
         public async Task<IActionResult> RegisterDoctorAsync([FromForm] RegisterDoctorRequest request)
         {
             if (!ModelState.IsValid)
@@ -36,11 +33,13 @@ namespace TadaWy.API.Controllers
                 Email = request.Email,
                 password = request.password,
                 PhoneNumber = request.PhoneNumber,
-<<<<<<< Updated upstream
+                FirstName = request.FirstName,
+                LastName = request.LastName,
                 SpecializationId = request.SpecializationId,
-=======
-                Specialization = request.Specialization,
->>>>>>> Stashed changes
+                AddressDescription = request.AddressDescription,
+                Confirmpassword=request.ConfirmPassword,
+                Latitude = request.Latitude,
+                Longitude = request.Longitude,
                 FileName = request.VerificationDocument.FileName,
                 FileStream = request.VerificationDocument.OpenReadStream()
             };

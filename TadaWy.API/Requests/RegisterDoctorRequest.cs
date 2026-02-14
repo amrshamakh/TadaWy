@@ -9,8 +9,17 @@ namespace TadaWy.API.Requests
 
         public string password { get; set; }
 
+        public string ConfirmPassword { get; set; }
+
+        public string? AddressDescription { get; set; }
+
+
         public int SpecializationId { get; set; }
-        public Address Address { get; set; } = default!;
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
+
 
         public string FirstName { get; set; }
         public string LastName { get; set; }

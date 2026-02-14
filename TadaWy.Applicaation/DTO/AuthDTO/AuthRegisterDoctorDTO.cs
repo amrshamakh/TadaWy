@@ -17,9 +17,12 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
 
         public string password { get; set; }
         public string Confirmpassword { get; set; }
-       
+
+        public double Latitude { get; set; }
+
+        public double Longitude { get; set; }
         public int SpecializationId { get; set; }
-        public GeoLocation? Location { get; set; }
+      
         public string? AddressDescription { get; set; }
 
         public string FirstName { get; set; }

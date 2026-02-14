@@ -17,6 +17,7 @@ using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
+using TadaWy.Domain.ValueObjects;
 using TadaWy.Infrastructure.Presistence;
 
 
@@ -55,6 +56,7 @@ namespace TadaWy.Infrastructure.service
                 Email = authRegisterDoctorDTO.Email,
              
                 PhoneNumber = authRegisterDoctorDTO.PhoneNumber,
+                UserName=authRegisterDoctorDTO.Email
                    
             };
            var result= await _userManager.CreateAsync(user, authRegisterDoctorDTO.password);
@@ -79,13 +81,10 @@ namespace TadaWy.Infrastructure.service
                 LastName = authRegisterDoctorDTO.LastName,
                 UserID = user.Id,
                IsApproved=false,
-<<<<<<< Updated upstream
-               SpecializationId=authRegisterDoctorDTO.SpecializationId,
-                VerificationDocumentPath=filePath
-=======
-               Specialization=authRegisterDoctorDTO.Specialization,
+                Location = new GeoLocation(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude),
+                SpecializationId =authRegisterDoctorDTO.SpecializationId,
                VerificationDocumentPath=filePath
->>>>>>> Stashed changes
+
 
             };
              _tadaWyDbContext.Add(doctor);
@@ -170,7 +169,7 @@ namespace TadaWy.Infrastructure.service
             };
 
         }
-
+        
         public async Task<JwtSecurityToken> CreateJwtToken(ApplicationUser applicationUser)
         {
             var UserClaims = await _userManager.GetClaimsAsync(applicationUser);

@@ -12,17 +12,6 @@ namespace TadaWy.Domain.Entities
     public class Doctor
     {
         public int Id { get; set; }
-<<<<<<< Updated upstream
-=======
-        public string FirstName { get; set; } = default!;
-        public string LastName { get; set; } = default!;
-        public bool IsApproved { get; set; } = false;
-        public string Specialization { get; set; }=default!;
-        public string Address { get; set; } = default!;
-        public double rating { get; set; }
-
-        public string VerificationDocumentPath { get; set; } = default!;
->>>>>>> Stashed changes
         public string UserID { get; set; } = default!;
 
         public string FirstName { get; set; } = default!;
@@ -31,6 +20,7 @@ namespace TadaWy.Domain.Entities
         public bool IsApproved { get; set; } = false;
 
         public int SpecializationId { get; set; }
+
         public Specialization Specialization { get; set; } = default!;
 
         public Address Address { get; set; } = default!;
