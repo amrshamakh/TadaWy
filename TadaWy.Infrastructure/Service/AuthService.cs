@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -32,14 +33,16 @@ namespace TadaWy.Infrastructure.service
         private readonly JWT _Jwt;
         TadaWyDbContext _tadaWyDbContext;
         private readonly IFileStorageService fileStorage;
+        private readonly IGeocodingService geocodingService;
 
-        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt,TadaWyDbContext tadaWyDbContext,IFileStorageService fileStorage)
+        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt,TadaWyDbContext tadaWyDbContext,IFileStorageService fileStorage,IGeocodingService geocodingService)
         {
             _userManager = userManager;
             jwt = Jwt;
             _Jwt =Jwt.Value;
             _tadaWyDbContext = tadaWyDbContext;
             this.fileStorage = fileStorage;
+            this.geocodingService = geocodingService;
         }
         
 
@@ -70,11 +73,17 @@ namespace TadaWy.Infrastructure.service
                 foreach (var error in result.Errors)
                 {
                     errors += $"{error.Description}";
-                    return new AuthModel { 
-                        Messege = errors };
                 }
+                return new AuthModel {
+                    Messege = errors
+                };
             }
             await _userManager.AddToRoleAsync(user, "Doctor");
+
+            var addressDto = await geocodingService.GetAddressAsync(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude);
+
+            if (addressDto is null)
+                throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
 
             var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
             var doctor = new Doctor
@@ -82,10 +91,12 @@ namespace TadaWy.Infrastructure.service
                 FirstName = authRegisterDoctorDTO.FirstName,
                 LastName = authRegisterDoctorDTO.LastName,
                 UserID = user.Id,
-               IsApproved=false,
+                IsApproved = false,
                 Location = new GeoLocation(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude),
-                SpecializationId =authRegisterDoctorDTO.SpecializationId,
-               VerificationDocumentPath=filePath
+                Address = new Address(addressDto.Street ?? "UnKnown", addressDto.City ?? "UnKnown", addressDto.State ?? "UnKnown"),
+                AddressDescription = authRegisterDoctorDTO.AddressDescription,
+                SpecializationId = authRegisterDoctorDTO.SpecializationId,
+                VerificationDocumentPath = filePath
 
 
             };
@@ -94,6 +105,7 @@ namespace TadaWy.Infrastructure.service
 ;
             return new AuthModel
             {
+                Success = true,
                 Messege = "Data send to Admin"
             };
         }
@@ -113,6 +125,7 @@ namespace TadaWy.Infrastructure.service
                 Email = RegisterPatientAsync.Email,
 
                 PhoneNumber = RegisterPatientAsync.PhoneNumber,
+                UserName = RegisterPatientAsync.Email
 
             };
             var result = await _userManager.CreateAsync(user, RegisterPatientAsync.password);

@@ -45,13 +45,8 @@ namespace TadaWy.API.Controllers
                 FileStream = request.VerificationDocument.OpenReadStream()
             };
             var result = await _authService.RegisterDoctorAsync(dto);
-
-            if (!result.IsAuthenticated)
-            {
-                return BadRequest(result.Messege);
-            }
-            
-            return Ok(new { token = result.Token, expireOn = result.ExpireOn, Role = result.Role });
+            if(!result.Success)return BadRequest(result.Messege);
+            else return Ok(result.Messege);
         }
 
         [HttpPost("RegisterPatient")]

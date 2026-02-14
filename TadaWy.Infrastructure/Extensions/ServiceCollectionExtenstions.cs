@@ -20,7 +20,7 @@ namespace TadaWy.Infrastructure.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<ILookupService, LookupService>();
-
+            services.AddHttpClient<IGeocodingService, OpenStreetMapGeocodingService>();
         }
     }
 }
