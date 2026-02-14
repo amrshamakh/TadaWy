@@ -74,8 +74,13 @@ namespace TadaWy.Infrastructure.service
                 LastName = authRegisterDoctorDTO.LastName,
                 UserID = user.Id,
                IsApproved=false,
+<<<<<<< Updated upstream
                SpecializationId=authRegisterDoctorDTO.SpecializationId,
                 VerificationDocumentPath=filePath
+=======
+               Specialization=authRegisterDoctorDTO.Specialization,
+               VerificationDocumentPath=filePath
+>>>>>>> Stashed changes
 
             };
              _tadaWyDbContext.Add(doctor);

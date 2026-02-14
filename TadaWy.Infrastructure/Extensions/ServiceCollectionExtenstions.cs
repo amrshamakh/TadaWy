@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,9 @@ using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.Infrastructure.Extensions
+=======
+﻿namespace TadaWy.Infrastructure.Extensions
+>>>>>>> Stashed changes
 {
     public static class ServiceCollectionExtenstions
     {
