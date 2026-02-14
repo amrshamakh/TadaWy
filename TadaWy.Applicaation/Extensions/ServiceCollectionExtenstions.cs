@@ -1,12 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
+using TadaWy.Applicaation.DTO.AuthDTO.Validators;
 
 namespace TadaWy.Applicaation.Extensions
 {
-    public class ServiceCollectionExtenstions
+    public static class ServiceCollectionExtenstions
     {
+        public static void AddApplicationServices(this IServiceCollection services)
+        {
+            services.AddValidatorsFromAssemblyContaining<AuthLoginValidator>();
+            services.AddFluentValidationAutoValidation(); 
+        }
     }
 }
