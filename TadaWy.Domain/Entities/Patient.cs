@@ -31,7 +31,9 @@ namespace TadaWy.Domain.Entities
         public ICollection <Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<PatientChronicDisease> PatientChronicDiseases { get; set; } = new List<PatientChronicDisease>();
 
+
         public ICollection<PatientAllergy> PatientAllergies = new List<PatientAllergy>();
+
 
     }
 

@@ -215,7 +215,7 @@ namespace TadaWy.Infrastructure.service
             var JWTSecurityToken = await CreateJwtToken(User);
             var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
 
-
+            
             authModel.Email = User.Email;
             authModel.IsAuthenticated = true;
             authModel.Username = User.UserName;
