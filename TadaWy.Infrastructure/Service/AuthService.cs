@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -151,7 +152,9 @@ namespace TadaWy.Infrastructure.service
                 Gendre = RegisterPatientAsync.Gendre,
             };
 
-
+            _tadaWyDbContext.Add(patient);
+            _tadaWyDbContext.SaveChanges();
+            ;
 
             var JWTSecurityToken = await CreateJwtToken(user);
             var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
