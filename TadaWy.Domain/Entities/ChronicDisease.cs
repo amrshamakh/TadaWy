@@ -9,12 +9,8 @@ namespace TadaWy.Domain.Entities
     public class ChronicDisease
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = default!;
 
-
-        public ChronicDisease(string name)
-        {
-            Name = name.Trim().ToLowerInvariant();
-        }
+        public ICollection<PatientChronicDisease> PatientChronicDiseases { get; set; } = new List<PatientChronicDisease>();
     }
 }

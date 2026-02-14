@@ -77,9 +77,9 @@ namespace TadaWy.Infrastructure.service
             {
                 FirstName = authRegisterDoctorDTO.FirstName,
                 LastName = authRegisterDoctorDTO.LastName,
-                 UserID = user.Id,
-                 IsApproved=false,
-                SpecializationId= authRegisterDoctorDTO.SpecializationId,
+                UserID = user.Id,
+               IsApproved=false,
+               SpecializationId=authRegisterDoctorDTO.SpecializationId,
                 VerificationDocumentPath=filePath
 
             };

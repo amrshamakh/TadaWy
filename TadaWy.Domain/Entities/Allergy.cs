@@ -8,12 +8,12 @@ namespace TadaWy.Domain.Entities
 {
     public class Allergy
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+      
+            public int Id { get; set; }
+            public string Name { get; set; } = default!;
 
-        public Allergy(string name)
-        {
-            Name = name.Trim().ToLowerInvariant();
-        }
+            public ICollection<PatientAllergy> PatientAllergies { get; set; }
+                = new List<PatientAllergy>();
+        
     }
 }

@@ -32,7 +32,7 @@ namespace TadaWy.API.Controllers
                 Email = request.Email,
                 password = request.password,
                 PhoneNumber = request.PhoneNumber,
-                SpecializationId=request.SpecializationId,
+                SpecializationId = request.SpecializationId,
                 FileName = request.VerificationDocument.FileName,
                 FileStream = request.VerificationDocument.OpenReadStream()
             };

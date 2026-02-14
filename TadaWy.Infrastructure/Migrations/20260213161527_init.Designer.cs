@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TadaWy.Infrastructure.Presistence;
 
@@ -11,9 +12,11 @@ using TadaWy.Infrastructure.Presistence;
 namespace TadaWy.Infrastructure.Migrations
 {
     [DbContext(typeof(TadaWyDbContext))]
-    partial class TadaWyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260213161527_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -268,14 +271,7 @@ namespace TadaWy.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("rating")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("float")
-                        .HasDefaultValue(0.0);
-
                     b.HasKey("Id");
-
-                    b.HasIndex("Locationid");
 
                     b.HasIndex("SpecializationId");
 
@@ -432,16 +428,11 @@ namespace TadaWy.Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int?>("Locationid")
-                        .HasColumnType("int");
-
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Locationid");
 
                     b.HasIndex("UserID")
                         .IsUnique();
@@ -600,10 +591,6 @@ namespace TadaWy.Infrastructure.Migrations
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Doctor", b =>
                 {
-                    b.HasOne("TadaWy.Domain.ValueObjects.GeoLocation", "Location")
-                        .WithMany()
-                        .HasForeignKey("Locationid");
-
                     b.HasOne("TadaWy.Domain.Entities.Specialization", "Specialization")
                         .WithMany("Doctors")
                         .HasForeignKey("SpecializationId")
@@ -726,10 +713,6 @@ namespace TadaWy.Infrastructure.Migrations
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Patient", b =>
                 {
-                    b.HasOne("TadaWy.Domain.ValueObjects.GeoLocation", "Location")
-                        .WithMany()
-                        .HasForeignKey("Locationid");
-
                     b.OwnsOne("TadaWy.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<int>("PatientId")

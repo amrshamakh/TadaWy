@@ -1,19 +1,11 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TadaWy.Domain.Entities.Identity;
-
 using TadaWy.Domain.Helpers;
-using TadaWy.Applicaation.IServices;
+using TadaWy.Infrastructure.Extensions;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
-using TadaWy.Infrastructure.service;
-using TadaWy.Applicaation.IService;
-using TadaWy.Infrastructure.Service;
-using TadaWy.Infrastructure.Service;
-using TadaWy.Applicaation.IService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,15 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<TadaWyDbContext>();
 builder.Services.AddControllers();
+builder.Services.AddInfrastructureServices(builder.Configuration);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<TadaWyDbContext>(obtions =>
-{
-    obtions.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-
 
 builder.Services
                .AddAuthentication(op => op.DefaultAuthenticateScheme = "myschema")
@@ -50,8 +37,7 @@ builder.Services
 
                    };
                });
-builder.Services.AddScoped<IAuthService,AuthService>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+
 var app = builder.Build();
 
 //role ,admin seeding
