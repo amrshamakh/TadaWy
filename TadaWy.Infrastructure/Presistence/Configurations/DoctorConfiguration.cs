@@ -25,9 +25,10 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(d => d.Specialization)
-                   .IsRequired()
-                   .HasMaxLength(100);
+            // امسح السطر ده نهائيًا
+            // builder.Property(d => d.Specialization)
+            //        .IsRequired()
+            //        .HasMaxLength(100);
 
             builder.Property(d => d.IsApproved)
                    .IsRequired();
@@ -56,11 +57,14 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .WithOne(r => r.Doctor)
                    .HasForeignKey(r => r.DoctorId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // علاقة Doctor ↔ Specialization 
             builder
-            .HasOne(x => x.Specialization)
-            .WithMany()
-            .HasForeignKey(x => x.SpecializationId)
-            .OnDelete(DeleteBehavior.Restrict);
+                .HasOne(d => d.Specialization)
+                .WithMany(s => s.Doctors)
+                .HasForeignKey(d => d.SpecializationId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
+
 }

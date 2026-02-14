@@ -30,23 +30,11 @@ namespace TadaWy.Domain.Entities
 
         public ICollection <Appointment> Appointments { get; set; } = new List<Appointment>();
 
-        private readonly List<ChronicDisease> _chronicDiseases = new();
-        public IReadOnlyCollection<ChronicDisease> ChronicDiseases => _chronicDiseases;
 
-        private readonly List<Allergy> _allergies = new();
-        public IReadOnlyCollection<Allergy> Allergies => _allergies;
+        //public ICollection<ChronicDisease> PatientChronicDiseases { get; set; } = new List<ChronicDisease>();
+        //public ICollection<Allergy> PatientAllergies { get; set; } = new List<Allergy>();
 
-        public void AddDisease(ChronicDisease disease)
-        {
-            if (!_chronicDiseases.Any(d => d.Id == disease.Id))
-                _chronicDiseases.Add(disease);
-        }
 
-        public void AddAllergy(Allergy allergy)
-        {
-            if (!_allergies.Any(a => a.Id == allergy.Id))
-                _allergies.Add(allergy);
-        }
 
     }
 

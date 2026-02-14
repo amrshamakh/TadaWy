@@ -8,6 +8,7 @@ namespace TadaWy.Domain.ValueObjects
 {
     public record GeoLocation(double Latitude, double Longitude)
     {
+        public int id { get; set; }
         public bool IsValid =>
             Latitude >= -90 && Latitude <= 90 &&
             Longitude >= -180 && Longitude <= 180;

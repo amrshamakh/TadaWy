@@ -45,6 +45,11 @@ namespace TadaWy.Infrastructure.service
             if (await _userManager.FindByEmailAsync(authRegisterDoctorDTO.Email) is not null)
                 return new AuthModel { Messege = "This Email IS Already Registered" };
 
+            if(authRegisterDoctorDTO.password!=authRegisterDoctorDTO.Confirmpassword)
+            {
+                return new AuthModel { Messege = "passwords is not match" };
+            }
+            
             var user = new ApplicationUser
             {
                 Email = authRegisterDoctorDTO.Email,
@@ -72,9 +77,9 @@ namespace TadaWy.Infrastructure.service
             {
                 FirstName = authRegisterDoctorDTO.FirstName,
                 LastName = authRegisterDoctorDTO.LastName,
-                UserID = user.Id,
-               IsApproved=false,
-               Specialization=authRegisterDoctorDTO.Specialization,
+                 UserID = user.Id,
+                 IsApproved=false,
+                SpecializationId= authRegisterDoctorDTO.SpecializationId,
                 VerificationDocumentPath=filePath
 
             };
@@ -102,6 +107,11 @@ namespace TadaWy.Infrastructure.service
         {
             if (await _userManager.FindByEmailAsync(RegisterPatientAsync.Email) is not null)
                 return new AuthModel { Messege = "This Email IS Already Registered" };
+
+            if (RegisterPatientAsync.password != RegisterPatientAsync.Confirmpassword)
+            {
+                return new AuthModel { Messege = "passwords is not match" };
+            }
 
             var user = new ApplicationUser
             {

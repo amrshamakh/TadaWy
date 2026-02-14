@@ -13,21 +13,15 @@ namespace TadaWy.Domain.Entities
     {
         public int Id { get; set; }
         public string UserID { get; set; } = default!;
-        public int SpecializationId { get; private set; }
+        public int SpecializationId { get;  set; }
 
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
 
         public bool IsApproved { get; set; } = false;
 
+       
         public Specialization Specialization { get; set; } = default!;
-        public void SetSpecialization(Specialization specialization)
-        {
-            Specialization = specialization;
-            SpecializationId = specialization.Id;
-        }
-
-
         public Address Address { get; set; } = default!;
         public GeoLocation? Location { get; set; }
         public string? AddressDescription { get; set; }

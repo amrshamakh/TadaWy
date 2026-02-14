@@ -10,8 +10,11 @@ using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
 using TadaWy.Infrastructure.service;
+using TadaWy.Applicaation.IService;
+using TadaWy.Infrastructure.Service;
 using TadaWy.Infrastructure.Service;
 using TadaWy.Applicaation.IService;
+
 
 var builder = WebApplication.CreateBuilder(args);
 

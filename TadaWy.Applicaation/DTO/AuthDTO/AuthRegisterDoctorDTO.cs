@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TadaWy.Domain.Entities;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.ValueObjects;
 
@@ -15,8 +16,9 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
         public string Email { get; set; }
 
         public string password { get; set; }
+        public string Confirmpassword { get; set; }
        
-        public string Specialization { get; set; }
+        public int SpecializationId { get; set; }
         public GeoLocation? Location { get; set; }
         public string? AddressDescription { get; set; }
 

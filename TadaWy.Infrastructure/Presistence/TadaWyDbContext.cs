@@ -16,7 +16,7 @@ namespace TadaWy.Infrastructure.Presistence
     public class TadaWyDbContext : IdentityDbContext<ApplicationUser>
     {
 
-        public TadaWyDbContext(DbContextOptions options) : base(options)
+        public TadaWyDbContext(DbContextOptions<TadaWyDbContext> options) : base(options)
         {
 
         }
