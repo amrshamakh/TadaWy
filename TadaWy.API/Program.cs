@@ -45,6 +45,7 @@ builder.Services
                });
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 var app = builder.Build();
 

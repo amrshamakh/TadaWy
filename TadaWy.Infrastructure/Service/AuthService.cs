@@ -233,6 +233,32 @@ namespace TadaWy.Infrastructure.service
                 return authModel;
             }
 
+            var roles = await _userManager.GetRolesAsync(User);
+
+            
+            if (roles.Contains("Doctor"))
+            {
+                var doctor =await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.UserID == User.Id);
+                if (doctor == null)
+                {
+                    authModel.Messege = "Doctor profile not found";
+                    return authModel;
+                }
+
+                if (doctor.IsRejected)
+                {
+                    authModel.Messege = $"Your request was rejected. Reason: {doctor.RejectionReason}";
+                    return authModel;
+                }
+
+                if (!doctor.IsApproved)
+                {
+                    authModel.Messege = "Your account is pending admin approval";
+                    return authModel;
+                }
+            }
+
+
             var JWTSecurityToken = await CreateJwtToken(User);
             var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
 

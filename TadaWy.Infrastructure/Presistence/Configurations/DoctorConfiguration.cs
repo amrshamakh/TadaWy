@@ -39,8 +39,8 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             });
             builder.OwnsOne(d => d.Location, l =>
             {
-                l.Property(p => p.Latitude);
-                l.Property(p => p.Longitude);
+                l.Property(p => p.Latitude).IsRequired();
+                l.Property(p => p.Longitude).IsRequired();
             });
             builder.HasMany(d => d.Appointments)
                    .WithOne(a => a.Doctor)
@@ -51,6 +51,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .WithOne(s => s.Doctor)
                    .HasForeignKey(s => s.DoctorId)
                    .OnDelete(DeleteBehavior.Cascade);
+
 
             builder.HasMany(d => d.Reviews)
                    .WithOne(r => r.Doctor)

@@ -18,13 +18,15 @@ namespace TadaWy.Domain.Entities
         public string LastName { get; set; } = default!;
 
         public bool IsApproved { get; set; } = false;
+        public bool IsRejected { get; set; } = false;
+        public string? RejectionReason { get; set; } 
 
         public int SpecializationId { get; set; }
 
         public Specialization Specialization { get; set; } = default!;
 
         public Address Address { get; set; } = default!;
-        public GeoLocation? Location { get; set; }
+        public GeoLocation Location { get; set; }
         public string? AddressDescription { get; set; }
 
         public double Rating { get; set; }

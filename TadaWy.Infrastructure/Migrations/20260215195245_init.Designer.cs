@@ -12,7 +12,7 @@ using TadaWy.Infrastructure.Presistence;
 namespace TadaWy.Infrastructure.Migrations
 {
     [DbContext(typeof(TadaWyDbContext))]
-    [Migration("20260213161527_init")]
+    [Migration("20260215195245_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -251,6 +251,9 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsRejected")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -259,6 +262,9 @@ namespace TadaWy.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("float")
                         .HasDefaultValue(0.0);
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SpecializationId")
                         .HasColumnType("int");
@@ -630,10 +636,12 @@ namespace TadaWy.Infrastructure.Migrations
                             b1.Property<int>("DoctorId")
                                 .HasColumnType("int");
 
-                            b1.Property<double>("Latitude")
+                            b1.Property<double?>("Latitude")
+                                .IsRequired()
                                 .HasColumnType("float");
 
-                            b1.Property<double>("Longitude")
+                            b1.Property<double?>("Longitude")
+                                .IsRequired()
                                 .HasColumnType("float");
 
                             b1.HasKey("DoctorId");
@@ -647,7 +655,8 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Navigation("Address")
                         .IsRequired();
 
-                    b.Navigation("Location");
+                    b.Navigation("Location")
+                        .IsRequired();
 
                     b.Navigation("Specialization");
                 });
@@ -676,7 +685,7 @@ namespace TadaWy.Infrastructure.Migrations
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Identity.ApplicationUser", b =>
                 {
-                    b.OwnsMany("TadaWy.Domain.Entities.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("TadaWy.Domain.Entities.AuthModels.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -746,10 +755,10 @@ namespace TadaWy.Infrastructure.Migrations
                             b1.Property<int>("PatientId")
                                 .HasColumnType("int");
 
-                            b1.Property<double>("Latitude")
+                            b1.Property<double?>("Latitude")
                                 .HasColumnType("float");
 
-                            b1.Property<double>("Longitude")
+                            b1.Property<double?>("Longitude")
                                 .HasColumnType("float");
 
                             b1.HasKey("PatientId");

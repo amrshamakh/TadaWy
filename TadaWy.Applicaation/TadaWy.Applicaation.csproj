@@ -21,8 +21,4 @@
     <ProjectReference Include="..\TadaWy.Domain\TadaWy.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\AdminDTO\" />
-  </ItemGroup>
-
 </Project>
