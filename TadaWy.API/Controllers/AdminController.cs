@@ -36,5 +36,16 @@ namespace TadaWy.API.Controllers
             return Ok("Doctor approved successfully");
         }
 
+        [HttpPut("Reject-doctor/{doctorId}")]
+        public async Task<IActionResult> RejectDoctor(int doctorId, [FromQuery] string RejectionReason)
+        {
+            var isApproved = await _adminService.RejectDoctorAsync(doctorId,RejectionReason);
+
+            if (!isApproved)
+                return NotFound("Doctor not found");
+
+            return Ok("Doctor Rejected successfully");
+        }
+
     }
 }
