@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Domain.Entities.Identity;
+using TadaWy.Domain.Enums;
 using TadaWy.Domain.ValueObjects;
 
 namespace TadaWy.Domain.Entities
@@ -17,8 +18,9 @@ namespace TadaWy.Domain.Entities
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
 
-        public bool IsApproved { get; set; } = false;
-        public bool IsRejected { get; set; } = false;
+        public DoctorStatus Status { get; set; } = DoctorStatus.Pending;
+
+        public DateTime CreatedAt { get; set; }
         public string? RejectionReason { get; set; } 
 
         public int SpecializationId { get; set; }

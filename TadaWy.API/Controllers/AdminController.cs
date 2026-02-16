@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TadaWy.Applicaation.DTO.AdminDTO;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
+using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
 {
@@ -20,10 +22,19 @@ namespace TadaWy.API.Controllers
         }
 
 
-        [HttpGet("doctors/pending")]
-        public async Task<ActionResult<List<DoctorsIsNotApprovedDto>>> GetPendingDoctorsAsync()
+        
+        [HttpGet("admin/doctors")]
+        public async Task<IActionResult> GetDoctorsForAdmin( [FromQuery] AdminGetDoctorsRequest request)
         {
-            var result = await _adminService.GetDoctorNotApprovedAsync();
+            var result = await _adminService.GetDoctorsForAdminAsync(request);
+            return Ok(result);
+        }
+
+
+        [HttpGet("doctors/{id}")]
+        public async Task<ActionResult<List<DoctorDetailsToAdminDto>>> GetDoctorById(int id)
+        {
+            var result = await _adminService.GetDoctorById(id);
             return Ok(result);
         }
 

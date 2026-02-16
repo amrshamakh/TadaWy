@@ -17,7 +17,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
         {
-            var query = _context.Doctors.AsNoTracking().Where(d=>d.IsApproved);
+            var query = _context.Doctors.AsNoTracking().Where(d => d.Status == Domain.Enums.DoctorStatus.Approved);
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(d =>

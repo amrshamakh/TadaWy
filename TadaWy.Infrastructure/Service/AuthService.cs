@@ -68,7 +68,7 @@ namespace TadaWy.Infrastructure.service
                    
             };
            var result= await _userManager.CreateAsync(user, authRegisterDoctorDTO.password);
-
+            
             if (!result.Succeeded)
             {
                 var errors = string.Empty;
@@ -94,13 +94,13 @@ namespace TadaWy.Infrastructure.service
                 FirstName = authRegisterDoctorDTO.FirstName,
                 LastName = authRegisterDoctorDTO.LastName,
                 UserID = user.Id,
-                IsApproved = false,
+                Status = Domain.Enums.DoctorStatus.Pending,
                 Location = new GeoLocation(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude),
                 Address = new Address(addressDto.Street ?? "UnKnown", addressDto.City ?? "UnKnown", addressDto.State ?? "UnKnown"),
                 AddressDescription = authRegisterDoctorDTO.AddressDescription,
                 SpecializationId = authRegisterDoctorDTO.SpecializationId,
-                VerificationDocumentPath = filePath
-
+                VerificationDocumentPath = filePath,
+                CreatedAt= DateTime.UtcNow,
 
             };
              _tadaWyDbContext.Add(doctor);
@@ -246,13 +246,13 @@ namespace TadaWy.Infrastructure.service
                     return authModel;
                 }
 
-                if (doctor.IsRejected)
+                if (doctor.Status==Domain.Enums.DoctorStatus.Rejected)
                 {
                     authModel.Messege = $"Your account was rejected. Reason: {doctor.RejectionReason}";
                     return authModel;
                 }
 
-                if (!doctor.IsApproved)
+                if (doctor.Status==Domain.Enums.DoctorStatus.Approved)
                 {
                     authModel.Messege = "Your account is pending admin approval";
                     return authModel;

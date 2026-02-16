@@ -25,7 +25,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .IsRequired()
                    .HasMaxLength(100);
 
-            builder.Property(d => d.IsApproved)
+            builder.Property(d => d.Status)
                    .IsRequired();
 
             builder.Property(d => d.Rating)

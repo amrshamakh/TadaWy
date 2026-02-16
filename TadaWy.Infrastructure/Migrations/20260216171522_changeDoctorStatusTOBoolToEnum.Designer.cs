@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TadaWy.Infrastructure.Presistence;
 
@@ -11,9 +12,11 @@ using TadaWy.Infrastructure.Presistence;
 namespace TadaWy.Infrastructure.Migrations
 {
     [DbContext(typeof(TadaWyDbContext))]
-    partial class TadaWyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216171522_changeDoctorStatusTOBoolToEnum")]
+    partial class changeDoctorStatusTOBoolToEnum
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
