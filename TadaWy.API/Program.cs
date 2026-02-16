@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TadaWy.Applicaation.Extensions;
+using TadaWy.Applicaation.IService;
+using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Extensions;
@@ -9,8 +12,6 @@ using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
 using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
-using TadaWy.Applicaation.IService;
-using TadaWy.Applicaation.IServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +44,40 @@ builder.Services
                        ValidateIssuerSigningKey = true,
                        ClockSkew = TimeSpan.Zero
 
+                   };
+                   option.Events = new JwtBearerEvents
+                   {
+                       OnChallenge = context =>
+                       {
+                           context.HandleResponse();
+
+                           context.Response.StatusCode = 401;
+                           context.Response.ContentType = "application/json";
+
+                           var result = System.Text.Json.JsonSerializer.Serialize(new
+                           {
+                               success = false,
+                               message = "Unauthorized",
+                               errorCode = "UNAUTHORIZED"
+                           });
+
+                           return context.Response.WriteAsync(result);
+                       },
+
+                       OnForbidden = context =>
+                       {
+                           context.Response.StatusCode = 403;
+                           context.Response.ContentType = "application/json";
+
+                           var result = System.Text.Json.JsonSerializer.Serialize(new
+                           {
+                               success = false,
+                               message = "Access denied",
+                               errorCode = "FORBIDDEN"
+                           });
+
+                           return context.Response.WriteAsync(result);
+                       }
                    };
                });
 builder.Services.AddScoped<IAuthService,AuthService>();
