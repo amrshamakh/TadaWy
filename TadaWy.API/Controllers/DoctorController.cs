@@ -22,5 +22,24 @@ namespace TadaWy.API.Controllers
             var result = await _doctorService.GetDoctorsAsync(request);
             return Ok(result);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDoctorById(int id)
+        {
+            var doctor = await _doctorService.GetDoctorByIdAsync(id);
+
+            if (doctor == null)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Doctor not found"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                data = doctor,
+                message = "Doctor retrieved successfully"
+            });
+        }
     }
 }
