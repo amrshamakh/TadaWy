@@ -11,10 +11,12 @@ namespace TadaWy.API.Controllers
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
+        private readonly IEmailService _emailService;
 
-        public AdminController(IAdminService adminService)
+        public AdminController(IAdminService adminService, IEmailService emailService)
         {
             _adminService = adminService;
+            _emailService = emailService;
         }
 
 
@@ -33,6 +35,7 @@ namespace TadaWy.API.Controllers
             if (!isApproved)
                 return NotFound("Doctor not found");
 
+            
             return Ok("Doctor approved successfully");
         }
 

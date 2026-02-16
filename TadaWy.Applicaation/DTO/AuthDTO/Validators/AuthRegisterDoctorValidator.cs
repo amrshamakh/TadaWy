@@ -7,8 +7,11 @@ namespace TadaWy.Applicaation.DTO.AuthDTO.Validators
         public AuthRegisterDoctorValidator()
         {
             RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("invalid email format");
+          .NotEmpty().WithMessage("Email is required.")
+          .EmailAddress().WithMessage("Invalid email format.")
+          .Must(email => email.EndsWith("@gmail.com"))
+          .WithMessage("Email must be a Gmail address (@gmail.com)");
+
 
             RuleFor(x => x.password)
                 .NotEmpty().WithMessage("Password is required.")

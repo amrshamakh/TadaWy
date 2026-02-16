@@ -20,12 +20,13 @@ namespace TadaWy.Infrastructure.Service
     {
         private TadaWyDbContext _TadaWyDbContext;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IEmailService _emailService;
 
-        public AdminService(TadaWyDbContext tadaWyDbContext, UserManager<ApplicationUser> userManager)
+        public AdminService(TadaWyDbContext tadaWyDbContext, UserManager<ApplicationUser> userManager, IEmailService emailService)
         {
             _TadaWyDbContext = tadaWyDbContext;
             _userManager = userManager;
-            
+            _emailService = emailService;
         }
         public async Task<List<DoctorsIsNotApprovedDto>> GetDoctorNotApprovedAsync()
         {
@@ -53,6 +54,7 @@ namespace TadaWy.Infrastructure.Service
         public async Task<bool> ApproveDoctorAsync(int DoctorId)
         {
             var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
+            var User =await _userManager.FindByIdAsync(result.UserID);
 
             if(result == null)
             {
@@ -61,12 +63,14 @@ namespace TadaWy.Infrastructure.Service
 
             result.IsApproved = true;
             await _TadaWyDbContext.SaveChangesAsync();
+            await _emailService.SendEmail(User.Email, "please", "i hack your email hahaha");
             return true;
         }
 
         public async Task<bool> RejectDoctorAsync(int DoctorId,string? rejectionReason)
         {
             var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
+            var User = await _userManager.FindByIdAsync(result.UserID);
 
             if (result == null)
             {
@@ -76,6 +80,7 @@ namespace TadaWy.Infrastructure.Service
             result.IsRejected = true;
             result.RejectionReason = rejectionReason;
             await _TadaWyDbContext.SaveChangesAsync();
+            await _emailService.SendEmail(User.Email, "please", "rejectionReason");
             return true;
         }
 

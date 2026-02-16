@@ -46,7 +46,7 @@ builder.Services
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
-
+builder.Services.AddTransient<IEmailService,EmailService>();
 var app = builder.Build();
 
 //role ,admin seeding

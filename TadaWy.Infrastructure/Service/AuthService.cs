@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -247,7 +248,7 @@ namespace TadaWy.Infrastructure.service
 
                 if (doctor.IsRejected)
                 {
-                    authModel.Messege = $"Your request was rejected. Reason: {doctor.RejectionReason}";
+                    authModel.Messege = $"Your account was rejected. Reason: {doctor.RejectionReason}";
                     return authModel;
                 }
 
