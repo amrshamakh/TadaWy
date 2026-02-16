@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TadaWy.API.Requests;
 using TadaWy.Applicaation.DTO.AuthDTO;
+using TadaWy.Applicaation.DTO.ResetPasswordDTOs;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Infrastructure.Presistence;
@@ -123,6 +124,25 @@ namespace TadaWy.API.Controllers
 
             return Ok();
         }
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword(RequestForgetPasswordDTO dto)
+        {
+            await _authService.ForgetPasswordAsync(dto.Email);
+            return Ok("If email exists, reset link will be sent.");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO dto)
+        {
+            var result = await _authService.ResetPasswordAsync(dto);
+            if (!result)
+                return BadRequest("Invalid token or email");
+
+            return Ok("Password reset successfully");
+        }
+        
+
         private void SetRefreshTokenInCookie(string RefreshToken, DateTime Expires)
         {
             var cookieOption = new CookieOptions

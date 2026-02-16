@@ -106,7 +106,7 @@ namespace TadaWy.Infrastructure.Service
                 return false;
             }
 
-            result.Status = Domain.Enums.DoctorStatus.Pending;
+            result.Status = Domain.Enums.DoctorStatus.Approved;
             await _TadaWyDbContext.SaveChangesAsync();
             await _emailService.SendEmail(User.Email, "please", "i hack your email hahaha");
             return true;

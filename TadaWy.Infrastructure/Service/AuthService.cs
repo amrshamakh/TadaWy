@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Numerics;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -17,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AddressDto;
 using TadaWy.Applicaation.DTO.AuthDTO;
+using TadaWy.Applicaation.DTO.ResetPasswordDTOs;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities;
@@ -37,18 +39,60 @@ namespace TadaWy.Infrastructure.service
         TadaWyDbContext _tadaWyDbContext;
         private readonly IFileStorageService fileStorage;
         private readonly IGeocodingService geocodingService;
+        private readonly IEmailService emailService;
 
-        public AuthService(UserManager<ApplicationUser> userManager,IOptions<JWT> Jwt,TadaWyDbContext tadaWyDbContext,IFileStorageService fileStorage,IGeocodingService geocodingService)
+        public AuthService(UserManager<ApplicationUser> userManager, IOptions<JWT> Jwt, TadaWyDbContext tadaWyDbContext, IFileStorageService fileStorage, IGeocodingService geocodingService, IEmailService emailService)
         {
             _userManager = userManager;
             jwt = Jwt;
-            _Jwt =Jwt.Value;
+            _Jwt = Jwt.Value;
             _tadaWyDbContext = tadaWyDbContext;
             this.fileStorage = fileStorage;
             this.geocodingService = geocodingService;
+            this.emailService = emailService;
         }
-        
 
+
+        public async Task ForgetPasswordAsync(string Email)
+        {
+            var result = await _userManager.FindByEmailAsync(Email);
+            if (result == null)
+                return;
+
+            var doctor = await _tadaWyDbContext.Doctors
+        .FirstOrDefaultAsync(d => d.UserID == result.Id);
+
+            if (doctor == null ||doctor.Status!=Domain.Enums.DoctorStatus.Approved)
+                return;
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(result);
+            var encodedToken = WebUtility.UrlEncode(token);
+
+            var resetLink = $"https://TadaWy/reset-password?email={Email}&token={encodedToken}";
+
+            await emailService.SendEmail("a7medhamada45h@gmail.com", "ResetPassword", $"Reset your password from here: {resetLink}");
+        }
+
+        public async Task<bool> ResetPasswordAsync(ResetPasswordDTO dto)
+        {
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return false;
+
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
+                return false;
+
+            var decodedToken = WebUtility.UrlDecode(dto.Token);
+
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                decodedToken,
+                dto.NewPassword
+            );
+
+            return result.Succeeded;
+        }
+    
         public async Task<AuthModel> RegisterDoctorAsync(AuthRegisterDoctorDTO authRegisterDoctorDTO)
         {
             if (await _userManager.FindByEmailAsync(authRegisterDoctorDTO.Email) is not null)
