@@ -21,6 +21,7 @@ namespace TadaWy.Infrastructure.Extensions
             services.AddScoped<IFileStorageService, FileStorageService>();
             services.AddScoped<ILookupService, LookupService>();
             services.AddHttpClient<IGeocodingService, OpenStreetMapGeocodingService>();
+            services.AddScoped<IDoctorService,DoctorService>();
         }
     }
 }
