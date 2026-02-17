@@ -108,7 +108,7 @@ namespace TadaWy.Infrastructure.Service
 
             result.Status = Domain.Enums.DoctorStatus.Approved;
             await _TadaWyDbContext.SaveChangesAsync();
-            await _emailService.SendEmail("m.khames.66666@gmail.com", "شوفت طيزك", "شوفت طيزك😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭😭\r\n\r\nامزح معااااااااگ يا المجنوووووووون كيف شوفت طيزك وانت لابس كلوت هههههههههه 😍😍\r\nيقرب رمضان😳 اهديلك💑🌹🎁(سمبوستين) 🐿️🎈اول حرفين لعدوك👿و الباقي علي خدودك😘 و خلاص يا عسول😉رمضان علي وصول \U0001f970 حسنات علي طول❤️ و صيامك مقبول \U0001fae1❤️");
+            await _emailService.SendEmail("eissaamr308@gmail.com", "Email confirmed", "welcome to tadawy login and enjoy the experience");
             return true;
         }
 
