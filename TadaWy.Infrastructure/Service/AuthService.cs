@@ -111,7 +111,14 @@ namespace TadaWy.Infrastructure.service
                 UserName=authRegisterDoctorDTO.Email
                    
             };
-           var result= await _userManager.CreateAsync(user, authRegisterDoctorDTO.password);
+            var addressDto = await geocodingService.GetAddressAsync(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude);
+
+            if (addressDto is null)
+                throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
+
+            var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
+
+            var result= await _userManager.CreateAsync(user, authRegisterDoctorDTO.password);
             
             if (!result.Succeeded)
             {
@@ -127,12 +134,7 @@ namespace TadaWy.Infrastructure.service
             }
             await _userManager.AddToRoleAsync(user, "Doctor");
 
-            var addressDto = await geocodingService.GetAddressAsync(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude);
-
-            if (addressDto is null)
-                throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
-
-            var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
+          
             var doctor = new Doctor
             {
                 FirstName = authRegisterDoctorDTO.FirstName,
@@ -175,6 +177,15 @@ namespace TadaWy.Infrastructure.service
                 UserName = RegisterPatientAsync.Email
 
             };
+
+            var addressDto = new AddressDto();
+            if ((RegisterPatientAsync.Latitude is not null) && (RegisterPatientAsync.Longitude is not null))
+            {
+                addressDto = await geocodingService.GetAddressAsync(RegisterPatientAsync.Latitude, RegisterPatientAsync.Longitude);
+                if (addressDto is null)
+                    throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
+            }
+
             var result = await _userManager.CreateAsync(user, RegisterPatientAsync.password);
 
             if (!result.Succeeded)
@@ -189,12 +200,7 @@ namespace TadaWy.Infrastructure.service
             }
             await _userManager.AddToRoleAsync(user, "Patient");
 
-            var addressDto = new AddressDto();
-            if ((RegisterPatientAsync.Latitude is not null) && (RegisterPatientAsync.Longitude is not null)) { 
-                 addressDto = await geocodingService.GetAddressAsync(RegisterPatientAsync.Latitude, RegisterPatientAsync.Longitude);
-                if (addressDto is null)
-                    throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
-            }
+           
            
             var patient = new Patient
             {

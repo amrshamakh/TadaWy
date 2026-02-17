@@ -1,5 +1,4 @@
-﻿
-using TadaWy.Applicaation.DTO.Common;
+﻿using TadaWy.Applicaation.DTO.Common;
 using TadaWy.Applicaation.DTO.DoctorDTOs;
 
 namespace TadaWy.Applicaation.IService
