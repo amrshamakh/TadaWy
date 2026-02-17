@@ -108,7 +108,7 @@ namespace TadaWy.Infrastructure.Service
 
             result.Status = Domain.Enums.DoctorStatus.Approved;
             await _TadaWyDbContext.SaveChangesAsync();
-            await _emailService.SendEmail(User.Email, "Email confirmed", "welcome to tadawy login and enjoy the experience");
+            await _emailService.SendEmail("eissaamr308@gmail.com", "Email confirmed", "welcome to tadawy login and enjoy the experience");
             return true;
         }
 
