@@ -14,7 +14,11 @@ namespace TadaWy.Applicaation.IService
         Task<DoctorDetailsToAdminDto> GetDoctorById(int DoctorId);
 
         Task<PagedResult<DoctorListToAdmin>> GetDoctorsForAdminAsync(AdminGetDoctorsRequest request);
-         Task<bool> ApproveDoctorAsync(int DoctorID);
-         Task<bool> RejectDoctorAsync(int DoctorID,string? rejectionReason);
+        Task<bool> ApproveDoctorAsync(int DoctorID);
+        Task<bool> RejectDoctorAsync(int DoctorID,string? rejectionReason);
+
+        Task<bool> BannDoctorAsync(int DoctorId, string? BannReason);
+
+        Task<bool> UnbanDoctorAsync(int doctorId);
     }
 }

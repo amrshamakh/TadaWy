@@ -21,7 +21,9 @@ namespace TadaWy.Domain.Entities
         public DoctorStatus Status { get; set; } = DoctorStatus.Pending;
 
         public DateTime CreatedAt { get; set; }
-        public string? RejectionReason { get; set; } 
+        public DateTime? BannedAt { get; set; }
+        public string? RejectionReason { get; set; }
+        public string? BannedReason { get; set; }
 
         public int SpecializationId { get; set; }
 

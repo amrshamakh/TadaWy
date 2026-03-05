@@ -13,6 +13,7 @@ using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Domain.Entities.Identity;
+using TadaWy.Domain.Enums;
 using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.Infrastructure.Service
@@ -56,7 +57,8 @@ namespace TadaWy.Infrastructure.Service
                 DoctorName = d.FirstName + " " + d.LastName,
                 SpecializationId = d.SpecializationId,
                 Status = d.Status,
-                CreatedAt = d.CreatedAt
+                CreatedAt = d.CreatedAt,
+                Rating = d.Rating,
             });
 
             var totalCount = await projected.CountAsync();
@@ -78,20 +80,25 @@ namespace TadaWy.Infrastructure.Service
         public async Task<DoctorDetailsToAdminDto> GetDoctorById(int DoctorId)
         {
             var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
+            var user = await _userManager.FindByIdAsync(result.UserID);
 
             if (result is null)
                 return new DoctorDetailsToAdminDto();
 
             return new DoctorDetailsToAdminDto
             {
-                FirstName = result.FirstName,
-                LastName = result.LastName,
+                Rating = result.Rating,
+                Email=user.Email,
+                PhoneNumber=user.PhoneNumber,
+                DoctorName = result.FirstName + " " + result.LastName,
                 Status = result.Status,
                 SpecializationId = result.SpecializationId,
                 Address = result.Address,
                 AddressDescription = result.AddressDescription,
                 Id = result.Id,
                 VerificationDocumentPath = result.VerificationDocumentPath,
+                RejectionReason = result.RejectionReason,
+                BannedReason = result.BannedReason,
             };
               
         }
@@ -129,6 +136,35 @@ namespace TadaWy.Infrastructure.Service
             return true;
         }
 
-       
+        public async Task<bool> BannDoctorAsync(int DoctorId, string? BannReason)
+        {
+            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
+            var User = await _userManager.FindByIdAsync(result.UserID);
+
+            if (result == null)
+            {
+                return false;
+            }
+
+            result.Status = Domain.Enums.DoctorStatus.Banned;
+            result.BannedReason = BannReason;
+            await _TadaWyDbContext.SaveChangesAsync();
+            await _emailService.SendEmail(User.Email, "please", "rejectionReason");
+            return true;
+        }
+
+        public async Task<bool> UnbanDoctorAsync(int doctorId)
+        {
+            var doctor = await _TadaWyDbContext.Doctors.FindAsync(doctorId);
+            if (doctor == null) return false;
+
+            doctor.Status = DoctorStatus.Approved;
+            doctor.BannedReason = null;
+            doctor.BannedAt = null;
+
+            await _TadaWyDbContext.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

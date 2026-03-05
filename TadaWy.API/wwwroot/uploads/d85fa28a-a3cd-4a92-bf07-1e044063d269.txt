@@ -1,0 +1,78 @@
+--q1
+select count(*) as number from VehicleMasterDetails
+where Year between 1950 and 2000;
+
+--q5
+select makes.make, numberofcar=count(*)  from VehicleMasterDetails
+inner join Makes on
+VehicleMasterDetails.Make=Makes.Make
+where VehicleMasterDetails.Year between 1950 and 2000 
+group by Makes.make having count(*)>12000
+order by numberofcar desc;
+
+
+--q7
+select * , cast(numberofcar as float) / cast(totalcars as float) from (
+select makes.make, numberofcar=count(*),(select count(*) from VehicleMasterDetails)as totalcars
+
+from VehicleMasterDetails
+inner join Makes on
+VehicleMasterDetails.Make=Makes.Make
+where (VehicleMasterDetails.Year between 1950 and 2000 )
+group by Makes.make) R1
+order by numberofcar desc;
+
+--q8
+select makes.make,FuelTypes.FuelTypeName, numberofcar=count(*)  from VehicleMasterDetails
+inner join Makes on
+VehicleMasterDetails.Make=Makes.Make
+inner join FuelTypes on
+VehicleMasterDetails.FuelTypeName=FuelTypes.FuelTypeName
+where VehicleMasterDetails.Year between 1950 and 2000 
+group by Makes.Make,FuelTypes.FuelTypeName
+order by Makes.make;
+
+
+--qu10
+select Makes.Make,FuelTypes.FuelTypeName 
+from VehicleDetails inner join Makes
+on VehicleDetails.MakeID=Makes.MakeID
+inner join FuelTypes
+on VehicleDetails.FuelTypeID=FuelTypes.FuelTypeID
+where FuelTypeName='gas'
+group by Makes.Make,FuelTypes.FuelTypeName;
+
+--qu11
+select totalmakesRunonGas=count(*) from(
+select distinct Makes.Make,FuelTypes.FuelTypeName  from Makes
+inner join VehicleDetails
+on Makes.MakeID=VehicleDetails.MakeID
+inner join FuelTypes
+on FuelTypes.FuelTypeID=VehicleDetails.FuelTypeID
+where FuelTypes.FuelTypeName='gas')r1;
+
+--qu13
+select * from(
+select Makes.Make,numberofcar=count(*) from VehicleDetails
+inner join Makes
+on VehicleDetails.MakeID=Makes.MakeID
+group by makes.Make 
+)r1
+where numberofcar>20000
+order by numberofcar desc;
+ 
+ --or this solve
+select Makes.Make,numberofcar=count(*) from VehicleDetails
+inner join Makes
+on VehicleDetails.MakeID=Makes.MakeID
+group by makes.Make 
+having count(*)>20000
+order by numberofcar desc;
+
+--qu14
+select make from Makes
+where make like 'b%';
+
+--qu15
+select make from Makes
+where make like '%w';

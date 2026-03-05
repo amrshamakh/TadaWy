@@ -26,7 +26,12 @@ public class EmailService:IEmailService
             Credentials = new NetworkCredential(email, password)
         };
 
-        using var message = new MailMessage(email, receptor, subject, body);
+        using var message = new MailMessage(email, receptor)
+        {
+            Subject = subject,
+            Body = body,
+            IsBodyHtml = true
+        };
 
         try
         {

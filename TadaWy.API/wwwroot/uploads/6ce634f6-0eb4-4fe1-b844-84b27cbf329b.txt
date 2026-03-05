@@ -1,0 +1,223 @@
+USE [master]
+GO
+/****** Object:  Database [Gym_System]    Script Date: 12/13/2024 10:57:30 PM ******/
+CREATE DATABASE [Gym_System]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'Gym_System', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\Gym_System.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'Gym_System_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\Gym_System_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [Gym_System] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [Gym_System].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [Gym_System] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [Gym_System] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [Gym_System] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [Gym_System] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [Gym_System] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [Gym_System] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [Gym_System] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [Gym_System] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [Gym_System] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [Gym_System] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [Gym_System] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [Gym_System] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [Gym_System] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [Gym_System] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [Gym_System] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [Gym_System] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [Gym_System] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [Gym_System] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [Gym_System] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [Gym_System] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [Gym_System] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [Gym_System] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [Gym_System] SET RECOVERY FULL 
+GO
+ALTER DATABASE [Gym_System] SET  MULTI_USER 
+GO
+ALTER DATABASE [Gym_System] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [Gym_System] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [Gym_System] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [Gym_System] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [Gym_System] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [Gym_System] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'Gym_System', N'ON'
+GO
+ALTER DATABASE [Gym_System] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [Gym_System] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [Gym_System]
+GO
+/****** Object:  Table [dbo].[membership_report_table]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[membership_report_table](
+	[start date] [date] NOT NULL,
+	[end date] [date] NOT NULL,
+	[idforign] [int] NOT NULL,
+ CONSTRAINT [PK_membership_report_table] PRIMARY KEY CLUSTERED 
+(
+	[idforign] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[membership_type_table]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[membership_type_table](
+	[membershiptype] [nvarchar](100) NOT NULL,
+	[amount] [numeric](18, 0) NOT NULL,
+	[id] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_membership_type_table_1] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[new_member_table]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[new_member_table](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[full name] [nvarchar](100) NOT NULL,
+	[contact number] [nvarchar](50) NOT NULL,
+	[address] [nvarchar](100) NOT NULL,
+	[post code] [nvarchar](50) NULL,
+	[age] [int] NOT NULL,
+	[gender] [nvarchar](50) NOT NULL,
+	[email] [nvarchar](100) NOT NULL,
+	[country] [nvarchar](100) NOT NULL,
+	[occupation] [nvarchar](100) NOT NULL,
+	[membership photo] [nvarchar](100) NULL,
+	[membership type forign] [nvarchar](100) NOT NULL,
+	[number of month] [int] NOT NULL,
+	[startdate] [date] NOT NULL,
+	[enddate] [date] NOT NULL,
+ CONSTRAINT [PK_new_member_table] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[password_table]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[password_table](
+	[current password] [nvarchar](max) NOT NULL,
+	[Email] [nvarchar](50) NOT NULL,
+	[id] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_password_table] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[renew]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[renew](
+	[id] [int] IDENTITY(1,1) NOT NULL,
+	[member_id] [int] NULL,
+	[total_amount] [decimal](10, 2) NULL,
+	[renew_date] [date] NULL,
+ CONSTRAINT [PK__renew__3213E83FC1A01123] PRIMARY KEY CLUSTERED 
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[revenue_report]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[revenue_report](
+	[revenue_start_date] [date] NOT NULL,
+	[revenue_end_date] [date] NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[setting_table]    Script Date: 12/13/2024 10:57:31 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[setting_table](
+	[system name] [nvarchar](50) NOT NULL,
+	[currency] [nvarchar](50) NOT NULL,
+	[Gym address] [nvarchar](50) NOT NULL,
+	[Gym contact] [nvarchar](50) NOT NULL,
+	[Gym email] [nvarchar](50) NOT NULL,
+	[Gym manager] [nvarchar](50) NOT NULL,
+	[logo] [nvarchar](50) NULL,
+ CONSTRAINT [PK_setting_table] PRIMARY KEY CLUSTERED 
+(
+	[system name] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Index [IDX_Member_ID]    Script Date: 12/13/2024 10:57:31 PM ******/
+CREATE NONCLUSTERED INDEX [IDX_Member_ID] ON [dbo].[renew]
+(
+	[member_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[membership_report_table]  WITH CHECK ADD  CONSTRAINT [FK_membership_report_table_new_member_table] FOREIGN KEY([idforign])
+REFERENCES [dbo].[new_member_table] ([id])
+GO
+ALTER TABLE [dbo].[membership_report_table] CHECK CONSTRAINT [FK_membership_report_table_new_member_table]
+GO
+ALTER TABLE [dbo].[renew]  WITH CHECK ADD  CONSTRAINT [FK_Renew_Member] FOREIGN KEY([member_id])
+REFERENCES [dbo].[new_member_table] ([id])
+GO
+ALTER TABLE [dbo].[renew] CHECK CONSTRAINT [FK_Renew_Member]
+GO
+USE [master]
+GO
+ALTER DATABASE [Gym_System] SET  READ_WRITE 
+GO

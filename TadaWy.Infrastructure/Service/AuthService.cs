@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
@@ -70,7 +72,7 @@ namespace TadaWy.Infrastructure.service
 
             var resetLink = $"https://TadaWy/reset-password?email={Email}&token={encodedToken}";
 
-            await emailService.SendEmail("a7medhamada45h@gmail.com", "ResetPassword", $"Reset your password from here: {resetLink}");
+            BackgroundJob.Enqueue<IEmailService>(x =>  x.SendEmail("a7medhamada45h@gmail.com","ResetPassword",$"Reset your password from here: {resetLink}"));
         }
 
         public async Task<bool> ResetPasswordAsync(ResetPasswordDTO dto)
@@ -296,13 +298,19 @@ namespace TadaWy.Infrastructure.service
                     return authModel;
                 }
 
+                if (doctor.Status == Domain.Enums.DoctorStatus.Banned)
+                {
+                    authModel.Messege = $"Your account was rejected. Reason: {doctor.BannedReason}";
+                    return authModel;
+                }
+
                 if (doctor.Status==Domain.Enums.DoctorStatus.Rejected)
                 {
                     authModel.Messege = $"Your account was rejected. Reason: {doctor.RejectionReason}";
                     return authModel;
                 }
 
-                if (doctor.Status==Domain.Enums.DoctorStatus.Approved)
+                if (doctor.Status==Domain.Enums.DoctorStatus.Pending)
                 {
                     authModel.Messege = "Your account is pending admin approval";
                     return authModel;

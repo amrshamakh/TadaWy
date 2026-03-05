@@ -7,13 +7,13 @@ using TadaWy.Domain.Enums;
 
 namespace TadaWy.Applicaation.DTO.AdminDTO
 {
-    public class DoctorListToAdmin
+    internal class DoctorsBannedListDTO
     {
         public int Id { get; set; }
         public string DoctorName { get; set; } = default!;
 
         public double? Rating { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime BaanedAt { get; set; }
         public int SpecializationId { get; set; }
         public DoctorStatus Status { get; set; } = DoctorStatus.Pending;
     }
