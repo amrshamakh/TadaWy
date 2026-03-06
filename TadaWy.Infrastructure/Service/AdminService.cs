@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Hangfire;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -115,7 +116,7 @@ namespace TadaWy.Infrastructure.Service
 
             result.Status = Domain.Enums.DoctorStatus.Approved;
             await _TadaWyDbContext.SaveChangesAsync();
-            await _emailService.SendEmail("eissaamr308@gmail.com", "Email confirmed", "welcome to tadawy login and enjoy the experience");
+            BackgroundJob.Enqueue(()=>_emailService.SendEmail("eissaamr308@gmail.com", "Email confirmed", "welcome to tadawy login and enjoy the experience"));
             return true;
         }
 
@@ -132,7 +133,7 @@ namespace TadaWy.Infrastructure.Service
             result.Status =Domain.Enums.DoctorStatus.Rejected;
             result.RejectionReason = rejectionReason;
             await _TadaWyDbContext.SaveChangesAsync();
-            await _emailService.SendEmail(User.Email, "please", "rejectionReason");
+            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please", "rejectionReason"));
             return true;
         }
 
@@ -149,7 +150,7 @@ namespace TadaWy.Infrastructure.Service
             result.Status = Domain.Enums.DoctorStatus.Banned;
             result.BannedReason = BannReason;
             await _TadaWyDbContext.SaveChangesAsync();
-            await _emailService.SendEmail(User.Email, "please", "rejectionReason");
+            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please", "rejectionReason"));
             return true;
         }
 
