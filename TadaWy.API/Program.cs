@@ -1,6 +1,7 @@
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TadaWy.Applicaation.Extensions;
@@ -23,8 +24,28 @@ builder.Services.AddHangfireServer();
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<TadaWyDbContext>()
-    .AddDefaultTokenProviders(); 
-builder.Services.AddControllers();
+    .AddDefaultTokenProviders();
+
+// Customize the model validation error response for Simple messages Responses for Errors
+
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var firstError = context.ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .FirstOrDefault()?.ErrorMessage;
+
+        return new BadRequestObjectResult(new
+        {
+            message = firstError
+        });
+    };
+});
+
+
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
