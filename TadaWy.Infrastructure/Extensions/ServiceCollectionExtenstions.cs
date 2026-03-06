@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
+using TadaWy.Applicaation.Services;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
@@ -22,6 +23,8 @@ namespace TadaWy.Infrastructure.Extensions
             services.AddScoped<ILookupService, LookupService>();
             services.AddHttpClient<IGeocodingService, OpenStreetMapGeocodingService>();
             services.AddScoped<IDoctorService,DoctorService>();
+            services.AddHttpClient<IAiBrainScanService, AiBrainScanService>();
+            services.AddScoped<IAiBrainScanAppService, AiBrainScanAppService>();
         }
     }
 }
