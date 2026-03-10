@@ -17,7 +17,10 @@ namespace TadaWy.Domain.Entities
 
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
-
+        public string PhoneNumber { get; set; } = default!;
+        public string? ImageUrl { get; set; }
+        public string? Bio { get; set; }
+        public decimal? Price { get; set; }
         public DoctorStatus Status { get; set; } = DoctorStatus.Pending;
 
         public DateTime CreatedAt { get; set; }

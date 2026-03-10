@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using TadaWy.Applicaation.DTO.Common;
 using TadaWy.Applicaation.DTO.DoctorDTOs;
 using TadaWy.Applicaation.IService;
@@ -11,10 +13,13 @@ namespace TadaWy.Infrastructure.Service
     public class DoctorService : IDoctorService
     {
         private readonly TadaWyDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public DoctorService(TadaWyDbContext context)
+        public DoctorService(TadaWyDbContext context,IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
+
         }
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
@@ -183,5 +188,80 @@ namespace TadaWy.Infrastructure.Service
 
             return slots;
         }
+
+        public async Task<DoctorProfileDto> GetDoctorProfileAsync(string userId)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Specialization)
+                .FirstOrDefaultAsync(d => d.UserID == userId);
+
+            if (doctor == null)
+                throw new Exception("Doctor not found");
+
+            return new DoctorProfileDto
+            {
+                Id = doctor.Id,
+                FirstName = doctor.FirstName,
+                LastName = doctor.LastName,
+                Specialization = doctor.Specialization.Name,
+                Address = doctor.Address.ToString(),
+                AddressDescription = doctor.AddressDescription??"",
+                PhoneNumber = doctor.PhoneNumber,
+                Bio = doctor.Bio,
+                Price = doctor.Price,
+                ImageUrl = doctor.ImageUrl
+            };
+        }
+
+        public async Task<bool> UpdateDoctorProfileAsync(string userId, UpdateDoctorProfileDto updateDto)
+        {
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return false;
+            user.PhoneNumber = updateDto.PhoneNumber;
+            if (doctor == null) return false;
+            doctor.FirstName = updateDto.FirstName??doctor.FirstName;
+            doctor.LastName = updateDto.LastName ?? doctor.LastName;
+            doctor.PhoneNumber = updateDto.PhoneNumber ?? doctor.PhoneNumber;
+            doctor.Bio = updateDto.Bio;
+            doctor.Price = updateDto.Price;
+            doctor.AddressDescription = updateDto.AddressDescription;
+            await _context.SaveChangesAsync();
+            return true;
+
+        }
+
+        public async Task<string> UploadDoctorImageAsync(string userId, IFormFile image)
+        {
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(d => d.UserID == userId);
+
+            if (doctor == null)
+                throw new Exception("Doctor not found");//will handle it in controller to return 404
+
+            var folder = Path.Combine(_env.WebRootPath, "images", "doctors");
+
+            if (!Directory.Exists(folder))
+                Directory.CreateDirectory(folder);
+
+            var fileName = $"doctor-{doctor.Id}{Path.GetExtension(image.FileName)}";
+
+            var path = Path.Combine(folder, fileName);
+
+            using var stream = new FileStream(path, FileMode.Create);
+
+            await image.CopyToAsync(stream);
+
+            doctor.ImageUrl = $"/images/doctors/{fileName}";
+
+            await _context.SaveChangesAsync();
+
+            return doctor.ImageUrl;
+        }
+
+
+
+
     }
 }

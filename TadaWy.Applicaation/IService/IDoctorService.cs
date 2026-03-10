@@ -1,4 +1,5 @@
-﻿using TadaWy.Applicaation.DTO.Common;
+﻿using Microsoft.AspNetCore.Http;
+using TadaWy.Applicaation.DTO.Common;
 using TadaWy.Applicaation.DTO.DoctorDTOs;
 
 namespace TadaWy.Applicaation.IService
@@ -7,5 +8,8 @@ namespace TadaWy.Applicaation.IService
     {
         Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request);
         Task<DoctorDetailsDto?> GetDoctorByIdAsync(int id);
+        Task<DoctorProfileDto> GetDoctorProfileAsync(string userId);
+        Task<bool> UpdateDoctorProfileAsync(string userId, UpdateDoctorProfileDto updateDto);
+        Task<string> UploadDoctorImageAsync(string userId, IFormFile image);
     }
 }

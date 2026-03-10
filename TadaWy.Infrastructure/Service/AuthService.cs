@@ -84,6 +84,7 @@ namespace TadaWy.Infrastructure.service
             if (user == null)
                 return false;
 
+
             var decodedToken = WebUtility.UrlDecode(dto.Token);
 
             var result = await _userManager.ResetPasswordAsync(
@@ -248,13 +249,14 @@ namespace TadaWy.Infrastructure.service
 
             foreach (var role in Roles)
             {
-                roleClaims.Add(new Claim("Roles", role));
+                roleClaims.Add(new Claim(ClaimTypes.Role, role));
             }
 
             var Claims = new[]
             {
             new Claim(JwtRegisteredClaimNames.Email,applicationUser.Email),
-            new Claim(JwtRegisteredClaimNames.Sub,applicationUser.PhoneNumber),
+            //new Claim(JwtRegisteredClaimNames.Sub,applicationUser.PhoneNumber),
+            new Claim(ClaimTypes.NameIdentifier,applicationUser.Id),
             }
             .Union(roleClaims)
             .Union(UserClaims);

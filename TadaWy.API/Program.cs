@@ -3,17 +3,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json;
 using TadaWy.Applicaation.Extensions;
-using TadaWy.Applicaation.IService;
-using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Extensions;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
-using TadaWy.Infrastructure.service;
-using TadaWy.Infrastructure.Service;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,64 +48,89 @@ builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("bearerAuth", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "JWT Authorization header using the Bearer scheme"
+    });
 
-builder.Services
-               .AddAuthentication(op => op.DefaultAuthenticateScheme = "myschema")
-               .AddJwtBearer("myschema", option =>
-               {
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "bearerAuth"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+});
 
-                   option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                   {
-                       IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:Key"])),
-                       ValidateIssuer = true,
-                       ValidateAudience = true,
-                       ValidateLifetime = true,
-                       ValidIssuer = builder.Configuration["JWT:Issuer"],
-                       ValidAudience = builder.Configuration["JWT:Audience"],
-                       ValidateIssuerSigningKey = true,
-                       ClockSkew = TimeSpan.Zero
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.ASCII.GetBytes(builder.Configuration["JWT:Key"])
+        ),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ClockSkew = TimeSpan.Zero
+    };
 
-                   };
-                   option.Events = new JwtBearerEvents
-                   {
-                       OnChallenge = context =>
-                       {
-                           context.HandleResponse();
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            context.HandleResponse();
 
-                           context.Response.StatusCode = 401;
-                           context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 401;
+            context.Response.ContentType = "application/json";
 
-                           var result = System.Text.Json.JsonSerializer.Serialize(new
-                           {
-                               success = false,
-                               message = "Unauthorized",
-                               errorCode = "UNAUTHORIZED"
-                           });
+            var result = JsonSerializer.Serialize(new
+            {
+                success = false,
+                message = "Unauthorized",
+                errorCode = "UNAUTHORIZED"
+            });
 
-                           return context.Response.WriteAsync(result);
-                       },
+            return context.Response.WriteAsync(result);
+        },
 
-                       OnForbidden = context =>
-                       {
-                           context.Response.StatusCode = 403;
-                           context.Response.ContentType = "application/json";
+        OnForbidden = context =>
+        {
+            context.Response.StatusCode = 403;
+            context.Response.ContentType = "application/json";
 
-                           var result = System.Text.Json.JsonSerializer.Serialize(new
-                           {
-                               success = false,
-                               message = "Access denied",
-                               errorCode = "FORBIDDEN"
-                           });
+            var result = JsonSerializer.Serialize(new
+            {
+                success = false,
+                message = "Access denied",
+                errorCode = "FORBIDDEN"
+            });
 
-                           return context.Response.WriteAsync(result);
-                       }
-                   };
-               });
-builder.Services.AddScoped<IAuthService,AuthService>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
-builder.Services.AddTransient<IEmailService,EmailService>();
+            return context.Response.WriteAsync(result);
+        }
+    };
+});
+
 
 
 var app = builder.Build();
