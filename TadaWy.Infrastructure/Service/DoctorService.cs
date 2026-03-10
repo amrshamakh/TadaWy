@@ -6,6 +6,7 @@ using TadaWy.Applicaation.DTO.DoctorDTOs;
 using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Entities;
 using TadaWy.Domain.Enums;
+using TadaWy.Domain.Exceptions;
 using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.Infrastructure.Service
@@ -103,7 +104,7 @@ namespace TadaWy.Infrastructure.Service
                 .FirstOrDefaultAsync(d => d.Id == id && d.Status==DoctorStatus.Approved);
 
             if (doctor == null)
-                return null;
+               throw new NotFoundException("Doctor not found");
 
             var rating = doctor.Reviews.Any()
                 ? doctor.Reviews.Average(r => r.Rating)
@@ -114,9 +115,12 @@ namespace TadaWy.Infrastructure.Service
                 Id = doctor.Id,
                 Name = doctor.FirstName + " " + doctor.LastName,
                 Specialization = doctor.Specialization.Name,
-                Address = doctor.Address.ToString(),
+                Address = doctor.Address,
                 AddressDescription = doctor.AddressDescription??"",
+                PhoneNumber=doctor.PhoneNumber,
                 Rating = Math.Round(rating, 1),
+                ReviewsCount=doctor.Reviews.Count,
+                Price=doctor.Price,
                 AvailableDaysSlots = GenerateNextThreeDaysSlots(doctor),
                 Reviews = doctor.Reviews
                     .Select(r => new DoctorReviewDto
@@ -196,7 +200,7 @@ namespace TadaWy.Infrastructure.Service
                 .FirstOrDefaultAsync(d => d.UserID == userId);
 
             if (doctor == null)
-                throw new Exception("Doctor not found");
+                throw new NotFoundException("Doctor not found");
 
             return new DoctorProfileDto
             {
@@ -213,14 +217,14 @@ namespace TadaWy.Infrastructure.Service
             };
         }
 
-        public async Task<bool> UpdateDoctorProfileAsync(string userId, UpdateDoctorProfileDto updateDto)
+        public async Task UpdateDoctorProfileAsync(string userId, UpdateDoctorProfileDto updateDto)
         {
             var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == userId);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
-                return false;
+                throw new NotFoundException("User not found");
             user.PhoneNumber = updateDto.PhoneNumber;
-            if (doctor == null) return false;
+            if (doctor == null) throw new NotFoundException("Doctor Not Found");
             doctor.FirstName = updateDto.FirstName??doctor.FirstName;
             doctor.LastName = updateDto.LastName ?? doctor.LastName;
             doctor.PhoneNumber = updateDto.PhoneNumber ?? doctor.PhoneNumber;
@@ -228,8 +232,7 @@ namespace TadaWy.Infrastructure.Service
             doctor.Price = updateDto.Price;
             doctor.AddressDescription = updateDto.AddressDescription;
             await _context.SaveChangesAsync();
-            return true;
-
+            
         }
 
         public async Task<string> UploadDoctorImageAsync(string userId, IFormFile image)

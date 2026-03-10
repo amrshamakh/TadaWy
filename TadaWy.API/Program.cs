@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json;
+using TadaWy.API.Middleware;
 using TadaWy.Applicaation.Extensions;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
@@ -151,12 +152,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseHangfireDashboard("/Dashboard");
 app.MapControllers();
 
