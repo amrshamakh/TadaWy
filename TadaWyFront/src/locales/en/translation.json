@@ -1,0 +1,390 @@
+{
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and settings",
+    "language": "Language",
+    "selectLanguage": "Select your preferred language",
+    "accountInfo": {
+      "title": "Account Information",
+      "subtitle": "Your account details",
+      "email": "Email",
+      "accountId": "Account ID",
+      "changePassword": "Change Password"
+    },
+    "languageRegion": {
+      "title": "Language & Region",
+      "subtitle": "Set your preferred language",
+      "language": "Language"
+    },
+    "appearance": {
+      "title": "Appearance",
+      "subtitle": "Customize how TadaWy looks to you",
+      "theme": "Theme",
+      "themeDescription": "Choose between light and dark mode",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Manage your notification preferences",
+      "appointmentReminders": "Appointment Reminders",
+      "appointmentDescription": "Get notified before your appointments",
+      "emailNotifications": "Email Notifications",
+      "emailDescription": "Receive updates via email",
+      "marketingUpdates": "Marketing Updates",
+      "marketingDescription": "Get news about new features and updates"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "subtitle": "Irreversible actions",
+      "signOut": "Sign Out",
+      "signOutDescription": "Sign out of your account",
+      "deleteAccount": "Delete Account",
+      "deleteAccountDescription": "Permanently remove your account"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal and medical information",
+    "personalInfo": {
+      "title": "Personal Information",
+      "subtitle": "Your basic personal details",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phoneNumber": "Phone Number",
+      "age": "Age",
+      "gender": "Gender",
+      "location": "Location",
+      "useLocation": "Use My Current Location"
+    },
+    "medicalInfo": {
+      "title": "Medical Information",
+      "subtitle": "Your health-related information",
+      "bloodType": "Blood Type",
+      "allergies": "Allergies",
+      "chronicDiseases": "Chronic Diseases"
+    },
+    "emergencyContact": {
+      "title": "Emergency Contact",
+      "subtitle": "Contact information for emergencies",
+      "phoneNumber": "Emergency Contact Number"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your TadaWy account",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot password?",
+      "signIn": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUpPatient": "Sign up as a patient",
+      "or": "or",
+      "signUpDoctor": "doctor"
+    },
+    "signup": {
+      "title": "Create an account",
+      "subtitle": "Enter your details to get started with TadaWy",
+      "password": "Password",
+      "createPassword": "Create a password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "selectLocation": "Select your location",
+      "none": "None",
+      "male": "Male",
+      "female": "Female",
+      "dateOfBirth": "Date Of Birth",
+      "signUp": "Sign Up",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "selectLocationTitle": "Select Your Location"
+    },
+    "doctor": {
+      "title": "Doctor Application",
+      "subtitle": "Enter your details to get start as a Doctor with TadaWy",
+      "password": "Password",
+      "createPassword": "Create a password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "selectLocation": "Select your location",
+      "addressDetails": "Address Details",
+      "addressPlaceholder": "Building number, street name, floor, etc.",
+      "specialization": "Specialization",
+      "specializationPlaceholder": "e.g., Cardiology, Pediatrics",
+      "uploadCV": "Upload Your CV including Experience, certificates, and ID card",
+      "uploadID": "Upload Your ID",
+      "uploadFile": "Upload your File",
+      "uploadImage": "Upload your Img",
+      "signUp": "Sign Up as Doctor",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "selectLocationTitle": "Select Your Location"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "calendar": "Calendar",
+    "profile": "Profile",
+    "settings": "Settings",
+    "notifications": "Notifications",
+    "signOut": "Sign Out",
+    "search": "Search for clinic, doctor, or specialty..."
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit Profile",
+    "welcome": "Welcome to our application",
+    "close": "Close"
+  },
+  "hero": {
+    "badge": "Your Health, Simplified",
+    "title": "Welcome to ",
+    "appName": "TadaWy",
+    "subtitle": "Your comprehensive healthcare companion. Find doctors, book appointments, and manage your medical journey all in one place.",
+    "getStarted": "Get Started",
+    "signIn": "Sign In",
+    "stats": {
+      "providers": "100+",
+      "providersLabel": "Healthcare Providers",
+      "patients": "50K+",
+      "patientsLabel": "Happy Patients",
+      "support": "24/7",
+      "supportLabel": "Support Available"
+    }
+  },
+  "features": {
+    "sectionTitle": "Everything You Need for Better Healthcare",
+    "sectionSubtitle": "TadaWy provides all the tools you need to take control of your health journey",
+    "items": {
+      "findClinics": {
+        "title": "Find Nearby Clinics",
+        "description": "Discover quality healthcare providers in your area with our location-based search."
+      },
+      "bookAppointments": {
+        "title": "Book Appointments Easily",
+        "description": "Schedule appointments with your preferred doctors in just a few clicks."
+      },
+      "manageHealth": {
+        "title": "Manage Your Health Digitally",
+        "description": "Keep all your medical records and appointments organized in one place."
+      },
+      "aiInsights": {
+        "title": "AI Medical Insights",
+        "description": "Upload medical files and get AI-powered analysis and guidance."
+      }
+    }
+  },
+  "cta": {
+    "title": "Ready to Get Started?",
+    "subtitle": "Join thousands of users who trust TadaWy for their healthcare needs",
+    "createAccount": "Create Your Account"
+  },
+  "footer": {
+    "madeWith": "Made with",
+    "madeWithSuffix": "for better healthcare",
+    "copyright": "© 2026 TadaWy. All rights reserved."
+  },
+  "discover": {
+    "title": "Discover Healthcare Providers",
+    "subtitle": "Find and book appointments with top-rated doctors and clinics",
+    "searchPlaceholder": "Search clinics, doctors, specialties...",
+    "showing": "Showing",
+    "of": "of",
+    "clinics": "clinics",
+    "noResults": "No clinics found",
+    "adjustFilters": "Try adjusting your filters",
+    "bookAppointment": "Book Appointment",
+    "specialties": {
+      "All Specialties": "All Specialties",
+      "Cardiology": "Cardiology",
+      "Orthopedics": "Orthopedics",
+      "Dentistry": "Dentistry",
+      "Ophthalmology": "Ophthalmology",
+      "Dermatology": "Dermatology",
+      "General Practice": "General Practice",
+      "Pediatrics": "Pediatrics",
+      "Gynecology": "Gynecology",
+      "Psychiatry": "Psychiatry",
+      "Neurology": "Neurology",
+      "Pulmonology": "Pulmonology",
+      "Gastroenterology": "Gastroenterology"
+    },
+    "ratings": {
+      "All Ratings": "All Ratings",
+      "4.5+": "4.5+",
+      "4.0+": "4.0+",
+      "3.5+": "3.5+",
+      "3.0+": "3.0+"
+    },
+    "locations": {
+      "All Locations": "All Locations",
+      "Downtown": "Downtown",
+      "Midtown": "Midtown",
+      "Uptown": "Uptown",
+      "Central": "Central",
+      "Westside": "Westside",
+      "Eastside": "Eastside",
+      "Northside": "Northside",
+      "Southside": "Southside",
+      "Harbor": "Harbor",
+      "Medical District": "Medical District",
+      "Health Park": "Health Park",
+      "City Center": "City Center"
+    },
+    "clinicsData": {
+      "1": {
+        "name": "Heart Care Center",
+        "doctor": "Dr. Sarah Johnson",
+        "specialty": "Cardiology",
+        "address": "123 Medical Plaza, Downtown"
+      },
+      "2": {
+        "name": "City Orthopedic Clinic",
+        "doctor": "Dr. James Williams",
+        "specialty": "Orthopedics",
+        "address": "456 Health Street, Midtown"
+      },
+      "3": {
+        "name": "Dental Excellence",
+        "doctor": "Dr. Michael Chen",
+        "specialty": "Dentistry",
+        "address": "789 Smile Avenue, Uptown"
+      },
+      "4": {
+        "name": "Vision Care Institute",
+        "doctor": "Dr. Emily Brown",
+        "specialty": "Ophthalmology",
+        "address": "321 Eye Street, Central"
+      },
+      "5": {
+        "name": "Skin Health Clinic",
+        "doctor": "Dr. David Lee",
+        "specialty": "Dermatology",
+        "address": "654 Beauty Boulevard, Westside"
+      },
+      "6": {
+        "name": "Family Medicine Center",
+        "doctor": "Dr. Lisa Anderson",
+        "specialty": "General Practice",
+        "address": "987 Family Lane, Eastside"
+      },
+      "7": {
+        "name": "Pediatric Care Plus",
+        "doctor": "Dr. Robert Martinez",
+        "specialty": "Pediatrics",
+        "address": "147 Kids Avenue, Northside"
+      },
+      "8": {
+        "name": "Women's Health Center",
+        "doctor": "Dr. Jennifer Taylor",
+        "specialty": "Gynecology",
+        "address": "258 Wellness Road, Southside"
+      },
+      "9": {
+        "name": "Mental Wellness Clinic",
+        "doctor": "Dr. Thomas White",
+        "specialty": "Psychiatry",
+        "address": "369 Peace Street, Harbor"
+      },
+      "10": {
+        "name": "NeuroHealth Institute",
+        "doctor": "Dr. Patricia Garcia",
+        "specialty": "Neurology",
+        "address": "741 Brain Avenue, Medical District"
+      },
+      "11": {
+        "name": "Respiratory Care Center",
+        "doctor": "Dr. Christopher Moore",
+        "specialty": "Pulmonology",
+        "address": "852 Breath Lane, Health Park"
+      },
+      "12": {
+        "name": "Digestive Health Clinic",
+        "doctor": "Dr. Amanda Lewis",
+        "specialty": "Gastroenterology",
+        "address": "963 Wellness Plaza, City Center"
+      },
+      "Pagination":{
+        "previous": "Previous",
+        "next": "Next"
+
+      }
+    }
+  },
+  "admin": {
+  "adminLayout": {
+    "doctors": "Doctors",
+    "settings": "Settings",
+    "bannedDoctors": "Banned Doctors"
+  },
+  "doctors": {
+    "title": "Manage Doctors",
+    "searchPlaceholder": "Search for a doctor...",
+    "filterLabel": "Filter:",
+    "allFilter": "All",
+    "approvedFilter": "Approved",
+    "rejectedFilter": "Rejected",
+    "pendingFilter": "Pending",
+    "filterSuffix": "Doctors",
+    "noResults": "No doctors found."
+  },
+  "bannedDoctors": {
+    "title": "Banned Doctors",
+    "searchPlaceholder": "Search for a banned doctor...",
+    "empty": "No banned doctors found."
+  },
+  "doctorCard": {
+    
+    "id": "ID",
+    "createdAt": "Created At",
+    "specialization": "Specialization",
+    "details": "Details",
+    "status": {
+      "Approved": "Approved",
+      "Rejected": "Rejected",
+      "Pending": "Pending",
+      "Banned": "Banned"
+    }
+  },
+  "doctorModal": {
+    "doctorName": "Doctor's Name",
+    "clinicLocation": "Clinic's Location",
+    "doctorId": "Doctor's ID",
+    "clinicDetails": "Clinic's Location Details",
+    "phoneNumber": "Phone Number",
+    "cvUploaded": "CV Uploaded",
+    "emailAddress": "Email Address",
+    "specialization": "Specialization",
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "ban": "BAN",
+      "unban": "Unban"
+    },
+    "status": {
+      "Approved": "Approved",
+      "Rejected": "Rejected",
+      "Pending": "Pending",
+      "Banned": "Banned"
+    }
+  },
+  "doctorContext": {
+    "banAlert": "Dr. {{name}} has been banned successfully."
+  }
+},
+"calendar": {
+  "title": "My Calendar",
+  "subtitle": "View and manage your medical appointments",
+  "selectDate": "Select a date",
+  "selectDateHint": "Select a date to view appointments",
+  "noAppointments": "No appointments",
+  "allAppointments": "All Appointments",
+  "status": {
+    "completed": "Completed",
+    "upcoming": "Upcoming"
+  }
+}
+}

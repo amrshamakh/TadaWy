@@ -1,0 +1,391 @@
+{
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة تفضيلات وإعدادات حسابك",
+    "language": "اللغة",
+    "selectLanguage": "اختر لغتك المفضلة",
+    "accountInfo": {
+      "title": "معلومات الحساب",
+      "subtitle": "تفاصيل حسابك",
+      "email": "البريد الإلكتروني",
+      "accountId": "معرف الحساب",
+      "changePassword": "تغيير كلمة المرور"
+    },
+    "languageRegion": {
+      "title": "اللغة والمنطقة",
+      "subtitle": "اختر لغتك المفضلة",
+      "language": "اللغة"
+    },
+    "appearance": {
+      "title": "المظهر",
+      "subtitle": "خصص كيف يبدو تداوي لك",
+      "theme": "السمة",
+      "themeDescription": "اختر بين الوضع الفاتح والداكن",
+      "light": "فاتح",
+      "dark": "داكن"
+    },
+    "notifications": {
+      "title": "الإشعارات",
+      "subtitle": "إدارة تفضيلات الإشعارات",
+      "appointmentReminders": "تذكيرات المواعيد",
+      "appointmentDescription": "احصل على إشعارات قبل مواعيدك",
+      "emailNotifications": "إشعارات البريد الإلكتروني",
+      "emailDescription": "تلقي التحديثات عبر البريد الإلكتروني",
+      "marketingUpdates": "التحديثات التسويقية",
+      "marketingDescription": "احصل على أخبار حول الميزات والتحديثات الجديدة"
+    },
+    "dangerZone": {
+      "title": "منطقة الخطر",
+      "subtitle": "إجراءات لا رجعة فيها",
+      "signOut": "تسجيل الخروج",
+      "signOutDescription": "تسجيل الخروج من حسابك",
+      "deleteAccount": "حذف الحساب",
+      "deleteAccountDescription": "إزالة حسابك نهائياً"
+    }
+  },
+  "profile": {
+    "title": "ملفي الشخصي",
+    "subtitle": "إدارة معلوماتك الشخصية والطبية",
+    "personalInfo": {
+      "title": "المعلومات الشخصية",
+      "subtitle": "تفاصيلك الشخصية الأساسية",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "phoneNumber": "رقم الهاتف",
+      "age": "العمر",
+      "gender": "الجنس",
+      "location": "الموقع",
+      "useLocation": "استخدم موقعي الحالي"
+    },
+    "medicalInfo": {
+      "title": "المعلومات الطبية",
+      "subtitle": "معلوماتك الصحية",
+      "bloodType": "فصيلة الدم",
+      "allergies": "الحساسية",
+      "chronicDiseases": "الأمراض المزمنة"
+    },
+    "emergencyContact": {
+      "title": "جهة الاتصال في حالات الطوارئ",
+      "subtitle": "معلومات الاتصال في حالات الطوارئ",
+      "phoneNumber": "رقم الاتصال في حالات الطوارئ"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "مرحباً بعودتك",
+      "subtitle": "سجل الدخول إلى حساب تداوي الخاص بك",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "أدخل كلمة المرور",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "signIn": "تسجيل الدخول",
+      "noAccount": "ليس لديك حساب؟",
+      "signUpPatient": "سجل كمريض",
+      "or": "أو",
+      "signUpDoctor": "طبيب"
+    },
+    "signup": {
+      "title": "إنشاء حساب",
+      "subtitle": "أدخل بياناتك للبدء مع تداوي",
+      "password": "كلمة المرور",
+      "createPassword": "إنشاء كلمة مرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أكد كلمة المرور",
+      "selectLocation": "اختر موقعك",
+      "none": "لا شيء",
+      "male": "ذكر",
+      "female": "أنثى",
+      "dateOfBirth": "تاريخ الميلاد",
+      "signUp": "تسجيل",
+      "haveAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "selectLocationTitle": "اختر موقعك"
+    },
+    "doctor": {
+      "title": "طلب انضمام طبيب",
+      "subtitle": "أدخل بياناتك للبدء كطبيب مع تداوي",
+      "password": "كلمة المرور",
+      "createPassword": "إنشاء كلمة مرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "confirmPasswordPlaceholder": "أكد كلمة المرور",
+      "selectLocation": "اختر موقعك",
+      "addressDetails": "تفاصيل العنوان",
+      "addressPlaceholder": "رقم المبنى، اسم الشارع، الطابق، إلخ",
+      "specialization": "التخصص",
+      "specializationPlaceholder": "مثل: أمراض القلب، طب الأطفال",
+      "uploadCV": "ارفع سيرتك الذاتية متضمنة الخبرات، الشهادات، وبطاقة الهوية",
+      "uploadID": "ارفع الهوية",
+      "uploadFile": "ارفع ملفك",
+      "uploadImage": "ارفع صورتك",
+      "signUp": "سجل كطبيب",
+      "haveAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "selectLocationTitle": "اختر موقعك"
+    }
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "calendar": "التقويم",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "notifications": "الإشعارات",
+    "signOut": "تسجيل الخروج",
+    "search": "ابحث عن عيادة أو طبيب أو تخصص..."
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "edit": "تعديل الملف الشخصي",
+    "welcome": "مرحباً بك في تطبيقنا",
+    "close": "إغلاق"
+  },
+  "hero": {
+    "badge": "صحتك، ببساطة",
+    "title": "مرحباً بك في ",
+    "appName": "تداوي ",
+    "subtitle": "رفيقك الصحي الشامل. ابحث عن الأطباء، احجز المواعيد، وأدر رحلتك الطبية في مكان واحد.",
+    "getStarted": "ابدأ الآن",
+    "signIn": "تسجيل الدخول",
+    "stats": {
+      "providers": "+100",
+      "providersLabel": "مقدمو الرعاية الصحية",
+      "patients": "+50K",
+      "patientsLabel": "مريض سعيد",
+      "support": "24/7",
+      "supportLabel": "دعم متاح"
+    }
+  },
+  "features": {
+    "sectionTitle": "كل ما تحتاجه لرعاية صحية أفضل",
+    "sectionSubtitle": "يوفر تداوي جميع الأدوات التي تحتاجها للسيطرة على رحلتك الصحية",
+    "items": {
+      "findClinics": {
+        "title": "ابحث عن عيادات قريبة",
+        "description": "اكتشف مقدمي الرعاية الصحية المميزين في منطقتك من خلال البحث المعتمد على الموقع."
+      },
+      "bookAppointments": {
+        "title": "احجز مواعيد بسهولة",
+        "description": "جدول مواعيدك مع الأطباء المفضلين لديك بنقرات قليلة."
+      },
+      "manageHealth": {
+        "title": "أدر صحتك رقمياً",
+        "description": "احتفظ بجميع سجلاتك الطبية ومواعيدك منظمةً في مكان واحد."
+      },
+      "aiInsights": {
+        "title": "رؤى طبية بالذكاء الاصطناعي",
+        "description": "ارفع ملفاتك الطبية واحصل على تحليل وتوجيه مدعوم بالذكاء الاصطناعي."
+      }
+    }
+  },
+  "cta": {
+    "title": "هل أنت مستعد للبدء؟",
+    "subtitle": "انضم إلى آلاف المستخدمين الذين يثقون بتداوي لاحتياجاتهم الصحية",
+    "createAccount": "إنشاء حسابك"
+  },
+  "footer": {
+    "madeWith": "صُنع بـ",
+    "madeWithSuffix": "لرعاية صحية أفضل",
+    "copyright": "© 2026 تداوي. جميع الحقوق محفوظة."
+  },
+  "discover": {
+    "title": "اكتشف مقدمي الرعاية الصحية",
+    "subtitle": "ابحث واحجز مواعيد مع أفضل الأطباء والعيادات المُقيَّمة",
+    "searchPlaceholder": "ابحث عن عيادات، أطباء، تخصصات...",
+    "showing": "عرض",
+    "of": "من",
+    "clinics": "عيادة",
+    "noResults": "لم يتم العثور على عيادات",
+    "adjustFilters": "جرب تعديل الفلاتر",
+    "bookAppointment": "احجز موعداً",
+    "specialties": {
+      "All Specialties": "جميع التخصصات",
+      "Cardiology": "أمراض القلب",
+      "Orthopedics": "جراحة العظام",
+      "Dentistry": "طب الأسنان",
+      "Ophthalmology": "طب العيون",
+      "Dermatology": "الأمراض الجلدية",
+      "General Practice": "الطب العام",
+      "Pediatrics": "طب الأطفال",
+      "Gynecology": "أمراض النساء",
+      "Psychiatry": "الطب النفسي",
+      "Neurology": "طب الأعصاب",
+      "Pulmonology": "أمراض الرئة",
+      "Gastroenterology": "أمراض الجهاز الهضمي"
+    },
+    "ratings": {
+      "All Ratings": "جميع التقييمات",
+      "4.5+": "4.5 فأكثر",
+      "4.0+": "4.0 فأكثر",
+      "3.5+": "3.5 فأكثر",
+      "3.0+": "3.0 فأكثر"
+    },
+    "locations": {
+      "All Locations": "جميع المواقع",
+      "Downtown": "وسط المدينة",
+      "Midtown": "منتصف المدينة",
+      "Uptown": "شمال المدينة",
+      "Central": "المنطقة المركزية",
+      "Westside": "الجانب الغربي",
+      "Eastside": "الجانب الشرقي",
+      "Northside": "الجانب الشمالي",
+      "Southside": "الجانب الجنوبي",
+      "Harbor": "الميناء",
+      "Medical District": "الحي الطبي",
+      "Health Park": "حديقة الصحة",
+      "City Center": "مركز المدينة"
+    },
+    "clinicsData": {
+      "1": {
+        "name": "مركز رعاية القلب",
+        "doctor": "د. سارة جونسون",
+        "specialty": "أمراض القلب",
+        "address": "123 ميدان الطب، وسط المدينة"
+      },
+      "2": {
+        "name": "عيادة العظام المدنية",
+        "doctor": "د. جيمس ويليامز",
+        "specialty": "جراحة العظام",
+        "address": "456 شارع الصحة، منتصف المدينة"
+      },
+      "3": {
+        "name": "التميز في طب الأسنان",
+        "doctor": "د. مايكل تشن",
+        "specialty": "طب الأسنان",
+        "address": "789 شارع الابتسامة، شمال المدينة"
+      },
+      "4": {
+        "name": "معهد رعاية البصر",
+        "doctor": "د. إيميلي براون",
+        "specialty": "طب العيون",
+        "address": "321 شارع العيون، المنطقة المركزية"
+      },
+      "5": {
+        "name": "عيادة صحة الجلد",
+        "doctor": "د. ديفيد لي",
+        "specialty": "الأمراض الجلدية",
+        "address": "654 شارع الجمال، الجانب الغربي"
+      },
+      "6": {
+        "name": "مركز طب الأسرة",
+        "doctor": "د. ليزا أندرسون",
+        "specialty": "الطب العام",
+        "address": "987 شارع الأسرة، الجانب الشرقي"
+      },
+      "7": {
+        "name": "عيادة رعاية الأطفال بلاس",
+        "doctor": "د. روبرت مارتينيز",
+        "specialty": "طب الأطفال",
+        "address": "147 شارع الأطفال، الجانب الشمالي"
+      },
+      "8": {
+        "name": "مركز صحة المرأة",
+        "doctor": "د. جنيفر تايلور",
+        "specialty": "أمراض النساء",
+        "address": "258 طريق الصحة، الجانب الجنوبي"
+      },
+      "9": {
+        "name": "عيادة الصحة النفسية",
+        "doctor": "د. توماس وايت",
+        "specialty": "الطب النفسي",
+        "address": "369 شارع السلام، الميناء"
+      },
+      "10": {
+        "name": "معهد صحة الأعصاب",
+        "doctor": "د. باتريشيا غارسيا",
+        "specialty": "طب الأعصاب",
+        "address": "741 شارع الدماغ، الحي الطبي"
+      },
+      "11": {
+        "name": "مركز رعاية الجهاز التنفسي",
+        "doctor": "د. كريستوفر مور",
+        "specialty": "أمراض الرئة",
+        "address": "852 شارع التنفس، حديقة الصحة"
+      },
+      "12": {
+        "name": "عيادة صحة الجهاز الهضمي",
+        "doctor": "د. أماندا لويس",
+        "specialty": "أمراض الجهاز الهضمي",
+        "address": "963 ميدان الصحة، مركز المدينة"
+      },
+        "Pagination":{
+        "previous": "السابق",
+        "next": "التالي"
+
+      }
+    }
+  },
+  "admin": {
+  "adminLayout": {
+    "doctors": "الأطباء",
+    "settings": "الإعدادات",
+    "bannedDoctors": "الأطباء المحظورون"
+  },
+  "doctors": {
+    "title": "إدارة الأطباء",
+    "searchPlaceholder": "ابحث عن طبيب...",
+    "filterLabel": "تصفية:",
+    "allFilter": "الكل",
+    "approvedFilter": "معتمد",
+    "rejectedFilter": "مرفوض",
+    "pendingFilter": "قيد الانتظار",
+    "filterSuffix": "طبيب",
+    "noResults": "لم يتم العثور على أطباء."
+  },
+  "bannedDoctors": {
+    "title": "الأطباء المحظورون",
+    "searchPlaceholder": "ابحث عن طبيب محظور...",
+    "empty": "لا يوجد أطباء محظورون."
+  },
+  "doctorCard": {
+   
+    "id": "المعرف",
+    "createdAt": "تاريخ الإنشاء",
+    "specialization": "التخصص",
+    "details": "التفاصيل",
+    "status": {
+      "Approved": "معتمد",
+      "Rejected": "مرفوض",
+      "Pending": "قيد الانتظار",
+      "Banned": "محظور"
+    }
+  },
+  "doctorModal": {
+    "doctorName": "اسم الطبيب",
+    "clinicLocation": "موقع العيادة",
+    "doctorId": "معرف الطبيب",
+    "clinicDetails": "تفاصيل موقع العيادة",
+    "phoneNumber": "رقم الهاتف",
+    "cvUploaded": "السيرة الذاتية المرفوعة",
+    "emailAddress": "البريد الإلكتروني",
+    "specialization": "التخصص",
+    "actions": {
+      "approve": "موافقة",
+      "reject": "رفض",
+      "ban": "حظر",
+      "unban": "رفع الحظر"
+    },
+    "status": {
+      "Approved": "معتمد",
+      "Rejected": "مرفوض",
+      "Pending": "قيد الانتظار",
+      "Banned": "محظور"
+    }
+  },
+  "doctorContext": {
+    "banAlert": "تم حظر الطبيب {{name}} بنجاح."
+  }
+},
+"calendar": {
+  "title": "تقويمي",
+  "subtitle": "عرض وإدارة مواعيدك الطبية",
+  "selectDate": "اختر تاريخاً",
+  "selectDateHint": "اختر تاريخاً لعرض المواعيد",
+  "noAppointments": "لا توجد مواعيد",
+  "allAppointments": "جميع المواعيد",
+  "status": {
+    "completed": "مكتمل",
+    "upcoming": "قادم"
+  }
+}
+
+}
