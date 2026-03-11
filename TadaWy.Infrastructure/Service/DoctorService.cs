@@ -15,11 +15,13 @@ namespace TadaWy.Infrastructure.Service
     {
         private readonly TadaWyDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IImageService _imageService;
 
-        public DoctorService(TadaWyDbContext context,IWebHostEnvironment env)
+        public DoctorService(TadaWyDbContext context,IWebHostEnvironment env, IImageService imageService)
         {
             _context = context;
             _env = env;
+            _imageService = imageService;
 
         }
 
@@ -241,22 +243,17 @@ namespace TadaWy.Infrastructure.Service
                 .FirstOrDefaultAsync(d => d.UserID == userId);
 
             if (doctor == null)
-                throw new Exception("Doctor not found");//will handle it in controller to return 404
+                throw new NotFoundException("Doctor not found");
 
-            var folder = Path.Combine(_env.WebRootPath, "images", "doctors");
+            // Delete old image if exists
+            if (!string.IsNullOrEmpty(doctor.ImageUrl))
+            {
+                await _imageService.DeleteDoctorImageAsync(doctor.ImageUrl);
+            }
 
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
+            var imageUrl = await _imageService.SaveDoctorImageAsync(image, doctor.Id);
 
-            var fileName = $"doctor-{doctor.Id}{Path.GetExtension(image.FileName)}";
-
-            var path = Path.Combine(folder, fileName);
-
-            using var stream = new FileStream(path, FileMode.Create);
-
-            await image.CopyToAsync(stream);
-
-            doctor.ImageUrl = $"/images/doctors/{fileName}";
+            doctor.ImageUrl = imageUrl;
 
             await _context.SaveChangesAsync();
 

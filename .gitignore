@@ -482,5 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Frontend
+TadaWy-develop/
+node_modules/
 w w w r o o t /  
  

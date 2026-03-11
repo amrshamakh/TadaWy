@@ -14,5 +14,12 @@ namespace TadaWy.API.Controllers
             var diseases = await _lookupService.GetChronicDiseasesAsync();
             return Ok(diseases);
         }
+
+        [HttpGet("specializations")]
+        public async Task<IActionResult> GetSpecializations()
+        {
+            var specializations = await _lookupService.GetSpecializationsAsync();
+            return Ok(specializations);
+        }
     }
 }

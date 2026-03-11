@@ -23,5 +23,15 @@ namespace TadaWy.Infrastructure.Service
                     Name = cd.Name
                 }).ToListAsync();
         }
+
+        public async Task<List<SpecializationDto>> GetSpecializationsAsync()
+        {
+            return await _context.Specializations
+                .Select(s => new SpecializationDto
+                {
+                    Id = s.Id,
+                    Name = s.Name
+                }).ToListAsync();
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace TadaWy.Infrastructure.Service
             if (!Directory.Exists(folder))
                 Directory.CreateDirectory(folder);
 
-            var fileName = $"doctor-{doctorId}{Path.GetExtension(image.FileName)}";
+            var fileName = $"doctor-{doctorId}-{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
 
             var path = Path.Combine(folder, fileName);
 
@@ -29,6 +29,21 @@ namespace TadaWy.Infrastructure.Service
             await image.CopyToAsync(stream);
 
             return $"/images/doctors/{fileName}";
+        }
+
+        public Task DeleteDoctorImageAsync(string imageUrl)
+        {
+            if (string.IsNullOrEmpty(imageUrl))
+                return Task.CompletedTask;
+
+            var path = Path.Combine(_env.WebRootPath, imageUrl.TrimStart('/'));
+
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
+
+            return Task.CompletedTask;
         }
     }
 

@@ -10,6 +10,6 @@ namespace TadaWy.Applicaation.IService
         public interface IImageService
         {
             Task<string> SaveDoctorImageAsync(IFormFile image, int doctorId);
-        }
-    
+            Task DeleteDoctorImageAsync(string imageUrl);
+        }    
 }
