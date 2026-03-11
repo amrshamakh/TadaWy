@@ -204,11 +204,16 @@ namespace TadaWy.Infrastructure.Service
             if (doctor == null)
                 throw new NotFoundException("Doctor not found");
 
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                throw new NotFoundException("User not found");
+
             return new DoctorProfileDto
             {
                 Id = doctor.Id,
                 FirstName = doctor.FirstName,
                 LastName = doctor.LastName,
+                Email = user.Email ?? "",
                 Specialization = doctor.Specialization.Name,
                 Address = doctor.Address.ToString(),
                 AddressDescription = doctor.AddressDescription??"",

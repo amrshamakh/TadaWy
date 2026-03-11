@@ -27,6 +27,7 @@ namespace TadaWy.Infrastructure.Extensions
             services.AddScoped<IAiBrainScanAppService, AiBrainScanAppService>();
             services.AddScoped<IImageService,ImageService>();
             services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IPatientService, PatientService>();
             services.AddTransient<IEmailService, EmailService>();
         }
     }

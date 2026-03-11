@@ -12,6 +12,7 @@ namespace TadaWy.Applicaation.DTO.DoctorDTOs
 
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
+        public string Email { get; set; } = default!;
         public string PhoneNumber { get; set; }= default!;
         public string Specialization { get; set; } = default!;
 

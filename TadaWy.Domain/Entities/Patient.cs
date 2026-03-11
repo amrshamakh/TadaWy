@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -32,7 +32,7 @@ namespace TadaWy.Domain.Entities
         public ICollection<PatientChronicDisease> PatientChronicDiseases { get; set; } = new List<PatientChronicDisease>();
 
 
-        public ICollection<PatientAllergy> PatientAllergies = new List<PatientAllergy>();
+        public ICollection<PatientAllergy> PatientAllergies { get; set; } = new List<PatientAllergy>();
 
 
     }
