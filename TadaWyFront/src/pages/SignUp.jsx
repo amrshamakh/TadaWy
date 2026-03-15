@@ -142,10 +142,10 @@ const SignUp = () => {
       alert("Passwords do not match!");
       return;
     }
-    
+
     console.log("Signup data:", formData);
   };
-  const navigate=useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div
@@ -361,8 +361,11 @@ dark:to-[#202326] flex items-center justify-center p-4 py-8"
           >
             {t("auth.signup.signUp", "Sign Up")}
           </button>
-          <span className="block text-center my-0.5 font-medium text-black dark:text-gray-400">OR</span>
-           <button onClick={()=>navigate('/doctorApplication')}
+          <span className="block text-center my-0.5 font-medium text-black dark:text-gray-400">
+            OR
+          </span>
+          <button
+            onClick={() => navigate("/doctorApplication")}
             type="submit"
             className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
           >
