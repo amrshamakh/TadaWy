@@ -14,6 +14,10 @@ import AdminLayout from "./admin/AdminLayout";
 import AdminDoctors from "./admin/AdminDoctors";
 import BannedDoctors from "./admin/BannedDoctors";
 import MedicalChecksChat from "./components/checksChat/checksChat";
+import DoctorLayout from "./components/doctor/DoctorLayout";
+import DoctorProfile from "./components/doctor/DoctorProfile";
+import DoctorAppointments from "./components/doctor/DoctorAppointements";
+import DoctorSchedule from "./components/doctor/DoctorSchedule";
 
 const App = () => {
   return (
@@ -23,17 +27,16 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
 
-        
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
-          <Route path='discover' element={<DiscoverPage />} />
+          <Route path="discover" element={<DiscoverPage />} />
 
           <Route path="calendar" element={<Calender />} />
           <Route path="booking" element={<Booking />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
         </Route>
-                {/* Admin routes */}
+        {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDoctors />} />
 
@@ -42,9 +45,14 @@ const App = () => {
           <Route path="settings" element={<Settings />} />
           <Route path="banned" element={<BannedDoctors />} />
         </Route>
-        
+        {/* Doctor routes */}
+        <Route path="/doctor" element={<DoctorLayout />}>
+          <Route index element={<DoctorProfile />} />
+          <Route path="appointments" element={<DoctorAppointments />} />
+          <Route path="schedule" element={<DoctorSchedule />} />
+        </Route>
       </Routes>
-      <MedicalChecksChat/>
+      <MedicalChecksChat />
     </div>
   );
 };

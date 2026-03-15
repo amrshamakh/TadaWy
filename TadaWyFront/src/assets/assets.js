@@ -23,25 +23,25 @@ import brainIcon from './brain.svg';
 
 
 export const assets = {
-    calenderIcon,
-    logo,
-    notificationIcon,
-    profileIcon,
-    profileIcon1,
-    searchIcon,
-    homeIcon,
-    settingIcon,
-    logoutIcon,
-    medicalIcon,
-    medical1Icon,
-    allergylIcon,
-    emergencyIcon,
-    sunIcon,
-    nightIcon,
-    infoIcon,
-    languageIcon,
-    brainIcon,
-    container
+  calenderIcon,
+  logo,
+  notificationIcon,
+  profileIcon,
+  profileIcon1,
+  searchIcon,
+  homeIcon,
+  settingIcon,
+  logoutIcon,
+  medicalIcon,
+  medical1Icon,
+  allergylIcon,
+  emergencyIcon,
+  sunIcon,
+  nightIcon,
+  infoIcon,
+  languageIcon,
+  brainIcon,
+  container
 
 
 
