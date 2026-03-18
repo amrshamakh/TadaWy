@@ -16,8 +16,8 @@ import BannedDoctors from "./admin/BannedDoctors";
 import MedicalChecksChat from "./components/checksChat/checksChat";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
-import DoctorAppointments from "./components/doctor/DoctorAppointements";
-import DoctorSchedule from "./components/doctor/DoctorSchedule";
+import DoctorAppointments from "./components/doctor/appointements/DoctorAppointements";
+import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 
 const App = () => {
   return (
