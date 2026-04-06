@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TadaWy.Applicaation.DTO.AiDTOS;
 using TadaWy.Applicaation.IService;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace TadaWy.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class AiBrainScanController : ControllerBase
@@ -21,7 +24,12 @@ namespace TadaWy.API.Controllers
         {
             try
             {
-                var result = await _service.UploadScanAsync(request.File, request.UserId);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                    return Unauthorized(new { message = "Invalid token." });
+
+                var result = await _service.UploadScanAsync(request.File, userId);
 
                 return Ok(result);
             }
