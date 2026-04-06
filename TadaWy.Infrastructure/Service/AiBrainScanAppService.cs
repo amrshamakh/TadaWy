@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,17 +22,20 @@ namespace TadaWy.Applicaation.Services
         private readonly TadaWyDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IWebHostEnvironment _environment;
+        private readonly IConfiguration _configuration;
 
         public AiBrainScanAppService(
             IAiBrainScanService aiService,
             TadaWyDbContext context,
             UserManager<ApplicationUser> userManager,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment,
+            IConfiguration configuration)
         {
             _aiService = aiService;
             _context = context;
             _userManager = userManager;
             _environment = environment;
+            _configuration = configuration;
         }
 
         public async Task<UploadAiBrainScanResponseDto> UploadScanAsync(IFormFile file, string userId)
@@ -76,30 +80,56 @@ namespace TadaWy.Applicaation.Services
             scan.Description = result.Description;
 
             await _context.SaveChangesAsync();
+            var baseUrl = _configuration["AppSettings:BaseUrl"];
 
             return new UploadAiBrainScanResponseDto
             {
                 ScanId = scan.Id,
+                ImageUrl = $"{baseUrl}/BrainScans/{userId}/{scan.ImagePath}",
                 Description = result.Description,
                 CreatedAt = scan.CreatedAt
             };
         }
 
         /////////Get user's scan history/////////
-        public async Task<List<AiBrainScanHistoryDto>> GetHistoryAsync(string userId)
+        public async Task<AiBrainScanHistoryResponseDto> GetHistoryAsync(string userId, DateTime? lastCreatedAt)
         {
-            var scans = await _context.AiBrainScans
-                .Where(x => x.UserId == userId)
-                .OrderBy(x => x.CreatedAt)
+            var baseUrl = _configuration["AppSettings:BaseUrl"];
+
+            var query = _context.AiBrainScans
+                .Where(x => x.UserId == userId);
+
+            if (lastCreatedAt.HasValue)
+            {
+                query = query.Where(x => x.CreatedAt < lastCreatedAt.Value);
+            }
+
+            var scans = await query
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(6) 
                 .Select(x => new AiBrainScanHistoryDto
                 {
-                    ImagePath = x.ImagePath,
+                    ImageUrl = $"{baseUrl}/BrainScans/{x.UserId}/{x.ImagePath}",
                     Description = x.Description,
                     CreatedAt = x.CreatedAt
                 })
                 .ToListAsync();
 
-            return scans;
+            // Check if there are more items
+            var hasMore = scans.Count > 5;
+
+            // Remove extra item
+            if (hasMore)
+                scans.RemoveAt(5);
+
+            // Reverse to chat order (old → new)
+            scans.Reverse();
+
+            return new AiBrainScanHistoryResponseDto
+            {
+                Items = scans,
+                HasMore = hasMore
+            };
         }
     }
 }

@@ -18,7 +18,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.Property(x => x.UserId)
                    .IsRequired();
 
-            builder.HasIndex(x => x.UserId);
+            builder.HasIndex(x => new { x.UserId, x.CreatedAt });
 
             builder.Property(x => x.ImagePath)
                    .IsRequired()

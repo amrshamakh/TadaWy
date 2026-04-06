@@ -11,6 +11,6 @@ namespace TadaWy.Applicaation.IService
     public interface IAiBrainScanAppService
     {
         Task<UploadAiBrainScanResponseDto> UploadScanAsync(IFormFile file, string userId);
-        Task<List<AiBrainScanHistoryDto>> GetHistoryAsync(string userId);
+        Task<AiBrainScanHistoryResponseDto> GetHistoryAsync(string userId, DateTime? lastCreatedAt);
     }
 }

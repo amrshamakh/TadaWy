@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using Microsoft.Extensions.Configuration;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using TadaWy.Applicaation.DTO.AiDTOS;
 using TadaWy.Applicaation.IService;
@@ -8,10 +9,12 @@ namespace TadaWy.Infrastructure.Service
     public class AiBrainScanService : IAiBrainScanService
     {
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _configuration;
 
-        public AiBrainScanService(HttpClient httpClient)
+        public AiBrainScanService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
+            _configuration = configuration;
         }
 
         public async Task<UploadAiBrainScanResponseDto> AnalyzeAsync(string filePath)
@@ -32,8 +35,9 @@ namespace TadaWy.Infrastructure.Service
                     form.Add(fileContent, "file", Path.GetFileName(filePath));
 
                     var response = await _httpClient.PostAsync(
-                        "https://omarahmed176-alzheimer-detection-api.hf.space/predict/",
+                        _configuration["AiSettings:BaseUrl"],
                         form);
+
 
                     response.EnsureSuccessStatusCode();
 
@@ -56,7 +60,7 @@ namespace TadaWy.Infrastructure.Service
                     if (attempt == maxRetries)
                         throw new Exception("AI service failed after multiple attempts.", ex);
 
-                    await Task.Delay(1000 * attempt); // exponential backoff
+                    await Task.Delay(1000 * attempt); 
                 }
             }
 

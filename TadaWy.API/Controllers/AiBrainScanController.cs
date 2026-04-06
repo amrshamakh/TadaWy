@@ -46,14 +46,14 @@ namespace TadaWy.API.Controllers
 
         [Authorize]
         [HttpGet("history")]
-        public async Task<IActionResult> GetHistory()
+        public async Task<IActionResult> GetHistory([FromQuery] DateTime? lastCreatedAt)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized(new { message = "Invalid token." });
 
-            var result = await _service.GetHistoryAsync(userId);
+            var result = await _service.GetHistoryAsync(userId, lastCreatedAt);
 
             return Ok(result);
         }
