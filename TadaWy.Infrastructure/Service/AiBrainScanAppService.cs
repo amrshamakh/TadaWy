@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,14 +44,16 @@ namespace TadaWy.Applicaation.Services
             if (user == null)
                 throw new UnauthorizedAccessException("Login to use AI.");
 
-            var uploadsFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot", "BrainScans");
+            //var uploadsFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot", "BrainScans");
 
-            if (!Directory.Exists(uploadsFolder))
-                Directory.CreateDirectory(uploadsFolder);
+            var userFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot","BrainScans", userId);
+
+            if (!Directory.Exists(userFolder))
+                Directory.CreateDirectory(userFolder);
 
             // Generate a unique file name to avoid conflicts
             var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(uploadsFolder, fileName);
+            var filePath = Path.Combine(userFolder, fileName);
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
@@ -80,6 +83,23 @@ namespace TadaWy.Applicaation.Services
                 Description = result.Description,
                 CreatedAt = scan.CreatedAt
             };
+        }
+
+        /////////Get user's scan history/////////
+        public async Task<List<AiBrainScanHistoryDto>> GetHistoryAsync(string userId)
+        {
+            var scans = await _context.AiBrainScans
+                .Where(x => x.UserId == userId)
+                .OrderBy(x => x.CreatedAt)
+                .Select(x => new AiBrainScanHistoryDto
+                {
+                    ImagePath = x.ImagePath,
+                    Description = x.Description,
+                    CreatedAt = x.CreatedAt
+                })
+                .ToListAsync();
+
+            return scans;
         }
     }
 }

@@ -42,5 +42,20 @@ namespace TadaWy.API.Controllers
                 return Unauthorized(ex.Message);
             }
         }
+
+
+        [Authorize]
+        [HttpGet("history")]
+        public async Task<IActionResult> GetHistory()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(new { message = "Invalid token." });
+
+            var result = await _service.GetHistoryAsync(userId);
+
+            return Ok(result);
+        }
     }
 }

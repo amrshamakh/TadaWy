@@ -16,34 +16,51 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<UploadAiBrainScanResponseDto> AnalyzeAsync(string filePath)
         {
-            using var form = new MultipartFormDataContent();
+            int maxRetries = 3;
 
-            using var stream = File.OpenRead(filePath);
-
-            var fileContent = new StreamContent(stream);
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
-
-            form.Add(fileContent, "file", Path.GetFileName(filePath));
-
-            var response = await _httpClient.PostAsync(
-                "https://omarahmed176-alzheimer-detection-api.hf.space/predict/",
-                form);
-
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            using var document = JsonDocument.Parse(json);
-
-            var description = document
-                .RootElement
-                .GetProperty("description")
-                .GetString();
-
-            return new UploadAiBrainScanResponseDto
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                Description = description!
-            };
+                try
+                {
+                    using var form = new MultipartFormDataContent();
+
+                    using var stream = File.OpenRead(filePath);
+
+                    var fileContent = new StreamContent(stream);
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+                    form.Add(fileContent, "file", Path.GetFileName(filePath));
+
+                    var response = await _httpClient.PostAsync(
+                        "https://omarahmed176-alzheimer-detection-api.hf.space/predict/",
+                        form);
+
+                    response.EnsureSuccessStatusCode();
+
+                    var json = await response.Content.ReadAsStringAsync();
+
+                    using var document = JsonDocument.Parse(json);
+
+                    var description = document
+                        .RootElement
+                        .GetProperty("description")
+                        .GetString();
+
+                    return new UploadAiBrainScanResponseDto
+                    {
+                        Description = description!
+                    };
+                }
+                catch (Exception ex)
+                {
+                    if (attempt == maxRetries)
+                        throw new Exception("AI service failed after multiple attempts.", ex);
+
+                    await Task.Delay(1000 * attempt); // exponential backoff
+                }
+            }
+
+            throw new Exception("Unexpected error.");
         }
     }
 }
