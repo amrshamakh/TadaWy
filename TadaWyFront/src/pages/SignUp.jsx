@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MapPin, Crosshair } from "lucide-react";
 import { assets } from "../assets/assets";
+import { registerPatient } from "../modules/patient/api/registerPatientAPi";
 import {
   MapContainer,
   TileLayer,
@@ -135,7 +136,7 @@ const SignUp = () => {
     );
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -144,6 +145,7 @@ const SignUp = () => {
     }
 
     console.log("Signup data:", formData);
+    await registerPatient(formData);
   };
   const navigate = useNavigate();
 
