@@ -38,6 +38,7 @@ namespace TadaWy.API.Controllers
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 SpecializationId = request.SpecializationId,
+                CareerStartDate = request.CareerStartDate,
                 AddressDescription = request.AddressDescription,
                 Confirmpassword=request.ConfirmPassword,
                 Latitude = request.Latitude,

@@ -62,5 +62,41 @@ namespace TadaWy.API.Controllers
 
             return Ok(new { imageUrl });
         }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpGet("schedule")]
+        public async Task<IActionResult> GetSchedule()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _doctorService.GetDoctorScheduleAsync(userId);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpPost("schedule")]
+        public async Task<IActionResult> UpdateSchedule(UpdateDoctorScheduleDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _doctorService.UpdateDoctorScheduleAsync(userId, dto);
+            return Ok(new { message = "Schedule updated successfully" });
+        }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpPost("schedule/timeslot")]
+        public async Task<IActionResult> AddTimeSlot(AddDoctorTimeSlotDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            await _doctorService.AddTimeSlotAsync(userId, dto);
+            return Ok(new { message = "Time slot added successfully" });
+        }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpGet("schedule/summary")]
+        public async Task<IActionResult> GetScheduleSummary()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var result = await _doctorService.GetDoctorWeeklySummaryAsync(userId);
+            return Ok(result);
+        }
     }
 }

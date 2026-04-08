@@ -20,5 +20,7 @@ namespace TadaWy.Applicaation.IService
         Task<List<AllergyDto>> GetPatientAllergiesAsync(string userId);
         Task AddPatientAllergyAsync(string userId, int allergyId);
         Task RemovePatientAllergyAsync(string userId, int allergyId);
+
+        Task SubmitReviewAsync(string userId, AddReviewDto reviewDto);
     }
 }

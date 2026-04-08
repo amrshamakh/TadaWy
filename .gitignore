@@ -486,5 +486,7 @@ $RECYCLE.BIN/
 # Frontend
 TadaWy-develop/
 node_modules/
-w w w r o o t /  
- 
+wwwroot/
+
+# Gemini CLI
+GEMINI.md

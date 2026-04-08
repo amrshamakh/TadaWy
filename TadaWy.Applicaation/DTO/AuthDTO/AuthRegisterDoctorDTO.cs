@@ -22,6 +22,7 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
 
         public double Longitude { get; set; }
         public int SpecializationId { get; set; }
+        public DateTime CareerStartDate { get; set; }
       
         public string? AddressDescription { get; set; }
 

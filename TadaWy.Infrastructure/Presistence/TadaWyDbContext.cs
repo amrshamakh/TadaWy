@@ -30,6 +30,7 @@ namespace TadaWy.Infrastructure.Presistence
         public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<Specialization> Specializations => Set<Specialization>();
         public DbSet<DoctorSchedule> DoctorSchedules => Set<DoctorSchedule>();
+        public DbSet<DoctorTimeSlot> DoctorTimeSlots => Set<DoctorTimeSlot>();
         public DbSet<DoctorReview> DoctorReviews => Set<DoctorReview>();
         public DbSet<AiBrainScan> AiBrainScans => Set<AiBrainScan>();
 

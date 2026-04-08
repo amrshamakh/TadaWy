@@ -24,6 +24,8 @@ namespace TadaWy.Applicaation.DTO.DoctorDTOs
 
         public decimal? Price { get; set; }
 
+        public DateTime? CareerStartDate { get; set; }
+
         public string? ImageUrl { get; set; }
     }
 }

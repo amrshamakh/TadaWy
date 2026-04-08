@@ -148,6 +148,7 @@ namespace TadaWy.Infrastructure.service
                 Address = new Address(addressDto.Street ?? "UnKnown", addressDto.City ?? "UnKnown", addressDto.State ?? "UnKnown"),
                 AddressDescription = authRegisterDoctorDTO.AddressDescription,
                 SpecializationId = authRegisterDoctorDTO.SpecializationId,
+                CareerStartDate = authRegisterDoctorDTO.CareerStartDate,
                 VerificationDocumentPath = filePath,
                 CreatedAt= DateTime.UtcNow,
 

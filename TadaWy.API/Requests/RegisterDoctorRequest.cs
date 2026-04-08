@@ -16,6 +16,8 @@ namespace TadaWy.API.Requests
 
         public int SpecializationId { get; set; }
 
+        public DateTime CareerStartDate { get; set; }
+
         public double Latitude { get; set; }
 
         public double Longitude { get; set; }
