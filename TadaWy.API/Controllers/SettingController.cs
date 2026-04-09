@@ -48,7 +48,7 @@ namespace TadaWy.API.Controllers
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("DeleteAccount")]
         public async Task<IActionResult> Delete()
         {
             await _settingService.DeleteAccount(GetUserId());
