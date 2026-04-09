@@ -21,6 +21,8 @@ namespace TadaWy.Domain.Entities
         public string? ImageUrl { get; set; }
         public string? Bio { get; set; }
         public decimal? Price { get; set; }
+        public int? AppointmentDurationMinutes { get; set; }
+        public DateTime? CareerStartDate { get; set; }
         public DoctorStatus Status { get; set; } = DoctorStatus.Pending;
 
         public DateTime CreatedAt { get; set; }

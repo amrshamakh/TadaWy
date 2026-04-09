@@ -169,5 +169,26 @@ namespace TadaWy.Infrastructure.Service
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task SubmitReviewAsync(string userId, AddReviewDto reviewDto)
+        {
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.UserID == userId);
+            if (patient == null)
+                throw new NotFoundException("Patient not found");
+
+            if (!await _context.Doctors.AnyAsync(d => d.Id == reviewDto.DoctorId))
+                throw new NotFoundException("Doctor not found");
+
+            var review = new DoctorReview
+            {
+                PatientId = patient.Id,
+                DoctorId = reviewDto.DoctorId,
+                Rating = reviewDto.Rating,
+                Comment = reviewDto.Comment
+            };
+
+            _context.DoctorReviews.Add(review);
+            await _context.SaveChangesAsync();
+        }
     }
 }

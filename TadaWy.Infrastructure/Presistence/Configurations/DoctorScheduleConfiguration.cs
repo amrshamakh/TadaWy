@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -18,13 +18,15 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.Property(s => s.DayOfWeek)
                    .IsRequired();
 
-            builder.Property(s => s.StartTime)
+            builder.Property(s => s.IsWorkingDay)
                    .IsRequired();
 
-            builder.Property(s => s.EndTime)
-                   .IsRequired();
+            builder.HasIndex(s => new { s.DoctorId, s.DayOfWeek }); 
 
-            builder.HasIndex(s => new { s.DoctorId, s.DayOfWeek }); //give me the doctor schadule for monday it will be fast 
+            builder.HasMany(s => s.TimeSlots)
+                   .WithOne(ts => ts.DoctorSchedule)
+                   .HasForeignKey(ts => ts.DoctorScheduleId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

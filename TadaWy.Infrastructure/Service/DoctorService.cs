@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using TadaWy.Applicaation.DTO.Common;
@@ -17,12 +17,11 @@ namespace TadaWy.Infrastructure.Service
         private readonly IWebHostEnvironment _env;
         private readonly IImageService _imageService;
 
-        public DoctorService(TadaWyDbContext context,IWebHostEnvironment env, IImageService imageService)
+        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService)
         {
             _context = context;
             _env = env;
             _imageService = imageService;
-
         }
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
@@ -96,21 +95,29 @@ namespace TadaWy.Infrastructure.Service
                 PageSize = request.PageSize
             };
         }
+
         public async Task<DoctorDetailsDto?> GetDoctorByIdAsync(int id)
         {
             var doctor = await _context.Doctors
                 .Include(d => d.Specialization)
-                .Include(d => d.Schedules)
+                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
                 .Include(d => d.Reviews)
-                .Include(d => d.Appointments.Where(a=>a.Date>=DateTime.Today&& a.Date<DateTime.Today.AddDays(3)))
-                .FirstOrDefaultAsync(d => d.Id == id && d.Status==DoctorStatus.Approved);
+                .Include(d => d.Appointments.Where(a => a.Date >= DateTime.Today && a.Date < DateTime.Today.AddDays(7)))
+                .FirstOrDefaultAsync(d => d.Id == id && d.Status == DoctorStatus.Approved);
 
             if (doctor == null)
-               throw new NotFoundException("Doctor not found");
+                throw new NotFoundException("Doctor not found");
 
             var rating = doctor.Reviews.Any()
                 ? doctor.Reviews.Average(r => r.Rating)
                 : 0;
+
+            var yearsOfExperience = 0;
+            if (doctor.CareerStartDate.HasValue)
+            {
+                yearsOfExperience = DateTime.Today.Year - doctor.CareerStartDate.Value.Year;
+                if (doctor.CareerStartDate.Value.Date > DateTime.Today.AddYears(-yearsOfExperience)) yearsOfExperience--;
+            }
 
             return new DoctorDetailsDto
             {
@@ -118,12 +125,13 @@ namespace TadaWy.Infrastructure.Service
                 Name = doctor.FirstName + " " + doctor.LastName,
                 Specialization = doctor.Specialization.Name,
                 Address = doctor.Address,
-                AddressDescription = doctor.AddressDescription??"",
-                PhoneNumber=doctor.PhoneNumber,
+                AddressDescription = doctor.AddressDescription ?? "",
+                PhoneNumber = doctor.PhoneNumber,
                 Rating = Math.Round(rating, 1),
-                ReviewsCount=doctor.Reviews.Count,
-                Price=doctor.Price,
-                AvailableDaysSlots = GenerateNextThreeDaysSlots(doctor),
+                YearsOfExperience = yearsOfExperience,
+                ReviewsCount = doctor.Reviews.Count,
+                Price = doctor.Price,
+                AvailableDaysSlots = GenerateNextSevenDaysSlots(doctor),
                 Reviews = doctor.Reviews
                     .Select(r => new DoctorReviewDto
                     {
@@ -133,16 +141,13 @@ namespace TadaWy.Infrastructure.Service
             };
         }
 
-
-        //helper methods 
-        private List<AvailableDaySlotsDto> GenerateNextThreeDaysSlots(Doctor doctor)
+        private List<AvailableDaySlotsDto> GenerateNextSevenDaysSlots(Doctor doctor)
         {
             var result = new List<AvailableDaySlotsDto>();
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 7; i++)
             {
                 var date = DateTime.Today.AddDays(i);
-
                 var daySlots = GenerateAvailableSlotsForDate(doctor, date);
 
                 if (daySlots.Any())
@@ -158,38 +163,42 @@ namespace TadaWy.Infrastructure.Service
             return result;
         }
 
-        private List<AvailableSlotDto> GenerateAvailableSlotsForDate(Doctor doctor,DateTime date)
+        private List<AvailableSlotDto> GenerateAvailableSlotsForDate(Doctor doctor, DateTime date)
         {
             var slots = new List<AvailableSlotDto>();
 
             var schedule = doctor.Schedules
-                .FirstOrDefault(s => s.DayOfWeek == date.DayOfWeek);
-            if (schedule == null)
+                .FirstOrDefault(s => s.DayOfWeek == date.DayOfWeek && s.IsWorkingDay);
+            
+            if (schedule == null || !schedule.TimeSlots.Any())
                 return slots;
-            var start = date.Date + schedule.StartTime;
-            var end = date.Date + schedule.EndTime;
 
             var now = DateTime.Now;
-            var bookedAppointments = doctor.Appointments.Where(a => a.Date.Date == date.Date).Select(a => a.Date).ToList();
+            var bookedAppointments = doctor.Appointments
+                .Where(a => a.Date.Date == date.Date)
+                .Select(a => a.Date)
+                .ToList();
 
-            while (start < end)
+            int duration = doctor.AppointmentDurationMinutes ?? 20;
+
+            foreach (var timeSlot in schedule.TimeSlots)
             {
-                var slotEnd = start.AddMinutes(20);
-                if (start < now)
-                {
-                    start = slotEnd;
-                    continue;
-                }
-                if (!bookedAppointments.Contains(start))
-                {
-                    slots.Add(new AvailableSlotDto
-                    {
-                        StartTime = start,
-                        EndTime = slotEnd
-                    });
-                }
+                var start = date.Date + timeSlot.StartTime;
+                var end = date.Date + timeSlot.EndTime;
 
-                start = slotEnd;
+                while (start.AddMinutes(duration) <= end)
+                {
+                    var slotEnd = start.AddMinutes(duration);
+                    if (start >= now && !bookedAppointments.Any(b => b >= start && b < slotEnd))
+                    {
+                        slots.Add(new AvailableSlotDto
+                        {
+                            StartTime = start,
+                            EndTime = slotEnd
+                        });
+                    }
+                    start = slotEnd;
+                }
             }
 
             return slots;
@@ -216,10 +225,11 @@ namespace TadaWy.Infrastructure.Service
                 Email = user.Email ?? "",
                 Specialization = doctor.Specialization.Name,
                 Address = doctor.Address.ToString(),
-                AddressDescription = doctor.AddressDescription??"",
+                AddressDescription = doctor.AddressDescription ?? "",
                 PhoneNumber = doctor.PhoneNumber,
                 Bio = doctor.Bio,
                 Price = doctor.Price,
+                CareerStartDate = doctor.CareerStartDate,
                 ImageUrl = doctor.ImageUrl
             };
         }
@@ -232,14 +242,14 @@ namespace TadaWy.Infrastructure.Service
                 throw new NotFoundException("User not found");
             user.PhoneNumber = updateDto.PhoneNumber;
             if (doctor == null) throw new NotFoundException("Doctor Not Found");
-            doctor.FirstName = updateDto.FirstName??doctor.FirstName;
+            doctor.FirstName = updateDto.FirstName ?? doctor.FirstName;
             doctor.LastName = updateDto.LastName ?? doctor.LastName;
             doctor.PhoneNumber = updateDto.PhoneNumber ?? doctor.PhoneNumber;
             doctor.Bio = updateDto.Bio;
             doctor.Price = updateDto.Price;
+            doctor.CareerStartDate = updateDto.CareerStartDate;
             doctor.AddressDescription = updateDto.AddressDescription;
             await _context.SaveChangesAsync();
-            
         }
 
         public async Task<string> UploadDoctorImageAsync(string userId, IFormFile image)
@@ -250,23 +260,152 @@ namespace TadaWy.Infrastructure.Service
             if (doctor == null)
                 throw new NotFoundException("Doctor not found");
 
-            // Delete old image if exists
             if (!string.IsNullOrEmpty(doctor.ImageUrl))
             {
                 await _imageService.DeleteDoctorImageAsync(doctor.ImageUrl);
             }
 
             var imageUrl = await _imageService.SaveDoctorImageAsync(image, doctor.Id);
-
             doctor.ImageUrl = imageUrl;
-
             await _context.SaveChangesAsync();
 
             return doctor.ImageUrl;
         }
 
+        public async Task<DoctorScheduleDto> GetDoctorScheduleAsync(string userId)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
+                .FirstOrDefaultAsync(d => d.UserID == userId);
 
+            if (doctor == null)
+                throw new NotFoundException("Doctor not found");
 
+            var result = new DoctorScheduleDto
+            {
+                AppointmentDurationMinutes = doctor.AppointmentDurationMinutes ?? 20,
+                AppointmentPrice = doctor.Price ?? 0,
+                WeeklyAvailability = new List<WeeklyAvailabilityDto>()
+            };
 
+            foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+            {
+                var schedule = doctor.Schedules.FirstOrDefault(s => s.DayOfWeek == day);
+                result.WeeklyAvailability.Add(new WeeklyAvailabilityDto
+                {
+                    DayOfWeek = day,
+                    IsWorkingDay = schedule?.IsWorkingDay ?? false,
+                    TimeSlots = schedule?.TimeSlots.Select(ts => new TimeSlotDto
+                    {
+                        StartTime = ts.StartTime,
+                        EndTime = ts.EndTime
+                    }).ToList() ?? new List<TimeSlotDto>()
+                });
+            }
+
+            return result;
+        }
+
+        public async Task UpdateDoctorScheduleAsync(string userId, UpdateDoctorScheduleDto dto)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
+                .FirstOrDefaultAsync(d => d.UserID == userId);
+
+            if (doctor == null)
+                throw new NotFoundException("Doctor not found");
+
+            doctor.AppointmentDurationMinutes = dto.AppointmentDurationMinutes;
+            doctor.Price = dto.AppointmentPrice;
+
+            // Simple approach: remove and recreate
+            _context.DoctorSchedules.RemoveRange(doctor.Schedules);
+
+            foreach (var avail in dto.WeeklyAvailability)
+            {
+                var schedule = new DoctorSchedule
+                {
+                    DoctorId = doctor.Id,
+                    DayOfWeek = avail.DayOfWeek,
+                    IsWorkingDay = avail.IsWorkingDay,
+                    TimeSlots = avail.TimeSlots.Select(ts => new DoctorTimeSlot
+                    {
+                        StartTime = ts.StartTime,
+                        EndTime = ts.EndTime
+                    }).ToList()
+                };
+                _context.DoctorSchedules.Add(schedule);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddTimeSlotAsync(string userId, AddDoctorTimeSlotDto dto)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Schedules)
+                .FirstOrDefaultAsync(d => d.UserID == userId);
+
+            if (doctor == null)
+                throw new NotFoundException("Doctor not found");
+
+            var schedule = doctor.Schedules.FirstOrDefault(s => s.DayOfWeek == dto.DayOfWeek);
+
+            if (schedule == null)
+            {
+                schedule = new DoctorSchedule
+                {
+                    DoctorId = doctor.Id,
+                    DayOfWeek = dto.DayOfWeek,
+                    IsWorkingDay = true
+                };
+                _context.DoctorSchedules.Add(schedule);
+            }
+            else
+            {
+                schedule.IsWorkingDay = true;
+            }
+
+            var slot = new DoctorTimeSlot
+            {
+                DoctorSchedule = schedule,
+                StartTime = dto.StartTime,
+                EndTime = dto.EndTime
+            };
+
+            _context.DoctorTimeSlots.Add(slot);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<DoctorScheduleSummaryDto> GetDoctorWeeklySummaryAsync(string userId)
+        {
+            var doctor = await _context.Doctors
+                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
+                .FirstOrDefaultAsync(d => d.UserID == userId);
+
+            if (doctor == null)
+                throw new NotFoundException("Doctor not found");
+
+            int workingDays = doctor.Schedules.Count(s => s.IsWorkingDay);
+            int totalSlots = 0;
+            int duration = doctor.AppointmentDurationMinutes ?? 20;
+
+            foreach (var schedule in doctor.Schedules.Where(s => s.IsWorkingDay))
+            {
+                foreach (var ts in schedule.TimeSlots)
+                {
+                    var diff = ts.EndTime - ts.StartTime;
+                    totalSlots += (int)(diff.TotalMinutes / duration);
+                }
+            }
+
+            return new DoctorScheduleSummaryDto
+            {
+                WorkingDaysCount = workingDays,
+                TotalAppointmentsPerWeek = totalSlots,
+                AppointmentDurationMinutes = duration,
+                AppointmentPrice = doctor.Price ?? 0
+            };
+        }
     }
 }

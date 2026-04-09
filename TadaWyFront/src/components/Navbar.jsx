@@ -4,14 +4,18 @@ import { assets } from "../assets/assets";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { FiUser, FiMenu } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
 
 export default function Navbar({ onToggleSidebar }) {
   const [open, setOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const isAdmin = useLocation().pathname.includes("/admin");
+  const location = useLocation();
+  const isAdmin = location.pathname.includes("/admin");
+
+  const { user, logout } = useAuth();
+  const isLoggedIn = !!user;
 
   useEffect(() => {
     const handler = (e) => {
@@ -23,16 +27,12 @@ export default function Navbar({ onToggleSidebar }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem("userToken");
-    // setIsLoggedIn(!!token);
-     setIsLoggedIn(true);
-  }, []);
-
   const goTo = (path) => {
     setOpen(false);
     navigate(path);
   };
+  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "User";
+  const displayEmail = user ? user.email : "";
 
   return (
     <nav className="bg-white dark:bg-[#0F172A] border-b border-gray-200 dark:border-gray-700">
@@ -67,7 +67,7 @@ export default function Navbar({ onToggleSidebar }) {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
 
-             
+
 
               {/* Profile */}
               <div className="hidden md:flex relative" ref={dropdownRef}>
@@ -78,16 +78,16 @@ export default function Navbar({ onToggleSidebar }) {
                   <div className="w-8 h-8  rounded-full flex items-center justify-center text-black dark:text-white">
                     <FiUser size={20} />
                   </div>
-                  <span className="text-sm font-medium dark:text-white">John Doe</span>
-              
+                  <span className="text-sm font-medium dark:text-white">{displayName}</span>
+
                 </button>
 
                 {/* Dropdown */}
                 {open && (
                   <div className="absolute right-0 top-12 w-64 bg-white dark:bg-[#1e293b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                      <p className="text-sm font-medium dark:text-white">John Doe</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">omaralsnmai@igh.com</p>
+                      <p className="text-sm font-medium dark:text-white">{displayName}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{displayEmail}</p>
                     </div>
                     <button
                       onClick={() => goTo("/profile")}
@@ -108,8 +108,7 @@ export default function Navbar({ onToggleSidebar }) {
                     </button>
                     <button
                       onClick={() => {
-                        localStorage.removeItem("userToken");
-                        setIsLoggedIn(false);
+                        logout();
                         goTo("/login");
                       }}
                       className="flex gap-3 items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
@@ -123,9 +122,9 @@ export default function Navbar({ onToggleSidebar }) {
                 )}
               </div>
 
-             
+
             </div>
-          ) : ( !isAdmin && !isLoggedIn ? (
+          ) : (!isAdmin && !isLoggedIn ? (
             // Not logged in - Show Sign In and Sign Up buttons
             <div className="flex items-center gap-3">
               <button
@@ -141,7 +140,7 @@ export default function Navbar({ onToggleSidebar }) {
                 Sign Up
               </button>
             </div>
-          ) :(<span className="text-lg font-medium dark:text-white">ADMIN</span>))}
+          ) : (<span className="text-lg font-medium dark:text-white">ADMIN</span>))}
         </div>
       </div>
     </nav>

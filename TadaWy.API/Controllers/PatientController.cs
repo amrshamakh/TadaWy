@@ -97,5 +97,16 @@ namespace TadaWy.API.Controllers
             await _patientService.RemovePatientAllergyAsync(userId, id);
             return Ok(new { message = "Allergy removed successfully" });
         }
+
+        [Authorize(Roles = "Patient")]
+        [HttpPost("review")]
+        public async Task<IActionResult> SubmitReview(AddReviewDto dto)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            await _patientService.SubmitReviewAsync(userId, dto);
+            return Ok(new { message = "Review submitted successfully" });
+        }
     }
 }

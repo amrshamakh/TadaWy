@@ -11,6 +11,5 @@ namespace TadaWy.Applicaation.DTO.AiDTOS
     {
         public IFormFile File { get; set; } = default!;
 
-        public string UserId { get; set; } = default!;
     }
 }

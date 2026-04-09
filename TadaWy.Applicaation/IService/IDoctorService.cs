@@ -11,5 +11,10 @@ namespace TadaWy.Applicaation.IService
         Task<DoctorProfileDto> GetDoctorProfileAsync(string userId);
         Task UpdateDoctorProfileAsync(string userId, UpdateDoctorProfileDto updateDto);
         Task<string> UploadDoctorImageAsync(string userId, IFormFile image);
+
+        Task<DoctorScheduleDto> GetDoctorScheduleAsync(string userId);
+        Task UpdateDoctorScheduleAsync(string userId, UpdateDoctorScheduleDto dto);
+        Task AddTimeSlotAsync(string userId, AddDoctorTimeSlotDto dto);
+        Task<DoctorScheduleSummaryDto> GetDoctorWeeklySummaryAsync(string userId);
     }
 }

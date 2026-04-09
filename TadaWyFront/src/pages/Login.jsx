@@ -1,24 +1,42 @@
 import { useState } from "react";
 import { assets } from "../assets/assets";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import { loginPatient } from "../modules/patient/api/loginPatientAPi";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
   const { t } = useTranslation();
+  const { login } = useAuth();
   
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login data:", formData);
-    // Add your login logic here
+    setLoading(true);
+    try {
+      console.log("Login data:", formData);
+      const res = await loginPatient(formData);
+      if (res && res.token) {
+        await login(res.token);
+        navigate("/discover");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
+      alert("Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,9 +108,10 @@ dark:to-[#0b2a3a] dark:to-99% flex items-center justify-center p-4">
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+            disabled={loading}
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
           >
-            {t('auth.login.signIn', 'Sign In')}
+            {loading ? "Loading..." : t('auth.login.signIn', 'Sign In')}
           </button>
         </form>
 

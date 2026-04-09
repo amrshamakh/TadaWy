@@ -18,6 +18,8 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.Property(x => x.UserId)
                    .IsRequired();
 
+            builder.HasIndex(x => new { x.UserId, x.CreatedAt });
+
             builder.Property(x => x.ImagePath)
                    .IsRequired()
                    .HasMaxLength(500);

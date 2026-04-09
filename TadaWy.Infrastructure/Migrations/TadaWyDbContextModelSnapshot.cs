@@ -177,9 +177,11 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
 
                     b.ToTable("AiBrainScans");
                 });
@@ -269,6 +271,9 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<string>("AddressDescription")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("AppointmentDurationMinutes")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("BannedAt")
                         .HasColumnType("datetime2");
 
@@ -277,6 +282,9 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.Property<string>("Bio")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CareerStartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -374,6 +382,27 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsWorkingDay")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId", "DayOfWeek");
+
+                    b.ToTable("DoctorSchedules");
+                });
+
+            modelBuilder.Entity("TadaWy.Domain.Entities.DoctorTimeSlot", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DoctorScheduleId")
+                        .HasColumnType("int");
+
                     b.Property<TimeSpan>("EndTime")
                         .HasColumnType("time");
 
@@ -382,9 +411,9 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId", "DayOfWeek");
+                    b.HasIndex("DoctorScheduleId");
 
-                    b.ToTable("DoctorSchedules");
+                    b.ToTable("DoctorTimeSlots");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Identity.ApplicationUser", b =>
@@ -765,6 +794,17 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Navigation("Doctor");
                 });
 
+            modelBuilder.Entity("TadaWy.Domain.Entities.DoctorTimeSlot", b =>
+                {
+                    b.HasOne("TadaWy.Domain.Entities.DoctorSchedule", "DoctorSchedule")
+                        .WithMany("TimeSlots")
+                        .HasForeignKey("DoctorScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DoctorSchedule");
+                });
+
             modelBuilder.Entity("TadaWy.Domain.Entities.Identity.ApplicationUser", b =>
                 {
                     b.OwnsMany("TadaWy.Domain.Entities.AuthModels.RefreshToken", "RefreshTokens", b1 =>
@@ -940,10 +980,9 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Navigation("Schedules");
                 });
 
-            modelBuilder.Entity("TadaWy.Domain.Entities.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("TadaWy.Domain.Entities.DoctorSchedule", b =>
                 {
-                    b.Navigation("Settings")
-                        .IsRequired();
+                    b.Navigation("TimeSlots");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Patient", b =>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MapPin, Crosshair } from "lucide-react";
 import { assets } from "../assets/assets";
+import { registerPatient } from "../modules/patient/api/registerPatientAPi";
 import {
   MapContainer,
   TileLayer,
@@ -11,6 +12,7 @@ import {
 import L from "leaflet";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
 
 /* Fix Leaflet marker icon */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -29,6 +31,7 @@ const FlyTo = ({ position }) => {
 
 const SignUp = () => {
   const { t } = useTranslation();
+  const { login } = useAuth();
   const LOCATION_STORAGE_KEY = "signup_location";
 
   const storedLocation = JSON.parse(
@@ -51,6 +54,7 @@ const SignUp = () => {
   });
 
   const [showMap, setShowMap] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [position, setPosition] = useState(
     storedLocation?.latitude && storedLocation?.longitude
@@ -135,17 +139,31 @@ const SignUp = () => {
     );
   };
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
     }
-    
-    console.log("Signup data:", formData);
+
+    setLoading(true);
+    try {
+      console.log("Signup data:", formData);
+      const res = await registerPatient(formData);
+      if (res && res.token) {
+        await login(res.token);
+        navigate("/discover");
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Failed to sign up");
+    } finally {
+      setLoading(false);
+    }
   };
-  const navigate=useNavigate()
 
   return (
     <div
@@ -357,12 +375,16 @@ dark:to-[#202326] flex items-center justify-center p-4 py-8"
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
+            disabled={loading}
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
           >
-            {t("auth.signup.signUp", "Sign Up")}
+            {loading ? "Loading..." : t("auth.signup.signUp", "Sign Up")}
           </button>
-          <span className="block text-center my-0.5 font-medium text-black dark:text-gray-400">OR</span>
-           <button onClick={()=>navigate('/doctorApplication')}
+          <span className="block text-center my-0.5 font-medium text-black dark:text-gray-400">
+            OR
+          </span>
+          <button
+            onClick={() => navigate("/doctorApplication")}
             type="submit"
             className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
           >
