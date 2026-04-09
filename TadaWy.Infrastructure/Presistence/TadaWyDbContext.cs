@@ -25,6 +25,7 @@ namespace TadaWy.Infrastructure.Presistence
         public DbSet<Allergy> Allergies => Set<Allergy>();
         public DbSet<PatientChronicDisease> PatientChronicDiseases => Set<PatientChronicDisease>();
         public DbSet<PatientAllergy> PatientAllergies => Set<PatientAllergy>();
+        public DbSet<UserSettings> UserSettings => Set<UserSettings>();
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<Doctor> Doctors => Set<Doctor>();

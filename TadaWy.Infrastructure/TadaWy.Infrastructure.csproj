@@ -20,8 +20,4 @@
     <ProjectReference Include="..\TadaWy.Applicaation\TadaWy.Applicaation.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

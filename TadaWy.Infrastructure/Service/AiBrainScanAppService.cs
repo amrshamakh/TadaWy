@@ -12,7 +12,7 @@ using TadaWy.Domain.Entities;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Infrastructure.Presistence;
 
-namespace TadaWy.Applicaation.Services
+namespace TadaWy.Infrastructure.Services
 {
     public class AiBrainScanAppService : IAiBrainScanAppService
     {

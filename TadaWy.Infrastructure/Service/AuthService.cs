@@ -175,7 +175,7 @@ namespace TadaWy.Infrastructure.service
             var user = new ApplicationUser
             {
                 Email = RegisterPatientAsync.Email,
-
+                
                 PhoneNumber = RegisterPatientAsync.PhoneNumber,
                 UserName = RegisterPatientAsync.Email
 
@@ -424,6 +424,8 @@ namespace TadaWy.Infrastructure.service
             };
         }
 
-      
+        
+
+
     }
 }

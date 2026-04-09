@@ -1,0 +1,16 @@
+﻿using TadaWy.Domain.Enums;
+
+namespace TadaWy.Applicaation.DTO.AppointmentDTOs
+{
+    public class AppointmentDto
+    {
+        public string DoctorName { get; set; }
+        public string Specialty { get; set; }
+
+        public DateTime Date { get; set; }
+      //  public TimeSpan Time { get; set; }
+
+        public AppointmentStatus Status { get; set; }
+        public PaymentStatus IsPaid { get; set; }
+    }
+}

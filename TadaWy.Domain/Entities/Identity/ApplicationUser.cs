@@ -7,5 +7,6 @@ namespace TadaWy.Domain.Entities.Identity
     public class ApplicationUser:IdentityUser
     {
         public List<RefreshToken>? RefreshTokens { get; set; }
+        public UserSettings Settings { get; set; }
     }
 }

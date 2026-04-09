@@ -3,10 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
-using TadaWy.Applicaation.Services;
+using TadaWy.Domain.Entities;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
+using TadaWy.Infrastructure.Services;
 
 namespace TadaWy.Infrastructure.Extensions
 {
@@ -20,6 +21,7 @@ namespace TadaWy.Infrastructure.Extensions
             });
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
+            services.AddScoped<IAppointmentService, ApointmentService>();
             services.AddScoped<ILookupService, LookupService>();
             services.AddHttpClient<IGeocodingService, OpenStreetMapGeocodingService>();
             services.AddScoped<IDoctorService,DoctorService>();
