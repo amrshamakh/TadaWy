@@ -10,13 +10,13 @@ const Profile = () => {
 
   const [profileData, setProfileData] = useState({
     personalInfo: {
-      firstName:"John ",
-      lastName:"Doe",
+      firstName: "John ",
+      lastName: "Doe",
       email: "omaralsmnajj@igh.com",
       phoneNumber: "+1 (555) 123-4567",
       age: 32,
       gender: "Male",
-      location:"Cairo",
+      location: "Cairo",
       fullLocation: "",
       latitude: null,
       longitude: null,
