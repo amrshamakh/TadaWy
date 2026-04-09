@@ -1,7 +1,6 @@
 import { useState } from "react";
 import PersonalInfo from "../components/PersonalInfo";
 import MedicalInfo from "../components/MedicalInfo";
-import EmergencyContact from "../components/EmergencyContact";
 import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
@@ -26,9 +25,7 @@ const Profile = () => {
       allergies: { penicillin: false, peanuts: true },
       chronicDiseases: { hypertension: true },
     },
-    emergencyContact: {
-      phoneNumber: "+1 (555) 987-6543",
-    },
+ 
   });
 
   return (
@@ -99,16 +96,6 @@ const Profile = () => {
           }
         />
 
-        <EmergencyContact
-          phone={profileData.emergencyContact.phoneNumber}
-          isEditing={isEditing}
-          onChange={(v) =>
-            setProfileData((p) => ({
-              ...p,
-              emergencyContact: { phoneNumber: v },
-            }))
-          }
-        />
       </div>
     </div>
   );
