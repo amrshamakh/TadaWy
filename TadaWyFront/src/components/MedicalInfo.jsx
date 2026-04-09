@@ -58,34 +58,39 @@ const MedicalInfo = ({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {Object.entries(data.allergies).map(
-              ([k, v]) =>
-                v && (
-                  <div
-                    key={k}
-                    className="flex items-center gap-2 px-3 py-1 w-auto h-9 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle"
-                  >
-                    <img
-                      className="h-4 w-4 align-middle"
-                      src={assets.allergylIcon}
-                      alt=""
-                    />
-                    {k}
-                  </div>
-                ),
-            )}
+            {!isEditing &&
+              Object.entries(data.allergies).map(
+                ([k, v]) =>
+                  v && (
+                    <div
+                      key={k}
+                      className="flex items-center gap-2 px-3 py-1 w-auto h-9 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle"
+                    >
+                      <img
+                        className="h-4 w-4 align-middle"
+                        src={assets.allergylIcon}
+                        alt=""
+                      />
+                      {k}
+                    </div>
+                  ),
+              )}
 
             {isEditing &&
               Object.keys(data.allergies).map((a) => (
                 <label
                   key={a}
-                  className="flex items-center gap-2 px-3 py-1 w-auto h-9 bg-teal-500 text-teal-50 rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle"
+                  className={`flex items-center gap-2 px-3 py-1 w-auto h-9 rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle cursor-pointer border transition-colors ${
+                    data.allergies[a]
+                      ? "bg-red-500 text-white border-red-500"
+                      : "bg-[#F8FAFC] dark:bg-[#3341554D] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <input
                     type="checkbox"
                     checked={data.allergies[a]}
                     onChange={() => toggleAllergy(a)}
-                    className="outline-teal-500"
+                    className="hidden"
                   />
                   {a}
                 </label>
@@ -102,29 +107,35 @@ const MedicalInfo = ({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {Object.entries(data.chronicDiseases).map(
-              ([k, v]) =>
-                v && (
-                  <div
-                    key={k}
-                    className="flex items-center gap-2 px-3 text-[#00BBA7] dark:text-[#00BBA7] py-1 w-auto h-9.5 bg-[#00BBA71A] dark:bg-[#00BBA71A] rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle"
-                  >
-                    <img src={assets.medical1Icon} alt="" />
-                    {k}
-                  </div>
-                ),
-            )}
+            {!isEditing &&
+              Object.entries(data.chronicDiseases).map(
+                ([k, v]) =>
+                  v && (
+                    <div
+                      key={k}
+                      className="flex items-center gap-2 px-3 text-[#00BBA7] dark:text-[#00BBA7] py-1 w-auto h-9.5 bg-[#00BBA71A] dark:bg-[#00BBA71A] rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle"
+                    >
+                      <img src={assets.medical1Icon} alt="" />
+                      {k}
+                    </div>
+                  ),
+              )}
 
             {isEditing &&
               Object.keys(data.chronicDiseases).map((d) => (
                 <label
                   key={d}
-                  className="flex items-center gap-2 px-3 py-1 w-auto h-9 bg-teal-500 text-teal-50 rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle"
+                  className={`flex items-center gap-2 px-3 py-1 w-auto h-9 rounded-lg font-inter font-normal text-[14px] leading-5px tracking-[-0.15px] align-middle cursor-pointer border transition-colors ${
+                    data.chronicDiseases[d]
+                      ? "bg-teal-500 text-white border-teal-500"
+                      : "bg-[#F8FAFC] dark:bg-[#3341554D] text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <input
                     type="checkbox"
                     checked={data.chronicDiseases[d]}
                     onChange={() => toggleDisease(d)}
+                    className="hidden"
                   />
                   {d}
                 </label>
