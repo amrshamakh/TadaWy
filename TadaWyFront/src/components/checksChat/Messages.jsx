@@ -7,6 +7,13 @@ const Messages = ({ messages, isLoading, messagesEndRef }) => {
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-50 max-h-80">
       {messages.map((msg) => (
+        msg.type === "divider" ? (
+          <div key={msg.id} className="flex items-center gap-2 py-1">
+            <span className="h-px bg-[#CBD5E1] flex-1" />
+            <span className="text-xs font-semibold text-[#94A3B8]">{msg.text}</span>
+            <span className="h-px bg-[#CBD5E1] flex-1" />
+          </div>
+        ) : (
         <div
           key={msg.id}
           className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"} gap-2`}
@@ -43,6 +50,7 @@ const Messages = ({ messages, isLoading, messagesEndRef }) => {
             </div>
           )}
         </div>
+        )
       ))}
 
       {isLoading && (

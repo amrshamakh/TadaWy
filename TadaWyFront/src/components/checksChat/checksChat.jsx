@@ -23,6 +23,20 @@ export default function MedicalChecksChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 
+  const buildSessionDivider = () => {
+    const now = new Date();
+    return {
+      id: Date.now() + 2,
+      type: "divider",
+      text: now.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+    };
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -47,6 +61,7 @@ export default function MedicalChecksChat() {
         setMessages((prev) => [
           ...prev,
           { id: Date.now() + 1, type: "bot", text: resultText },
+          buildSessionDivider(),
         ]);
         setShowUpload(true);
       } catch (err) {
@@ -58,6 +73,7 @@ export default function MedicalChecksChat() {
             type: "bot",
             text: "Sorry, I was unable to analyze the image. Please try again.",
           },
+          buildSessionDivider(),
         ]);
         setShowUpload(true);
       } finally {

@@ -35,7 +35,7 @@ export default function Navbar({ onToggleSidebar }) {
   const displayEmail = user ? user.email : "";
 
   return (
-    <nav className="bg-white dark:bg-[#0F172A] border-b border-gray-200 dark:border-gray-700">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0F172A] border-b border-gray-200 dark:border-gray-700">
       <div className="w-full px-4 md:px-8 lg:px-16">
         <div className="flex justify-between items-center h-16">
           {/* Left section with menu toggle and logo */}
