@@ -5,7 +5,7 @@ import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
 import infoIcon from "../../assets/info.svg";
 
-/** April 2026 sample data (month index 3). */
+// Mock data for appointments list
 const SAMPLE_APPOINTMENTS = [
   {
     clinicKey: "3",

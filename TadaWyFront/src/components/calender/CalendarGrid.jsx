@@ -89,7 +89,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
           </button>
           {showLegend && (
             <div
-              className="absolute left-0 top-9 z-30 bg-white dark:bg-[#1E293B] border-2 border-[#14B8A6] rounded-xl px-4 py-3 shadow-lg min-w-[200px]"
+              className="absolute left-[calc(100%+8px)] top-0 z-30 bg-white dark:bg-[#1E293B] border-2 border-[#14B8A6] rounded-xl px-4 py-3 shadow-lg min-w-[200px]"
             >
               <div className="flex items-center gap-3 mb-2.5">
                 <span className="inline-flex w-5 h-5 shrink-0 rounded-md border-2 border-[#14B8A6] bg-white dark:bg-[#0F172A]" />
@@ -159,11 +159,11 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
             "relative w-full aspect-square rounded-xl border-2 flex items-center justify-center cursor-pointer text-base font-medium transition-colors ";
 
           if (isSelected) {
-            cellClass += "bg-[#00BBA7] border-[#00BBA7] text-white ";
+            cellClass += "bg-[#E6FFFA] border-[#00BBA7] text-gray-800 dark:text-white ";
           } else if (isToday) {
-            cellClass += "bg-[#E6FFFA] border-[#00BBA7] text-[#0F766E] ";
+            cellClass += "bg-transparent border-[#00BBA7] text-gray-800 dark:text-white ";
           } else if (status === "upcoming") {
-            cellClass += "bg-white dark:bg-[#0F172A] border-[#00BBA7] text-gray-800 dark:text-white ";
+            cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
           } else if (status === "missed") {
             cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
           } else if (status === "completed") {
@@ -186,9 +186,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
                 {showDot && (
                   <span
                     aria-hidden
-                    className={`absolute bottom-2 ${status === "upcoming" ? "left-2" : "left-1/2 -translate-x-1/2"} w-1.5 h-1.5 rounded-full ${
-                      isSelected ? "bg-white" : dotClass
-                    }`}
+                    className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${dotClass}`}
                   />
                 )}
               </button>

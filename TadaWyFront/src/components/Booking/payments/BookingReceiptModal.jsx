@@ -22,7 +22,7 @@ export default function BookingReceiptModal({
     >
       <div className="receipt-shell" ref={receiptRef}>
         <div className="receipt-header" style={{ justifyContent: "center", gap: 12 }}>
-          <img src={receiptLogo} alt="TadaWy" className="receipt-logo" style={{ width: 42, height: 42 }} />
+          <img src={receiptLogo} alt="TadaWy" className="receipt-logo" style={{ width: 80, height: "auto" }} />
           <div className="receipt-header-content" style={{ textAlign: "center" }}>
             <h4 className="receipt-title">PAYMENT RECEIPT</h4>
             <p className="receipt-number">Receipt No. {receiptNumber}</p>
@@ -64,12 +64,16 @@ export default function BookingReceiptModal({
             <p className="receipt-value receipt-highlight" style={{ color: "#E3B341" }}>
               Pay at the Clinic
             </p>
+            <p className="receipt-label">Receipt Date</p>
+            <p className="receipt-value">
+              {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).replace(/,/g, "")} - {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+            </p>
           </div>
         </div>
 
         <div className="receipt-footer" style={{ borderTop: "none", paddingTop: 2 }}>
           <p className="receipt-price" style={{ marginBottom: 8 }}>
-            <span>Price</span>
+            <span style={{ fontSize: "1.15rem", fontWeight: 600 }}>Price</span>
             <strong style={{ fontWeight: 600 }}>{appointmentCost} L.E</strong>
           </p>
           <div className="receipt-actions">

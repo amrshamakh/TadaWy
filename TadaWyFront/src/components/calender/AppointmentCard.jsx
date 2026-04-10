@@ -9,7 +9,7 @@ export default function AppointmentCard({ clinic, doctor, specialty, date, time,
 
   const statusLabel = isUpcoming ? "Upcoming" : isMissed ? "Missed" : "Completed";
   const statusPillClass = isUpcoming
-    ? "text-[#0F766E] border-[#0F766E] bg-transparent"
+    ? "text-[#00BBA7] border-[#00BBA7] bg-transparent"
     : isMissed
       ? "text-[#DC2626] border-[#DC2626] bg-transparent"
       : "text-[#64748B] border-[#64748B] bg-transparent";
@@ -50,16 +50,16 @@ export default function AppointmentCard({ clinic, doctor, specialty, date, time,
       </div>
 
       {expanded && (
-        <div className="border-t border-gray-200 dark:border-[#334155] px-4 py-3 flex justify-end gap-2 bg-[#F3F4F6] dark:bg-[#1E293B]/80">
+        <div className="border-t border-gray-200 dark:border-[#334155] px-4 py-3 flex justify-end gap-2 bg-gray-50 dark:bg-[#1E293B] rounded-b-xl">
           <button
             type="button"
-            className="px-4 py-1.5 text-sm rounded-full border border-[#EF4444] text-[#EF4444] hover:bg-red-50 active:bg-red-100 dark:hover:bg-red-950/40 transition-colors"
+            className="px-4 py-1.5 text-sm rounded-full border border-gray-200 bg-white text-[#EF4444] hover:bg-red-50 active:bg-red-100 dark:bg-[#0F172A] dark:border-[#334155] transition-colors"
           >
             Cancel
           </button>
           <button
             type="button"
-            className="px-4 py-1.5 text-sm rounded-full border border-[#00BBA7] text-[#00BBA7] hover:bg-teal-50 active:bg-teal-100 dark:hover:bg-teal-950/30 transition-colors"
+            className="px-4 py-1.5 text-sm rounded-full border border-gray-200 bg-white text-[#00BBA7] hover:bg-teal-50 active:bg-teal-100 dark:bg-[#0F172A] dark:border-[#334155] transition-colors"
           >
             Details
           </button>
