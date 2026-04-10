@@ -44,6 +44,8 @@
 /* Doctor Card */
 .booking-doctor-card {
   display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .booking-doctor-header {
@@ -99,20 +101,20 @@
 }
 
 .booking-doctor-tags {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
 }
 
 .booking-doctor-tag {
   display: flex;
   flex-direction: column;
-  padding: 8px 12px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #E5E7EB;
   background: #FFFFFF;
-  width: fit-content;
-  min-width: 180px;
+  width: 100%;
 }
 
 .booking-doctor-tag-label {
@@ -149,6 +151,14 @@
 
 .booking-location-desc {
   margin: 0 0 0 32px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7c8da4;
+  line-height: 1.6;
+}
+
+.booking-about-desc {
+  margin: 0;
   font-size: 0.95rem;
   font-weight: 500;
   color: #7c8da4;
@@ -434,6 +444,285 @@
   cursor: not-allowed;
 }
 
+.booking-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.2);
+  backdrop-filter: blur(5px);
+  z-index: 99;
+}
+
+.booking-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90vw, 640px);
+  z-index: 100;
+  border-radius: 16px;
+}
+
+/* Payment method modal */
+.payment-method-modal {
+  background: #ffffff;
+  border: 1px solid #D1D5DB;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+  padding: 28px 28px 20px;
+}
+
+.payment-modal-title {
+  margin: 0 0 20px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.payment-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.payment-method-option {
+  border: 1px solid #D1D5DB;
+  border-radius: 12px;
+  background: #F8FAFC;
+  padding: 22px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-method-option:hover {
+  border-color: #00BBA7;
+  transform: translateY(-1px);
+}
+
+.payment-method-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.payment-method-icon-offline {
+  background-color: #FBE7A3;
+  color: #A16207;
+}
+
+.payment-method-icon-online {
+  background-color: #B8F1EC;
+  color: #0F766E;
+}
+
+.payment-method-name {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.payment-method-subtitle {
+  font-size: 1.35rem;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+/* Receipt modal */
+.receipt-modal {
+  width: min(92vw, 520px);
+}
+
+.receipt-shell {
+  border-radius: 16px;
+  border: 1px solid #D1D5DB;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+}
+
+.receipt-header {
+  background: #00BBA7;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+}
+
+.receipt-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ffffff;
+  padding: 2px;
+}
+
+.receipt-header-content {
+  color: #ffffff;
+}
+
+.receipt-title {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+}
+
+.receipt-number {
+  margin: 2px 0 0;
+  font-size: 0.72rem;
+  opacity: 0.95;
+}
+
+.receipt-body {
+  padding: 14px 16px;
+}
+
+.receipt-section {
+  margin-bottom: 10px;
+}
+
+.receipt-label {
+  margin: 0 0 2px;
+  font-size: 0.78rem;
+  color: #6B7280;
+}
+
+.receipt-value {
+  margin: 0 0 5px;
+  font-size: 0.92rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.receipt-row-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.receipt-divider {
+  border-top: 1px dashed #D1D5DB;
+  margin: 12px 0;
+}
+
+.receipt-highlight {
+  color: #D4A017;
+}
+
+.receipt-footer {
+  border-top: 1px solid #E5E7EB;
+  padding: 12px 16px 14px;
+}
+
+.receipt-price {
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #4B5563;
+}
+
+.receipt-price strong {
+  font-size: 1.75rem;
+  color: #111827;
+}
+
+.receipt-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.receipt-btn {
+  border-radius: 8px;
+  height: 40px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.receipt-btn-print {
+  border: 1px solid #D1D5DB;
+  background: #ffffff;
+  color: #1F2937;
+}
+
+.receipt-btn-done {
+  border: none;
+  background: #00BBA7;
+  color: #ffffff;
+}
+
+/* Success modal */
+.success-modal {
+  width: min(88vw, 520px);
+}
+
+.success-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  min-height: 250px;
+  background: #ffffff;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+}
+
+.success-fireworks-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  inset: 0;
+}
+
+.success-content {
+  position: relative;
+  z-index: 1;
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.success-check {
+  width: 66px;
+  height: 66px;
+  border-radius: 999px;
+  background: #00BBA7;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.success-content h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.success-content p {
+  margin: 6px 0 0;
+  color: #6B7280;
+  font-size: 1.55rem;
+  font-weight: 500;
+}
+
 @media (max-width: 1024px) {
   .booking-layout {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1.15fr);
@@ -471,5 +760,55 @@
 
   .booking-time-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .booking-modal {
+    width: min(94vw, 94vw);
+  }
+
+  .payment-method-modal {
+    padding: 20px 16px;
+  }
+
+  .payment-modal-title {
+    font-size: 1.6rem;
+  }
+
+  .payment-method-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-method-name {
+    font-size: 1.2rem;
+  }
+
+  .payment-method-subtitle {
+    font-size: 1rem;
+  }
+
+  .receipt-title {
+    font-size: 1.2rem;
+  }
+
+  .receipt-row-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .receipt-price strong {
+    font-size: 1.3rem;
+  }
+
+  .success-card,
+  .success-content {
+    min-height: 200px;
+  }
+
+  .success-content h3 {
+    font-size: 1.5rem;
+  }
+
+  .success-content p {
+    font-size: 1.1rem;
   }
 }

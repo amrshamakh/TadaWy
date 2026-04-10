@@ -54,6 +54,7 @@ const DoctorApplication = () => {
     longitude: storedLocation?.longitude || null,
     addressDetails: "",
     specialization: "",
+    yearsOfExperience: "",
     cv: null,
    
   });
@@ -316,6 +317,20 @@ dark:to-[#202326] flex items-center justify-center p-4 py-8">
               placeholder={t('auth.doctor.specializationPlaceholder', 'e.g., Cardiology, Pediatrics')}
               className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
               required
+            />
+          </div>
+
+          {/* File Uploads */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Years of experience:
+            </label>
+            <input
+              type="number"
+              min="0"
+              value={formData.yearsOfExperience}
+              onChange={(e) => handleChange("yearsOfExperience", e.target.value)}
+              className="w-28 px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
             />
           </div>
 

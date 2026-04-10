@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onClose, menuItems }) {
           
           transition-all duration-300 ease-in-out
           overflow-y-auto
-          fixed inset-y-0 left-0 w-64 z-40
+          fixed top-16 bottom-0 left-0 w-64 z-30
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:static lg:translate-x-0
           ${isOpen ? "lg:w-64" : "lg:w-0"}

@@ -38,8 +38,8 @@ export default function DiscoverPage() {
   // Filter still uses raw English values from assets so logic stays consistent
   const filteredClinics = useMemo(() => {
     return clinicsData.filter((clinic) => {
-      const translatedName    = t(`discover.clinicsData.${clinic.id}.name`,    { defaultValue: clinic.name });
-      const translatedDoctor  = t(`discover.clinicsData.${clinic.id}.doctor`,  { defaultValue: clinic.doctor });
+      const translatedName = t(`discover.clinicsData.${clinic.id}.name`, { defaultValue: clinic.name });
+      const translatedDoctor = t(`discover.clinicsData.${clinic.id}.doctor`, { defaultValue: clinic.doctor });
       const translatedSpecialty = t(`discover.clinicsData.${clinic.id}.specialty`, { defaultValue: clinic.specialty });
 
       const matchesSearch =
@@ -168,21 +168,19 @@ export default function DiscoverPage() {
             <div className="flex gap-2 p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 w-9 h-9 rounded-xl transition-colors flex justify-center items-center ${
-                  viewMode === "grid"
-                    ? "bg-teal-500 text-white border"
-                    : "text-gray-600 hover:bg-gray-200 border border-gray-300"
-                }`}
+                className={`p-2 w-9 h-9 rounded-xl transition-colors flex justify-center items-center ${viewMode === "grid"
+                  ? "bg-teal-500 text-white border"
+                  : "text-gray-600 hover:bg-gray-200 border border-gray-300"
+                  }`}
               >
                 <Grid className="w-4 h-4 dark:text-white" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 w-9 h-9 rounded-xl transition-colors ${
-                  viewMode === "list"
-                    ? "bg-teal-500 text-white"
-                    : "text-gray-600 hover:bg-gray-200 border border-gray-300"
-                }`}
+                className={`p-2 w-9 h-9 rounded-xl transition-colors ${viewMode === "list"
+                  ? "bg-teal-500 text-white"
+                  : "text-gray-600 hover:bg-gray-200 border border-gray-300"
+                  }`}
               >
                 <List className="w-5 h-5 dark:text-white" />
               </button>
@@ -228,12 +226,9 @@ export default function DiscoverPage() {
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold dark:text-white text-gray-800 mb-1">
-                      {getClinicField(clinic, "name")}
-                    </h3>
-                    <p className="text-sm dark:text-gray-400 text-gray-600 mb-2">
+                    <h3 className="text-lg font-semibold dark:text-white text-gray-800 mb-2">
                       {getClinicField(clinic, "doctor")}
-                    </p>
+                    </h3>
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
@@ -245,16 +240,10 @@ export default function DiscoverPage() {
                         • {getClinicField(clinic, "specialty")}
                       </span>
                     </div>
-                    <div className="flex items-start gap-2 mb-2">
+                    <div className="flex items-start gap-2 mb-4">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
                       <p className="text-sm text-gray-600 dark:text-gray-400">
                         {getClinicField(clinic, "address")}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {clinic.phone}
                       </p>
                     </div>
                     <button

@@ -47,7 +47,7 @@ const DoctorLayout = () => {
   const doctorEmail = doctorHeader?.email || "ahmedkhaled@gmail.com";
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen pt-16">
       <Navbar
         onToggleSidebar={handleToggleSidebar}
         userDisplayName={doctorDisplayName}

@@ -11,11 +11,12 @@ import {
 
 export default function DoctorAppointements() {
   const [activeDay, setActiveDay] = useState("All Days");
+  const [pickedDate, setPickedDate] = useState(null);
   const [activePayment, setActivePayment] = useState("All Payments");
 
   const filtered = appointments.filter((apt) => {
-    const dayMatch =
-      activeDay === "All Days" || apt.date === DAY_TO_DATE[activeDay];
+    const dateByDay = activeDay === "All Days" ? null : DAY_TO_DATE[activeDay];
+    const dayMatch = pickedDate ? apt.date === pickedDate : (activeDay === "All Days" || apt.date === dateByDay);
 
     const paymentMatch =
       activePayment === "All Payments" || apt.payment === activePayment;
@@ -33,7 +34,18 @@ export default function DoctorAppointements() {
   return (
     <div className="min-h-screen  p-6">
       <StatsRow />
-      <DayFilter activeDay={activeDay} onDayChange={setActiveDay} />
+      <DayFilter
+        activeDay={activeDay}
+        selectedDateKey={pickedDate}
+        onDayChange={(day) => {
+          setActiveDay(day);
+          setPickedDate(day === "All Days" ? null : DAY_TO_DATE[day] || null);
+        }}
+        onDatePick={(dateStr) => {
+          setPickedDate(dateStr);
+          if (dateStr) setActiveDay("All Days");
+        }}
+      />
       <PaymentFilter
         activePayment={activePayment}
         onPaymentChange={setActivePayment}

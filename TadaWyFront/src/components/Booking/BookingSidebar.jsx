@@ -1,5 +1,12 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import infoIcon from "../../assets/info.svg";
+import html2canvas from "html2canvas";
+import { useAuth } from "../../context/AuthContext";
+import PaymentMethodModal from "./payments/PaymentMethodModal";
+import BookingReceiptModal from "./payments/BookingReceiptModal";
+import BookingSuccessModal from "./payments/BookingSuccessModal";
+import { getVisibleDays, toReadableDateTime } from "./utils/bookingDate";
 import "./Booking.css";
 
 const TIME_OPTIONS = [
@@ -12,40 +19,86 @@ const TIME_OPTIONS = [
 ];
 
 export default function BookingSidebar({ doctor }) {
+  const { user } = useAuth();
+  const baseDate = useMemo(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  }, []);
   const [dateOffset, setDateOffset] = useState(0);
-  const [selectedDateStr, setSelectedDateStr] = useState("1 Mar");
+  const [selectedDateStr, setSelectedDateStr] = useState(
+    `${baseDate.getDate()} ${baseDate.toLocaleDateString("en-US", { month: "short" })}`
+  );
   const [selectedTime, setSelectedTime] = useState(null);
+  const [activeModal, setActiveModal] = useState(null);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const receiptRef = useRef(null);
 
-  const getDays = () => {
-    const baseDate = new Date(2026, 1, 28);
-    const daysArr = [];
-    for (let i = 0; i < 5; i++) {
-      const d = new Date(baseDate);
-      d.setDate(baseDate.getDate() + dateOffset + i);
-      const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
-      const dateNum = d.getDate();
-      const monthName = d.toLocaleDateString("en-US", { month: "short" });
-      daysArr.push({
-        day: dayName,
-        date: `${dateNum} ${monthName}`,
-      });
-    }
-    return daysArr;
-  };
+  const appointmentCost = doctor?.price || 150;
 
-  const currentDays = getDays();
+  const currentDays = useMemo(() => getVisibleDays(baseDate, dateOffset), [baseDate, dateOffset]);
 
   const handlePrev = () => setDateOffset(prev => prev - 1);
   const handleNext = () => setDateOffset(prev => prev + 1);
 
   const handleBook = () => {
     if (!doctor || !selectedDateStr || !selectedTime) return;
-    console.log(
-      `Booking appointment with ${doctor.doctor} on ${selectedDateStr} at ${selectedTime}`
-    );
+    setActiveModal("payment");
   };
 
   const isDisabled = !selectedDateStr || !selectedTime;
+
+  const patientName = useMemo(() => {
+    if (!user) return "John Doe";
+    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+    return fullName || user.name || "John Doe";
+  }, [user]);
+
+  const patientEmail = user?.email || "JohnDoe@gmail.com";
+
+  const appointmentDateValue = useMemo(
+    () => toReadableDateTime(selectedDateStr, selectedTime),
+    [selectedDateStr, selectedTime]
+  );
+
+  const receiptNumber = useMemo(
+    () => `RX-${Date.now().toString().slice(-10)}`,
+    []
+  );
+
+  const handlePaymentSelection = (method) => {
+    if (method === "offline") {
+      setActiveModal("receipt");
+      return;
+    }
+    setActiveModal(null);
+  };
+
+  const handlePrintReceipt = async () => {
+    if (!receiptRef.current || isPrinting) return;
+    setIsPrinting(true);
+    try {
+      const canvas = await html2canvas(receiptRef.current, {
+        backgroundColor: "#ffffff",
+        scale: 2,
+      });
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = `receipt-${Date.now()}.png`;
+      link.click();
+    } catch (error) {
+      console.error("Failed to export receipt image", error);
+    } finally {
+      setIsPrinting(false);
+    }
+  };
+
+  const handleReceiptDone = () => setActiveModal("success");
+
+  useEffect(() => {
+    if (activeModal !== "success") return;
+    const timer = setTimeout(() => setActiveModal(null), 2600);
+    return () => clearTimeout(timer);
+  }, [activeModal]);
 
   return (
     <aside className="booking-card booking-sidebar">
@@ -56,7 +109,10 @@ export default function BookingSidebar({ doctor }) {
 
       <div className="booking-sidebar-content">
         <div className="booking-sidebar-section">
-          <p className="booking-sidebar-label">Select Day/Date:</p>
+          <p className="booking-sidebar-label flex items-center gap-1.5">
+            Select Day/Date:
+            <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0" />
+          </p>
           <div className="booking-date-carousel">
             <button type="button" className="booking-carousel-nav" onClick={handlePrev} aria-label="Previous options">
               <ArrowLeft size={20} />
@@ -104,7 +160,7 @@ export default function BookingSidebar({ doctor }) {
           <div className="booking-price">
             <span className="booking-price-label">Appointment Cost:</span>
             <span className="booking-price-box">
-              <span className="booking-price-value">150</span>
+              <span className="booking-price-value">{appointmentCost}</span>
               <span className="booking-price-currency"> L.E</span>
             </span>
           </div>
@@ -113,6 +169,7 @@ export default function BookingSidebar({ doctor }) {
               type="button"
               className="booking-submit-btn"
               onClick={handleBook}
+              disabled={isDisabled}
             >
               <Calendar size={18} className="booking-submit-icon" />
               Book Appointment
@@ -120,6 +177,34 @@ export default function BookingSidebar({ doctor }) {
           </div>
         </div>
       </div>
+
+      {activeModal && (
+        <div
+          className="fixed inset-0 z-[98]"
+          style={{ backgroundColor: "rgba(255,255,255,0.78)" }}
+        />
+      )}
+
+      {activeModal === "payment" && (
+        <PaymentMethodModal onSelectMethod={handlePaymentSelection} />
+      )}
+
+      {activeModal === "receipt" && (
+        <BookingReceiptModal
+          receiptRef={receiptRef}
+          receiptNumber={receiptNumber}
+          patientName={patientName}
+          patientEmail={patientEmail}
+          doctor={doctor}
+          appointmentDateValue={appointmentDateValue}
+          appointmentCost={appointmentCost}
+          isPrinting={isPrinting}
+          onPrintReceipt={handlePrintReceipt}
+          onDone={handleReceiptDone}
+        />
+      )}
+
+      {activeModal === "success" && <BookingSuccessModal />}
     </aside>
   );
 }
