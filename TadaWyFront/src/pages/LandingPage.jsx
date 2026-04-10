@@ -10,9 +10,9 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       <div className="max-h-screen w-full">
-        
+
         {/* Hero Section */}
-        
+
         <Hero />
       </div>
 

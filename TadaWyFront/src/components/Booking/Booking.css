@@ -44,6 +44,8 @@
 /* Doctor Card */
 .booking-doctor-card {
   display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .booking-doctor-header {
@@ -99,20 +101,20 @@
 }
 
 .booking-doctor-tags {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
 }
 
 .booking-doctor-tag {
   display: flex;
   flex-direction: column;
-  padding: 8px 12px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #E5E7EB;
   background: #FFFFFF;
-  width: fit-content;
-  min-width: 180px;
+  width: 100%;
 }
 
 .booking-doctor-tag-label {
@@ -149,6 +151,14 @@
 
 .booking-location-desc {
   margin: 0 0 0 32px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7c8da4;
+  line-height: 1.6;
+}
+
+.booking-about-desc {
+  margin: 0;
   font-size: 0.95rem;
   font-weight: 500;
   color: #7c8da4;
