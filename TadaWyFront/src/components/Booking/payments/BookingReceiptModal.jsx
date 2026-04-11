@@ -22,7 +22,7 @@ export default function BookingReceiptModal({
     >
       <div className="receipt-shell" ref={receiptRef}>
         <div className="receipt-header" style={{ justifyContent: "center", gap: 12 }}>
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+          <div className="w-16 h-16 flex items-center justify-center">
             <img className="w-16 h-16" src={assets.logo} alt="logo" />
           </div>
           <div className="receipt-header-content" style={{ textAlign: "center" }}>
