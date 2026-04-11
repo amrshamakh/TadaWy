@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 import infoIcon from "../../assets/info.svg";
 import html2canvas from "html2canvas";
@@ -20,6 +21,7 @@ const TIME_OPTIONS = [
 
 export default function BookingSidebar({ doctor }) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const baseDate = useMemo(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -67,7 +69,19 @@ export default function BookingSidebar({ doctor }) {
 
   const handlePaymentSelection = (method) => {
     if (method === "offline") {
-      setActiveModal("receipt");
+      setActiveModal("success");
+      return;
+    }
+    if (method === "online") {
+      navigate("/online-payment", {
+        state: {
+          doctor,
+          patientName,
+          patientEmail,
+          appointmentDateValue,
+          appointmentCost,
+        },
+      });
       return;
     }
     setActiveModal(null);
@@ -92,11 +106,11 @@ export default function BookingSidebar({ doctor }) {
     }
   };
 
-  const handleReceiptDone = () => setActiveModal("success");
+  const handleReceiptDone = () => setActiveModal(null);
 
   useEffect(() => {
     if (activeModal !== "success") return;
-    const timer = setTimeout(() => setActiveModal(null), 2600);
+    const timer = setTimeout(() => setActiveModal("receipt"), 1200);
     return () => clearTimeout(timer);
   }, [activeModal]);
 
