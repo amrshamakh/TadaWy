@@ -96,7 +96,7 @@ export default function BookingSidebar({ doctor }) {
 
   useEffect(() => {
     if (activeModal !== "success") return;
-    const timer = setTimeout(() => setActiveModal(null), 2600);
+    const timer = setTimeout(() => setActiveModal(null), 1200);
     return () => clearTimeout(timer);
   }, [activeModal]);
 

@@ -1,8 +1,10 @@
 import { LuShield } from "react-icons/lu";
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 
 const AccountInfo = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm">
@@ -33,7 +35,10 @@ const AccountInfo = () => {
           <span className="dark:text-white">1</span>
         </div>
 
-        <button className="mt-2 px-3 py-2 border border-[#E2E8F0] dark:border-[#334155] rounded-xl text-lg hover:bg-gray-50 dark:hover:bg-[#334155] font-medium font-[Inter] dark:text-white">
+        <button 
+          onClick={() => navigate('/change-password')}
+          className="mt-2 px-3 py-2 border border-[#E2E8F0] dark:border-[#334155] rounded-xl text-lg hover:bg-gray-50 dark:hover:bg-[#334155] font-medium font-[Inter] dark:text-white"
+        >
           {t('settings.accountInfo.changePassword')}
         </button>
       </div>

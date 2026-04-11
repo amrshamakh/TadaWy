@@ -1,5 +1,5 @@
 import { Printer } from "lucide-react";
-import receiptLogo from "../../../assets/TadaWy Logo.svg";
+import { assets } from "../../../assets/assets";
 
 export default function BookingReceiptModal({
   receiptRef,
@@ -22,7 +22,9 @@ export default function BookingReceiptModal({
     >
       <div className="receipt-shell" ref={receiptRef}>
         <div className="receipt-header" style={{ justifyContent: "center", gap: 12 }}>
-          <img src={receiptLogo} alt="TadaWy" className="receipt-logo" style={{ width: 80, height: "auto" }} />
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+            <img className="w-16 h-16" src={assets.logo} alt="logo" />
+          </div>
           <div className="receipt-header-content" style={{ textAlign: "center" }}>
             <h4 className="receipt-title">PAYMENT RECEIPT</h4>
             <p className="receipt-number">Receipt No. {receiptNumber}</p>
