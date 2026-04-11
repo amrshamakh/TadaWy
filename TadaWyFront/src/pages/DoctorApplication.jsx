@@ -62,8 +62,7 @@ const DoctorApplication = () => {
     addressDetails: "",
     specializationId: "",
     specializationName: "",
-    yearsOfExperience: "",
-    dateOfBirth: "",
+    careerStartDate: "",
     cv: null,
   });
 
@@ -181,16 +180,7 @@ const DoctorApplication = () => {
 
     setIsSubmitting(true);
     try {
-      // Calculate CareerStartDate or use a default based on yearsOfExperience
-      const careerStartDate = new Date();
-      careerStartDate.setFullYear(careerStartDate.getFullYear() - (parseInt(formData.yearsOfExperience) || 0));
-      
-      const payload = {
-        ...formData,
-        careerStartDate: careerStartDate.toISOString().split('T')[0]
-      };
-      
-      await registerDoctor(payload);
+      await registerDoctor(formData);
       navigate("/application-pending");
     } catch (err) {
       console.error("Application failed:", err);
@@ -312,12 +302,12 @@ const DoctorApplication = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('auth.signup.dateOfBirth', 'Date of Birth')}
+                {t('auth.doctor.careerStartDate', 'Career Start Date')}
               </label>
               <input
                 type="date"
-                value={formData.dateOfBirth}
-                onChange={(e) => handleChange("dateOfBirth", e.target.value)}
+                value={formData.careerStartDate}
+                onChange={(e) => handleChange("careerStartDate", e.target.value)}
                 className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                 required
               />
@@ -327,7 +317,7 @@ const DoctorApplication = () => {
           {/* Location Picker */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('profile.personalInfo.location', 'Location')}
+              {t('profile.personalInfo.location', 'Clinic Location')}
             </label>
             <div className="relative cursor-pointer" onClick={() => setShowMap(true)}>
               <input
@@ -339,6 +329,21 @@ const DoctorApplication = () => {
               <MapPin className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('auth.doctor.addressDetails', 'Address Description')}
+            </label>
+            <input
+              type="text"
+              value={formData.addressDetails}
+              onChange={(e) => handleChange("addressDetails", e.target.value)}
+              placeholder={t('auth.doctor.addressPlaceholder', 'Building number, street name, floor, etc.')}
+              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+              required
+            />
+          </div>
+
 
           {/* Specialization Searchable Select */}
           <div className="relative" ref={specRef}>
@@ -394,20 +399,6 @@ const DoctorApplication = () => {
                 </ul>
               </div>
             )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Years of experience:
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={formData.yearsOfExperience}
-              onChange={(e) => handleChange("yearsOfExperience", e.target.value)}
-              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-              required
-            />
           </div>
 
           <div>

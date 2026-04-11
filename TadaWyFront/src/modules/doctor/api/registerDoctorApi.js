@@ -20,11 +20,6 @@ export function registerDoctor(data) {
   formData.append("SpecializationId", data.specializationId);
   formData.append("CareerStartDate", data.careerStartDate);
   
-  // Date of Birth
-  if (data.dateOfBirth) {
-    formData.append("DateOfBirth", data.dateOfBirth);
-  }
-
   // Files
   if (data.cv) {
     formData.append("VerificationDocument", data.cv);
