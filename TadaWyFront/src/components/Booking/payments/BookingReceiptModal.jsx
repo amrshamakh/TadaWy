@@ -12,23 +12,21 @@ export default function BookingReceiptModal({
   isPrinting,
   onPrintReceipt,
   onDone,
+  isOnline = false,
+  isInline = false,
 }) {
-  return (
-    <div
-      className="booking-modal receipt-modal"
-      role="dialog"
-      aria-modal="true"
-      style={{ width: "min(90vw, 450px)", zIndex: 101 }}
-    >
-      <div className="receipt-shell" ref={receiptRef}>
-        <div className="receipt-header" style={{ justifyContent: "center", gap: 12 }}>
-          <div className="w-16 h-16 flex items-center justify-center">
+  const innerContent = (
+    <div className="receipt-shell" ref={receiptRef}>
+        <div className="receipt-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
+          <div className="w-16 h-16 flex items-center justify-center shrink-0">
+            {/* The user only didn't want the white circle. Keep logo. */}
             <img className="w-16 h-16" src={assets.logo} alt="logo" />
           </div>
-          <div className="receipt-header-content" style={{ textAlign: "center" }}>
+          <div className="receipt-header-content shrink-0" style={{ textAlign: "center", flex: 1 }}>
             <h4 className="receipt-title">PAYMENT RECEIPT</h4>
             <p className="receipt-number">Receipt No. {receiptNumber}</p>
           </div>
+          <div className="w-16 h-16 shrink-0" />
         </div>
 
         <div className="receipt-body">
@@ -62,14 +60,26 @@ export default function BookingReceiptModal({
           <div className="receipt-section">
             <p className="receipt-label">Appointment Date</p>
             <p className="receipt-value">{appointmentDateValue}</p>
-            <p className="receipt-label">Payment method</p>
-            <p className="receipt-value receipt-highlight" style={{ color: "#E3B341" }}>
-              Pay at the Clinic
-            </p>
-            <p className="receipt-label">Receipt Date</p>
-            <p className="receipt-value">
-              {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).replace(/,/g, "")} - {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
-            </p>
+            <div className="receipt-row-grid" style={{ marginTop: '10px' }}>
+              <div>
+                <p className="receipt-label">Payment method</p>
+                <p className="receipt-value receipt-highlight" style={{ color: isOnline ? "#00BBA7" : "#E3B341" }}>
+                  {isOnline ? "Paid Online" : "Pay at the Clinic"}
+                </p>
+              </div>
+              {isOnline && (
+                <div>
+                   <p className="receipt-label">Payment Reference</p>
+                   <p className="receipt-value">11111111111</p>
+                </div>
+              )}
+            </div>
+            <div style={{ marginTop: '10px' }}>
+              <p className="receipt-label">Receipt Date</p>
+              <p className="receipt-value">
+                {new Date().toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric" }).replace(/,/g, "")} - {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -94,6 +104,20 @@ export default function BookingReceiptModal({
           </div>
         </div>
       </div>
+  );
+
+  if (isInline) {
+    return <div className="w-[450px] max-w-full">{innerContent}</div>;
+  }
+
+  return (
+    <div
+      className="booking-modal receipt-modal"
+      role="dialog"
+      aria-modal="true"
+      style={{ width: "min(90vw, 450px)", zIndex: 101 }}
+    >
+      {innerContent}
     </div>
   );
 }

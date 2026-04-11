@@ -1,15 +1,9 @@
 import { Check } from "lucide-react";
 import successFireworks from "../../../assets/booking-success-fireworks.png";
 
-export default function BookingSuccessModal() {
-  return (
-    <div
-      className="booking-modal success-modal"
-      role="dialog"
-      aria-modal="true"
-      style={{ width: "min(85vw, 420px)", zIndex: 101 }}
-    >
-      <div className="success-card" style={{ minHeight: 240 }}>
+export default function BookingSuccessModal({ isInline = false }) {
+  const innerContent = (
+      <div className="success-card" style={{ minHeight: 240, width: isInline ? '420px' : 'auto', maxWidth: '100%' }}>
         <img
           src={successFireworks}
           alt=""
@@ -24,6 +18,20 @@ export default function BookingSuccessModal() {
           <p style={{ fontWeight: 400, fontSize: "1.2rem" }}>Thank you for Booking with Us</p>
         </div>
       </div>
+  );
+
+  if (isInline) {
+    return innerContent;
+  }
+
+  return (
+    <div
+      className="booking-modal success-modal"
+      role="dialog"
+      aria-modal="true"
+      style={{ width: "min(85vw, 420px)", zIndex: 101 }}
+    >
+      {innerContent}
     </div>
   );
 }

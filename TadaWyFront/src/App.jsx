@@ -8,6 +8,7 @@ import Signout from "./pages/Login";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ChangePassword from "./pages/ChangePassword";
+import OnlinePayment from "./components/Booking/payments/OnlinePayment";
 import DoctorApplication from "./pages/DoctorApplication";
 import DiscoverPage from "./pages/DiscoverPage";
 import Booking from "./pages/Booking";
@@ -28,6 +29,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/online-payment" element={<OnlinePayment />} />
 
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
