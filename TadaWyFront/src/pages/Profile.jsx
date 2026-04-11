@@ -318,78 +318,30 @@ const Profile = () => {
               medicalInfo: { ...p.medicalInfo, bloodType: v },
             }))
           }
-          onAddAllergy={(name) =>
+          toggleAllergy={(a) =>
             setProfileData((p) => ({
               ...p,
               medicalInfo: {
                 ...p.medicalInfo,
-                allergies: { ...p.medicalInfo.allergies, [name]: true },
+                allergies: {
+                  ...p.medicalInfo.allergies,
+                  [a]: !p.medicalInfo.allergies[a],
+                },
               },
             }))
           }
-          onRemoveAllergy={(name) =>
+          toggleDisease={(d) =>
             setProfileData((p) => ({
               ...p,
               medicalInfo: {
                 ...p.medicalInfo,
-                allergies: { ...p.medicalInfo.allergies, [name]: false },
+                chronicDiseases: {
+                  ...p.medicalInfo.chronicDiseases,
+                  [d]: !p.medicalInfo.chronicDiseases[d],
+                },
               },
             }))
           }
-          onAddDisease={(name) =>
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: {
-                ...p.medicalInfo,
-                chronicDiseases: { ...p.medicalInfo.chronicDiseases, [name]: true },
-              },
-            }))
-          }
-          onRemoveDisease={(name) =>
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: {
-                ...p.medicalInfo,
-                chronicDiseases: { ...p.medicalInfo.chronicDiseases, [name]: false },
-              },
-            }))
-          }
-          onCreateAllergy={async (name) => {
-            await createLookupAllergy(name);
-            // Refresh lookup list so the new item appears
-            const updated = await getAllAllergies().catch(() => []);
-            const normalized = (Array.isArray(updated) ? updated : []).map((item) => ({
-              id: item.id ?? item.Id,
-              name: item.name ?? item.Name,
-            }));
-            setAllAllergies(normalized);
-            // Auto-select the newly created allergy
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: {
-                ...p.medicalInfo,
-                allergies: { ...p.medicalInfo.allergies, [name]: true },
-              },
-            }));
-          }}
-          onCreateDisease={async (name) => {
-            await createLookupChronicDisease(name);
-            // Refresh lookup list so the new item appears
-            const updated = await getAllChronicDiseases().catch(() => []);
-            const normalized = (Array.isArray(updated) ? updated : []).map((item) => ({
-              id: item.id ?? item.Id,
-              name: item.name ?? item.Name,
-            }));
-            setAllDiseases(normalized);
-            // Auto-select the newly created disease
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: {
-                ...p.medicalInfo,
-                chronicDiseases: { ...p.medicalInfo.chronicDiseases, [name]: true },
-              },
-            }));
-          }}
         />
       </div>
     </div>
