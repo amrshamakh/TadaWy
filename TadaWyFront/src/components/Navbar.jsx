@@ -40,14 +40,14 @@ export default function Navbar({ onToggleSidebar }) {
         <div className="flex justify-between items-center h-16">
           {/* Left section with menu toggle and logo */}
           <div className="flex items-center gap-3">
-            {/* Sidebar Toggle Button - Only visible on desktop when logged in */}
-            {isLoggedIn && onToggleSidebar && (
+            {/* Sidebar Toggle Button */}
+            {onToggleSidebar && (
               <button
                 onClick={onToggleSidebar}
                 className="flex p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors"
                 aria-label="Toggle sidebar"
               >
-                <FiMenu size={20} />
+                <FiMenu size={24} />
               </button>
             )}
 
