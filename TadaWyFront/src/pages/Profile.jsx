@@ -15,6 +15,8 @@ import {
   removePatientChronicDisease,
   getAllAllergies,
   getAllChronicDiseases,
+  createLookupAllergy,
+  createLookupChronicDisease,
 } from "../modules/patient/api/profilePatientAPi";
 
 const Profile = () => {
@@ -308,36 +310,86 @@ const Profile = () => {
         <MedicalInfo
           data={profileData.medicalInfo}
           isEditing={isEditing}
+          allAllergies={allAllergies}
+          allDiseases={allDiseases}
           onBloodChange={(v) =>
             setProfileData((p) => ({
               ...p,
               medicalInfo: { ...p.medicalInfo, bloodType: v },
             }))
           }
-          toggleAllergy={(a) =>
+          onAddAllergy={(name) =>
             setProfileData((p) => ({
               ...p,
               medicalInfo: {
                 ...p.medicalInfo,
-                allergies: {
-                  ...p.medicalInfo.allergies,
-                  [a]: !p.medicalInfo.allergies[a],
-                },
+                allergies: { ...p.medicalInfo.allergies, [name]: true },
               },
             }))
           }
-          toggleDisease={(d) =>
+          onRemoveAllergy={(name) =>
             setProfileData((p) => ({
               ...p,
               medicalInfo: {
                 ...p.medicalInfo,
-                chronicDiseases: {
-                  ...p.medicalInfo.chronicDiseases,
-                  [d]: !p.medicalInfo.chronicDiseases[d],
-                },
+                allergies: { ...p.medicalInfo.allergies, [name]: false },
               },
             }))
           }
+          onAddDisease={(name) =>
+            setProfileData((p) => ({
+              ...p,
+              medicalInfo: {
+                ...p.medicalInfo,
+                chronicDiseases: { ...p.medicalInfo.chronicDiseases, [name]: true },
+              },
+            }))
+          }
+          onRemoveDisease={(name) =>
+            setProfileData((p) => ({
+              ...p,
+              medicalInfo: {
+                ...p.medicalInfo,
+                chronicDiseases: { ...p.medicalInfo.chronicDiseases, [name]: false },
+              },
+            }))
+          }
+          onCreateAllergy={async (name) => {
+            await createLookupAllergy(name);
+            // Refresh lookup list so the new item appears
+            const updated = await getAllAllergies().catch(() => []);
+            const normalized = (Array.isArray(updated) ? updated : []).map((item) => ({
+              id: item.id ?? item.Id,
+              name: item.name ?? item.Name,
+            }));
+            setAllAllergies(normalized);
+            // Auto-select the newly created allergy
+            setProfileData((p) => ({
+              ...p,
+              medicalInfo: {
+                ...p.medicalInfo,
+                allergies: { ...p.medicalInfo.allergies, [name]: true },
+              },
+            }));
+          }}
+          onCreateDisease={async (name) => {
+            await createLookupChronicDisease(name);
+            // Refresh lookup list so the new item appears
+            const updated = await getAllChronicDiseases().catch(() => []);
+            const normalized = (Array.isArray(updated) ? updated : []).map((item) => ({
+              id: item.id ?? item.Id,
+              name: item.name ?? item.Name,
+            }));
+            setAllDiseases(normalized);
+            // Auto-select the newly created disease
+            setProfileData((p) => ({
+              ...p,
+              medicalInfo: {
+                ...p.medicalInfo,
+                chronicDiseases: { ...p.medicalInfo.chronicDiseases, [name]: true },
+              },
+            }));
+          }}
         />
       </div>
     </div>

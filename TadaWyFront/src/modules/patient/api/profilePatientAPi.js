@@ -43,3 +43,12 @@ export function getAllAllergies() {
 export function getAllChronicDiseases() {
   return ApiClient.get("/Lookup/chronic-diseases");
 }
+
+// ─── Create new lookup items ────────────────────────────────
+export function createLookupAllergy(name) {
+  return ApiClient.post(`/Lookup/allergies?name=${encodeURIComponent(name)}`);
+}
+
+export function createLookupChronicDisease(name) {
+  return ApiClient.post(`/Lookup/chronic-diseases?name=${encodeURIComponent(name)}`);
+}
