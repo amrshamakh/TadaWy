@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { assets } from "../../assets/assets";
 
 const DoctorLayout = () => {
+  const { t, i18n } = useTranslation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [doctorHeader, setDoctorHeader] = useState(() => {
     try {
@@ -18,11 +20,11 @@ const DoctorLayout = () => {
 
   const doctorMenu = useMemo(
     () => [
-      { to: "", icon: assets.profileIcon, label: "Profile", end: true },
-      { to: "appointments", icon: assets.homeIcon, label: "Appointments", end: false },
-      { to: "schedule", icon: assets.calenderIcon, label: "My Schedule", end: false },
+      { to: "", icon: assets.profileIcon, label: t("doctorDashboard.profile.title"), end: true },
+      { to: "appointments", icon: assets.homeIcon, label: t("doctorDashboard.appointments.title"), end: false },
+      { to: "schedule", icon: assets.calenderIcon, label: t("doctorDashboard.schedule.title"), end: false },
     ],
-    []
+    [t]
   );
 
   const handleToggleSidebar = () => {
@@ -43,7 +45,7 @@ const DoctorLayout = () => {
     return () => window.removeEventListener("doctorProfileUpdated", refresh);
   }, []);
 
-  const doctorDisplayName = doctorHeader?.displayName || "Dr. Ahmed Khaled";
+  const doctorDisplayName = doctorHeader?.displayName || `${i18n.language === "ar" ? "د." : "Dr."} Ahmed Khaled`;
   const doctorEmail = doctorHeader?.email || "ahmedkhaled@gmail.com";
 
   return (

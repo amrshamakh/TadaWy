@@ -13,6 +13,7 @@ const BannedDoctors = () => {
   const [search, setSearch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [toastMessage, setToastMessage] = useState("");
 
   const filtered = doctors.filter((d) => {
     if (d.status !== "Banned") return false;
@@ -79,7 +80,16 @@ const BannedDoctors = () => {
         onReject={() => {}}
         onBan={banDoctor}
         onUnban={handleUnban}
+        onActionSuccess={(message) => {
+          setToastMessage(message);
+          setTimeout(() => setToastMessage(""), 2600);
+        }}
       />
+      {toastMessage && (
+        <div className="fixed top-4 right-4 z-[70] rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm shadow-lg">
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 };

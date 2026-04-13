@@ -1,19 +1,22 @@
 // components/WeeklyAvailability.jsx
 import DayRow from "./DayRow";
+import { useTranslation } from "react-i18next";
 
 const DAYS = [
-  { name: "Friday",    key: "fri" },
-  { name: "Saturday",  key: "sat" },
-  { name: "Sunday",    key: "sun" },
-  { name: "Monday",    key: "mon" },
-  { name: "Tuesday",   key: "tue" },
-  { name: "Wednesday", key: "wed" },
-  { name: "Thursday",  key: "thu" },
+  { key: "fri" },
+  { key: "sat" },
+  { key: "sun" },
+  { key: "mon" },
+  { key: "tue" },
+  { key: "wed" },
+  { key: "thu" },
 ];
 
 export default function WeeklyAvailability({ schedule, onToggle, onUpdateSlot, onAddSlot, onRemoveSlot }) {
+  const { t } = useTranslation();
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-[#334155] shadow-sm p-6">
       <div className="flex items-center gap-2 mb-5">
         <span className="text-teal-500">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -23,14 +26,14 @@ export default function WeeklyAvailability({ schedule, onToggle, onUpdateSlot, o
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
         </span>
-        <h2 className="font-bold text-gray-800 text-[15px]">Weekly Availability</h2>
+        <h2 className="font-bold text-gray-800 dark:text-slate-200 text-[15px]">{t("doctorDashboard.schedule.availability")}</h2>
       </div>
 
       <div>
-        {DAYS.map(({ name, key }) => (
+        {DAYS.map(({ key }) => (
           <DayRow
             key={key}
-            name={name}
+            name={t(`doctorDashboard.schedule.days.${key}`)}
             dayData={schedule[key]}
             onToggle={(val) => onToggle(key, val)}
             onUpdateSlot={(idx, field, val) => onUpdateSlot(key, idx, field, val)}

@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Calender from "./pages/Calender";
 import LandingPage from "./pages/LandingPage";
 import Layout from "../Layout";
@@ -8,6 +10,8 @@ import Signout from "./pages/Login";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import ChangePassword from "./pages/ChangePassword";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import OnlinePayment from "./components/Booking/payments/OnlinePayment";
 import DoctorApplication from "./pages/DoctorApplication";
 import DiscoverPage from "./pages/DiscoverPage";
@@ -18,10 +22,18 @@ import BannedDoctors from "./admin/BannedDoctors";
 import MedicalChecksChat from "./components/checksChat/checksChat";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
-import DoctorAppointments from "./components/doctor/appointements/DoctorAppointements";
+import DoctorAppointments from "./components/doctor/appointments/DoctorAppointments";
 import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 
 const App = () => {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const lang = i18n.language || 'en';
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  }, [i18n.language]);
+
   return (
     <div className="max-h-[70vh]">
       <Routes>
@@ -29,6 +41,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/online-payment" element={<OnlinePayment />} />
 
         <Route path="/" element={<Layout />}>

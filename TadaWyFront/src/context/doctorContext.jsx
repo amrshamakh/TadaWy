@@ -1,5 +1,4 @@
 import { createContext, useContext, useState } from "react";
-import i18n from "../i18n"; // adjust path to your i18n config
 
 const mockDoctors = [
   {
@@ -17,6 +16,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 3, Building 5",
     clinicDetails_ar: "الطابق 3، المبنى 5",
     cv: "ahmed_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "323145",
@@ -33,6 +34,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 1, Building 2",
     clinicDetails_ar: "الطابق 1، المبنى 2",
     cv: "mohamed_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "1234",
@@ -49,6 +52,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 2, Building 8",
     clinicDetails_ar: "الطابق 2، المبنى 8",
     cv: "khalid_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "231234",
@@ -65,6 +70,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 4, Building 3",
     clinicDetails_ar: "الطابق 4، المبنى 3",
     cv: "tawfik_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "1234-2",
@@ -81,6 +88,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 5, Building 1",
     clinicDetails_ar: "الطابق 5، المبنى 1",
     cv: "maram_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "323145-2",
@@ -97,6 +106,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 6, Building 7",
     clinicDetails_ar: "الطابق 6، المبنى 7",
     cv: "maiada_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "231234-2",
@@ -113,6 +124,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 2, Building 4",
     clinicDetails_ar: "الطابق 2، المبنى 4",
     cv: "menna_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
   {
     id: "323145-3",
@@ -129,6 +142,8 @@ const mockDoctors = [
     clinicDetails_en: "Floor 3, Building 9",
     clinicDetails_ar: "الطابق 3، المبنى 9",
     cv: "mahmoud_cv.pdf",
+    banReason: "",
+    rejectReason: "",
   },
 ];
 
@@ -137,23 +152,34 @@ const DoctorsContext = createContext(null);
 export function DoctorsProvider({ children }) {
   const [doctors, setDoctors] = useState(mockDoctors);
 
-  const updateStatus = (doctor, newStatus) => {
+  const updateStatus = (doctor, newStatus, reason = "") => {
     setDoctors((prev) =>
-      prev.map((d) => (d.id === doctor.id ? { ...d, status: newStatus } : d))
+      prev.map((d) => {
+        if (d.id !== doctor.id) return d;
+        if (newStatus === "Rejected") {
+          return { ...d, status: newStatus, rejectReason: reason.trim() };
+        }
+        if (newStatus === "Approved") {
+          return { ...d, status: newStatus, rejectReason: "", banReason: "" };
+        }
+        return { ...d, status: newStatus };
+      })
     );
   };
 
-  const banDoctor = (doctor) => {
+  const banDoctor = (doctor, reason = "") => {
     setDoctors((prev) =>
-      prev.map((d) => (d.id === doctor.id ? { ...d, status: "Banned" } : d))
+      prev.map((d) =>
+        d.id === doctor.id
+          ? { ...d, status: "Banned", banReason: reason.trim() }
+          : d
+      )
     );
-    // Use i18n.t() directly outside of a component
-    alert(i18n.t("admin.doctorContext.banAlert", { name: doctor.name }));
   };
 
   const unbanDoctor = (doctor) => {
     setDoctors((prev) =>
-      prev.map((d) => (d.id === doctor.id ? { ...d, status: "Pending" } : d))
+      prev.map((d) => (d.id === doctor.id ? { ...d, status: "Pending", banReason: "" } : d))
     );
   };
 

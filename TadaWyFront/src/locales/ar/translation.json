@@ -46,11 +46,17 @@
   "profile": {
     "title": "ملفي الشخصي",
     "subtitle": "إدارة معلوماتك الشخصية والطبية",
+    "edit": "تعديل",
+    "save": "حفظ",
     "personalInfo": {
       "title": "المعلومات الشخصية",
       "subtitle": "تفاصيلك الشخصية الأساسية",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
+      "nameMap": {
+        "Ahmed": "أحمد",
+        "Khaled": "خالد"
+      },
       "email": "البريد الإلكتروني",
       "phoneNumber": "رقم الهاتف",
       "age": "العمر",
@@ -114,6 +120,7 @@
       "specialization": "التخصص",
       "specializationPlaceholder": "مثل: أمراض القلب، طب الأطفال",
       "uploadCV": "ارفع سيرتك الذاتية متضمنة الخبرات، الشهادات، وبطاقة الهوية",
+      "yearsOfExperience": "سنوات الخبرة:",
       "uploadID": "ارفع الهوية",
       "uploadFile": "ارفع ملفك",
       "uploadImage": "ارفع صورتك",
@@ -130,7 +137,8 @@
     "settings": "الإعدادات",
     "notifications": "الإشعارات",
     "signOut": "تسجيل الخروج",
-    "search": "ابحث عن عيادة أو طبيب أو تخصص..."
+    "search": "ابحث عن عيادة أو طبيب أو تخصص...",
+    "doctorDashboard": "لوحة تحكم الطبيب"
   },
   "common": {
     "save": "حفظ",
@@ -361,11 +369,23 @@
     "cvUploaded": "السيرة الذاتية المرفوعة",
     "emailAddress": "البريد الإلكتروني",
     "specialization": "التخصص",
+    "banReason": "سبب الحظر",
+    "noBanReason": "لم يتم إدخال سبب",
+    "banReasonPrompt": "اكتب سبب حظر هذا الطبيب",
+    "banReasonPlaceholder": "اكتب سبب الحظر...",
+    "rejectReason": "سبب الرفض",
+    "noRejectReason": "لم يتم إدخال سبب",
+    "rejectReasonPrompt": "اكتب سبب رفض هذا الطبيب",
+    "rejectReasonPlaceholder": "اكتب سبب الرفض...",
+    "reasonRequired": "يجب إدخال السبب.",
     "actions": {
       "approve": "موافقة",
       "reject": "رفض",
       "ban": "حظر",
-      "unban": "رفع الحظر"
+      "unban": "رفع الحظر",
+      "cancel": "إلغاء",
+      "confirmBan": "تأكيد الحظر",
+      "confirmReject": "تأكيد الرفض"
     },
     "status": {
       "Approved": "معتمد",
@@ -375,20 +395,271 @@
     }
   },
   "doctorContext": {
-    "banAlert": "تم حظر الطبيب {{name}} بنجاح."
+    "banAlert": "تم حظر الطبيب {{name}} بنجاح.",
+    "rejectAlert": "تم رفض الطبيب {{name}} بنجاح."
+    },
+    "common": {
+      "am": "صباحاً",
+      "pm": "مساءً",
+      "reviews": "التقييمات"
+    }
+  },
+  "calendar": {
+    "title": "تقويمي",
+    "subtitle": "عرض وإدارة مواعيدك الطبية",
+    "selectDate": "اختر تاريخاً",
+    "selectDateHint": "اختر تاريخاً لعرض المواعيد",
+    "noAppointments": "لا توجد مواعيد",
+    "allAppointments": "جميع المواعيد",
+    "status": {
+      "completed": "مكتمل",
+      "upcoming": "قادم",
+      "missed": "فائت"
+    },
+    "legend": {
+      "today": "اليوم",
+      "pressedOn": "تم الضغط",
+      "appointment": "موعد",
+      "paid": "تم الدفع",
+      "notPaid": "لم يتم الدفع"
+    }
+  },
+  "doctorDashboard": {
+    "profile": {
+      "title": "ملف الطبيب الشخصي",
+      "verified": "تم التحقق",
+      "id": "المعرف",
+      "specialty": "التخصص",
+      "patients": "المرضى",
+      "reviews": "التقييمات",
+      "experience": "سنوات الخبرة",
+      "experienceSubtitle": "{{count}} سنوات",
+      "about": "نبذة عني",
+      "location": "الموقع",
+      "locationDetails": "تفاصيل الموقع",
+      "locationPlaceholder": "اختر موقعك",
+      "locationFetchError": "تعذر الحصول على تفاصيل الموقع",
+      "locationPermissionDenied": "تم رفض إذن الوصول للموقع",
+      "email": "البريد الإلكتروني",
+      "telephone": "رقم الهاتف",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "save": "حفظ",
+      "edit": "تعديل"
+    },
+    "appointments": {
+      "title": "المواعيد",
+      "filterByDay": "تصفية حسب اليوم:",
+      "allDays": "كل الأيام",
+      "paymentStatus": "حالة الدفع:",
+      "total": "إجمالي المواعيد",
+      "confirmed": "تم التأكيد",
+      "cancelled": "ملغاة",
+      "today": "اليوم",
+      "viewProfile": "عرض الملف",
+      "cancel": "إلغاء",
+      "phone": "رقم الهاتف:",
+      "payment": "الدفع:",
+      "details": "تفاصيل الموعد",
+      "allPayments": "جميع المدفوعات",
+      "paidOnline": "دفع أونلاين",
+      "payAtClinic": "دفع في العيادة",
+      "stats": {
+        "all": "جميع المواعيد",
+        "confirmed": "تم التأكيد",
+        "pending": "قيد الانتظار",
+        "cancelled": "ملغاة",
+        "today": "اليوم"
+      },
+      "details": "التفاصيل"
+    },
+    "schedule": {
+      "title": "الجدول الأسبوعي",
+      "availability": "التوافر الأسبوعي",
+      "duration": "مدة الموعد",
+      "durationSubtitle": "كل موعد سيستغرق هذه المدة",
+      "fee": "رسوم الموعد",
+      "feeSubtitle": "الرسوم المعروضة للمرضى عند الحجز",
+      "summary": "ملخص الأسبوع",
+      "totalSessions": "إجمالي الجلسات",
+      "totalRevenue": "إجمالي الإيرادات",
+      "averageFee": "متوسط الرسوم",
+      "workingDays": "أيام العمل",
+      "totalAppts": "المواعيد/الأسبوع",
+      "apptDuration": "مدة الموعد",
+      "perAppt": "لكل موعد",
+      "minutes": "دقيقة",
+      "le": "ج.م",
+      "dayOff": "يوم عطلة",
+      "addSlot": "+ إضافة فترة زمنية",
+      "slot": "فترة",
+      "slots": "فترات",
+      "days": {
+        "fri": "الجمعة",
+        "sat": "السبت",
+        "sun": "الأحد",
+        "mon": "الاثنين",
+        "tue": "الثلاثاء",
+        "wed": "الأربعاء",
+        "thu": "الخميس"
+      }
+    }
+  },
+  "booking": {
+    "doctorCard": {
+      "specialization": "التخصص",
+      "experience": "سنوات الخبرة",
+      "phone": "رقم الهاتف",
+      "rating": "التقييم العام",
+      "about": "نبذة عن الطبيب",
+      "notAvailable": "غير متوفر",
+      "aboutPlaceholder": "يقع في الطابق الخامس من مبنى ميديكال بلازا، مع سهولة الوصول من الشارع الرئيسي. تتوفر مواقف للسيارات في مرآب المبنى."
+    },
+    "locationCard": {
+      "title": "الموقع",
+      "address": "العنوان",
+      "locationDetailsPlaceholder": "يقع في الطابق الخامس من مبنى ميديكال بلازا، مع سهولة الوصول من الشارع الرئيسي. تتوفر مواقف للسيارات في مرآب المبنى."
+    },
+    "reviewsSection": {
+      "title": "التقييمات",
+      "overallRating": "التقييم العام",
+      "reviews": [
+        {
+          "author": "جون سميث",
+          "date": "15 فبراير 2026",
+          "text": "رعاية ممتازة وطاقم عمل محترف للغاية. أخذ الدكتور الوقت الكافي لشرح كل شيء بوضوح."
+        },
+        {
+          "author": "ماري ديفيس",
+          "date": "10 فبراير 2026",
+          "text": "أفضل طبيب قلب زرته على الإطلاق. أنصح به بشدة!"
+        },
+        {
+          "author": "روبرت براون",
+          "date": "5 فبراير 2026",
+          "text": "فحص دقيق للغاية. كان وقت الانتظار طويلاً بعض الشيء لكنه استحق ذلك."
+        }
+      ]
+    },
+    "sidebar": {
+      "title": "احجز موعدك",
+      "selectDay": "اختر اليوم/التاريخ:",
+      "availableTime": "الأوقات المتاحة:",
+      "cost": "تكلفة الموعد:",
+      "bookBtn": "احجز الموعد",
+      "currency": "ج.م"
+    },
+    "modals": {
+      "payment": {
+        "title": "اختر وسيلة الدفع:",
+        "offline": "دفع في العيادة",
+        "offlineSub": "ادفع عند وصولك للعيادة",
+        "online": "دفع أونلاين",
+        "onlineSub": "فيزا / محفظة إلكترونية"
+      },
+      "receipt": {
+        "title": "وصل الدفع",
+        "receiptNo": "وصل رقم",
+        "patientName": "اسم المريض",
+        "patientEmail": "البريد الإلكتروني للمريض",
+        "doctorName": "اسم الطبيب",
+        "doctorLocation": "موقع الطبيب",
+        "specialization": "التخصص",
+        "phone": "رقم الهاتف",
+        "locationDetails": "تفاصيل موقع الطبيب",
+        "locationDetailsPlaceholder": "يقع في الطابق الخامس من مبنى ميديكال بلازا، مع سهولة الوصول من الشارع الرئيسي. تتوفر مواقف للسيارات في مرآب المبنى.",
+        "appointmentDate": "تاريخ الموعد",
+        "paymentMethod": "وسيلة الدفع",
+        "paidOnline": "دفع أونلاين",
+        "payAtClinic": "دفع في العيادة",
+        "paymentRef": "رقم المرجع",
+        "receiptDate": "تاريخ الوصل",
+        "price": "السعر",
+        "printBtn": "طباعة الوصل",
+        "exporting": "جاري التصدير...",
+        "doneBtn": "تم"
+      },
+      "success": {
+        "title": "تم الحجز بنجاح",
+        "subTitle": "شكراً لحجزك معنا"
+      },
+      "onlinePayment": {
+        "billingTitle": "تفاصيل الفاتورة",
+        "fullNameLabel": "الاسم الكامل",
+        "fullNamePlaceholder": "أدخل اسمك الكامل",
+        "addressLabel": "عنوان الفاتورة",
+        "addressPlaceholder": "أدخل العنوان",
+        "cityLabel": "المدينة",
+        "cityPlaceholder": "المدينة",
+        "zipLabel": "الرمز البريدي",
+        "zipPlaceholder": "الرمز البريدي",
+        "countryLabel": "الدولة",
+        "countryPlaceholder": "الدولة",
+        "paymentTitle": "معلومات الدفع",
+        "cardLabel": "رقم البطاقة",
+        "cardPlaceholder": "xxxx xxxx xxxx",
+        "nameOnCardLabel": "الاسم على البطاقة",
+        "nameOnCardPlaceholder": "الاسم الكامل",
+        "expiryLabel": "تاريخ الانتهاء",
+        "expiryPlaceholder": "MM/YY",
+        "cvvLabel": "رمز الأمان (CVV)",
+        "cvvPlaceholder": "كود",
+        "confirmBtn": "تأكيد",
+        "cancel": "إلغاء"
+      }
+    }
+  },
+  "checksChat": {
+    "title": "الفحوصات الطبية",
+    "subtitle": "ارفع الصور للتحليل",
+    "welcome": "مرحبًا! أنا مساعد تداوي للفحوصات الطبية. ارفع صور الأشعة الطبية للمخ (أشعة سينية، رنين، مقطعية...) وسأعرض لك نتيجة مفصلة.",
+    "diagnosis": "التشخيص",
+    "analyzeError": "عذرًا، لم أتمكن من تحليل الصورة. حاول مرة أخرى.",
+    "uploadHint": "ارفع الأشعة الطبية لتحليل مدعوم بالذكاء الاصطناعي. هذا لا يغني عن التشخيص الطبي المتخصص.",
+    "uploadButton": "رفع صورة الأشعة",
+    "waitingForResults": "جاري انتظار النتيجة",
+    "closeAria": "إغلاق الشات الطبي",
+    "openAria": "فتح الشات الطبي"
+  },
+  "common": {
+    "am": "ص",
+    "pm": "م",
+    "reviews": "التقييمات"
+  },
+  "changePassword": {
+    "title": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirm": "تأكيد",
+    "success": "تم تحديث كلمة المرور بنجاح",
+    "errors": {
+      "passwordMismatch": "كلمتا المرور غير متطابقتين!"
+    }
+  },
+  "forgotPassword": {
+    "title": "نسيت كلمة المرور",
+    "subtitle": "أدخل بريدك الإلكتروني وسنرسل لك تعليمات إعادة تعيين كلمة المرور.",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "name@example.com",
+    "sendButton": "إرسال رابط إعادة التعيين",
+    "sentSuccess": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني."
+  },
+  "resetPassword": {
+    "title": "إعادة تعيين كلمة المرور",
+    "subtitle": "قم بتعيين كلمة المرور الجديدة للمتابعة.",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "name@example.com",
+    "newPassword": "كلمة المرور الجديدة",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+    "passwordHint": "يجب أن تكون كلمة المرور 8 أحرف على الأقل وتحتوي على حروف وأرقام.",
+    "confirm": "إعادة تعيين كلمة المرور",
+    "success": "تمت إعادة تعيين كلمة المرور بنجاح.",
+    "errors": {
+      "weakPassword": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
+      "passwordMismatch": "كلمتا المرور غير متطابقتين!"
+    }
   }
-},
-"calendar": {
-  "title": "تقويمي",
-  "subtitle": "عرض وإدارة مواعيدك الطبية",
-  "selectDate": "اختر تاريخاً",
-  "selectDateHint": "اختر تاريخاً لعرض المواعيد",
-  "noAppointments": "لا توجد مواعيد",
-  "allAppointments": "جميع المواعيد",
-  "status": {
-    "completed": "مكتمل",
-    "upcoming": "قادم"
-  }
-}
-
 }

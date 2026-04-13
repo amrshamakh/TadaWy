@@ -97,12 +97,12 @@ dark:to-[#0b2a3a] dark:to-99% flex items-center justify-center p-4">
 
           {/* Forgot Password */}
           <div className="text-right">
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="text-sm text-teal-500 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-medium"
             >
               {t('auth.login.forgotPassword', 'Forgot password?')}
-            </a>
+            </Link>
           </div>
 
           {/* Submit Button */}

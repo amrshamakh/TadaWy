@@ -4,23 +4,28 @@ import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 import infoIcon from "../../assets/info.svg";
 import html2canvas from "html2canvas";
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "react-i18next";
 import PaymentMethodModal from "./payments/PaymentMethodModal";
 import BookingReceiptModal from "./payments/BookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
 import { getVisibleDays, toReadableDateTime } from "./utils/bookingDate";
 import "./Booking.css";
 
-const TIME_OPTIONS = [
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "1:00 PM",
-  "2:00 PM",
-  "3:00 PM",
+const getTimeOptions = (t) => [
+  `10:00 ${t("common.am")}`,
+  `11:00 ${t("common.am")}`,
+  `12:00 ${t("common.pm")}`,
+  `1:00 ${t("common.pm")}`,
+  `2:00 ${t("common.pm")}`,
+  `3:00 ${t("common.pm")}`,
 ];
+
+// Note: If you want to translate the times themselves (e.g. 10 صباحاً), 
+// you can use t() logic here. For now keeping numbers but labels could be translated.
 
 export default function BookingSidebar({ doctor }) {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const baseDate = useMemo(() => {
     const today = new Date();
@@ -28,7 +33,7 @@ export default function BookingSidebar({ doctor }) {
   }, []);
   const [dateOffset, setDateOffset] = useState(0);
   const [selectedDateStr, setSelectedDateStr] = useState(
-    `${baseDate.getDate()} ${baseDate.toLocaleDateString("en-US", { month: "short" })}`
+    `${baseDate.getDate()} ${baseDate.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`
   );
   const [selectedTime, setSelectedTime] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
@@ -37,7 +42,9 @@ export default function BookingSidebar({ doctor }) {
 
   const appointmentCost = doctor?.price || 150;
 
-  const currentDays = useMemo(() => getVisibleDays(baseDate, dateOffset), [baseDate, dateOffset]);
+  const currentDays = useMemo(() => getVisibleDays(baseDate, dateOffset, i18n.language), [baseDate, dateOffset, i18n.language]);
+
+  const TIME_OPTIONS = useMemo(() => getTimeOptions(t), [t]);
 
   const handlePrev = () => setDateOffset(prev => prev - 1);
   const handleNext = () => setDateOffset(prev => prev + 1);
@@ -58,8 +65,8 @@ export default function BookingSidebar({ doctor }) {
   const patientEmail = user?.email || "JohnDoe@gmail.com";
 
   const appointmentDateValue = useMemo(
-    () => toReadableDateTime(selectedDateStr, selectedTime),
-    [selectedDateStr, selectedTime]
+    () => toReadableDateTime(selectedDateStr, selectedTime, i18n.language),
+    [selectedDateStr, selectedTime, i18n.language]
   );
 
   const receiptNumber = useMemo(
@@ -118,14 +125,14 @@ export default function BookingSidebar({ doctor }) {
     <aside className="booking-card booking-sidebar">
       <div className="booking-sidebar-header-bar">
         <Calendar size={20} className="booking-sidebar-header-icon" />
-        <h3 className="booking-sidebar-header-title">Book your appointment</h3>
+        <h3 className="booking-sidebar-header-title">{t("booking.sidebar.title")}</h3>
       </div>
 
       <div className="booking-sidebar-content">
         <div className="booking-sidebar-section">
           <p className="booking-sidebar-label flex items-center gap-1.5">
-            Select Day/Date:
-            <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0" />
+            {t("booking.sidebar.selectDay")}
+            <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0 dark:invert dark:opacity-90" />
           </p>
           <div className="booking-date-carousel">
             <button type="button" className="booking-carousel-nav" onClick={handlePrev} aria-label="Previous options">
@@ -154,7 +161,7 @@ export default function BookingSidebar({ doctor }) {
         </div>
 
         <div className="booking-sidebar-section">
-          <p className="booking-sidebar-label">Available Times:</p>
+          <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
           <div className="booking-time-grid">
             {TIME_OPTIONS.map((time) => (
               <button
@@ -172,10 +179,10 @@ export default function BookingSidebar({ doctor }) {
 
         <div className="booking-sidebar-footer">
           <div className="booking-price">
-            <span className="booking-price-label">Appointment Cost:</span>
+            <span className="booking-price-label">{t("booking.sidebar.cost")}</span>
             <span className="booking-price-box">
               <span className="booking-price-value">{appointmentCost}</span>
-              <span className="booking-price-currency"> L.E</span>
+              <span className="booking-price-currency"> {t("booking.sidebar.currency")}</span>
             </span>
           </div>
           <div className="booking-submit-wrapper">
@@ -186,7 +193,7 @@ export default function BookingSidebar({ doctor }) {
               disabled={isDisabled}
             >
               <Calendar size={18} className="booking-submit-icon" />
-              Book Appointment
+              {t("booking.sidebar.bookBtn")}
             </button>
           </div>
         </div>
@@ -194,8 +201,7 @@ export default function BookingSidebar({ doctor }) {
 
       {activeModal && (
         <div
-          className="fixed inset-0 z-[98]"
-          style={{ backgroundColor: "rgba(255,255,255,0.78)" }}
+          className="fixed inset-0 z-[98] bg-white/78 dark:bg-[#0f172a]/80 backdrop-blur-[5px]"
         />
       )}
 

@@ -24,16 +24,7 @@ const LanguageSettings = () => {
     }
   };
 
-  // Load saved language on component mount
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage && savedLanguage !== i18n.language) {
-      changeLanguage(savedLanguage);
-    } else if (i18n.language === 'ar') {
-      document.documentElement.setAttribute('dir', 'rtl');
-      document.documentElement.setAttribute('lang', 'ar');
-    }
-  }, [i18n,i18n.language]);
+  // Document direction is handled Globally in App.jsx
 
   return (
     <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm min-h-40">

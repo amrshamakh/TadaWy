@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { MdOutlineLanguage } from "react-icons/md";
 import { FiUser, FiMenu } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
@@ -10,7 +11,7 @@ export default function Navbar({ onToggleSidebar }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const isAdmin = location.pathname.includes("/admin");
 
@@ -33,6 +34,12 @@ export default function Navbar({ onToggleSidebar }) {
   };
   const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "User";
   const displayEmail = user ? user.email : "";
+
+  const toggleLanguage = () => {
+    const nextLang = i18n.language === "ar" ? "en" : "ar";
+    i18n.changeLanguage(nextLang);
+    localStorage.setItem("language", nextLang);
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-white dark:bg-[#0F172A] border-b border-gray-200 dark:border-gray-700">
@@ -67,8 +74,15 @@ export default function Navbar({ onToggleSidebar }) {
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
               </button>
 
-
-
+              {/* Language Switcher */}
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={i18n.language === "ar" ? "Switch to English" : "تغيير للغة العربية"}
+              >
+                <MdOutlineLanguage size={20} className="text-teal-500" />
+                <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
+              </button>
               {/* Profile */}
               <div className="hidden md:flex relative" ref={dropdownRef}>
                 <button
@@ -95,6 +109,15 @@ export default function Navbar({ onToggleSidebar }) {
                     >
                       <FiUser size={16} />
                       {t("nav.profile")}
+                    </button>
+                    <button
+                      onClick={() => goTo("/doctor")}
+                      className="flex gap-3 items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#334155] dark:text-white text-teal-600 dark:text-teal-400 font-medium"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                      {t("nav.doctorDashboard")}
                     </button>
                     <button
                       onClick={() => goTo("/settings")}
@@ -128,19 +151,39 @@ export default function Navbar({ onToggleSidebar }) {
             // Not logged in - Show Sign In and Sign Up buttons
             <div className="flex items-center gap-3">
               <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={i18n.language === "ar" ? "Switch to English" : "تغيير للغة العربية"}
+              >
+                <MdOutlineLanguage size={20} className="text-teal-500" />
+                <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
+              </button>
+              <button
                 onClick={() => goTo("/login")}
                 className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
               >
-                Sign In
+                {t("auth.login.signIn")}
               </button>
               <button
                 onClick={() => goTo("/signup")}
                 className="px-6 py-2 text-sm font-medium text-white bg-teal-500 hover:bg-teal-600 rounded-lg transition-colors"
               >
-                Sign Up
+                {t("auth.signup.signUp")}
               </button>
             </div>
-          ) : (<span className="text-lg font-medium dark:text-white">ADMIN</span>))}
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={i18n.language === "ar" ? "Switch to English" : "تغيير للغة العربية"}
+              >
+                <MdOutlineLanguage size={20} className="text-teal-500" />
+                <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
+              </button>
+              <span className="text-lg font-medium dark:text-white">ADMIN</span>
+            </div>
+          ))}
         </div>
       </div>
     </nav>

@@ -33,7 +33,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
 
   const year = currentDate.getFullYear();
   const monthIndex = currentDate.getMonth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const days = useMemo(() => getDaysForMonth(year, monthIndex), [year, monthIndex]);
 
   useEffect(() => {
@@ -85,25 +85,27 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
             className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#334155]"
             aria-label="Calendar legend"
           >
-            <img src={infoIcon} alt="" className="w-4 h-4" />
+            <img src={infoIcon} alt="" className="w-4 h-4 dark:invert-[.9] dark:sepia-[.9] dark:hue-rotate-[130deg] dark:saturate-[500%]" />
           </button>
           {showLegend && (
             <div
-              className="absolute left-[calc(100%+8px)] top-0 z-30 bg-white dark:bg-[#1E293B] border-2 border-[#14B8A6] rounded-xl px-4 py-3 shadow-lg min-w-[200px]"
+              className={`absolute top-0 z-30 bg-white dark:bg-[#1E293B] border-2 border-[#14B8A6] rounded-xl px-4 py-3 shadow-lg min-w-[200px] ${
+                i18n.language === "ar" ? "right-[calc(100%+8px)]" : "left-[calc(100%+8px)]"
+              }`}
             >
               <div className="flex items-center gap-3 mb-2.5">
                 <span className="inline-flex w-5 h-5 shrink-0 rounded-md border-2 border-[#14B8A6] bg-white dark:bg-[#0F172A]" />
-                <span className="text-sm font-semibold text-gray-800 dark:text-white">Today</span>
+                <span className="text-sm font-semibold text-gray-800 dark:text-white">{t("calendar.legend.today")}</span>
               </div>
               <div className="flex items-center gap-3 mb-2.5">
                 <span className="inline-flex w-5 h-5 shrink-0 rounded-md bg-[#14B8A6]" />
-                <span className="text-sm font-semibold text-gray-800 dark:text-white">Pressed on</span>
+                <span className="text-sm font-semibold text-gray-800 dark:text-white">{t("calendar.legend.pressedOn")}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="relative inline-flex w-5 h-5 shrink-0 rounded-md border-2 border-[#14B8A6] bg-white dark:bg-[#0F172A]">
                   <span className="absolute bottom-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-[#14B8A6]" />
                 </span>
-                <span className="text-sm font-semibold text-gray-800 dark:text-white">Appointment</span>
+                <span className="text-sm font-semibold text-gray-800 dark:text-white">{t("calendar.legend.appointment")}</span>
               </div>
             </div>
           )}
@@ -159,7 +161,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
             "relative w-full aspect-square rounded-xl border-2 flex items-center justify-center cursor-pointer text-base font-medium transition-colors ";
 
           if (isSelected) {
-            cellClass += "bg-[#E6FFFA] border-[#00BBA7] text-gray-800 dark:text-white ";
+            cellClass += "bg-[#E6FFFA] dark:bg-[#00BBA7]/20 border-[#00BBA7] text-gray-800 dark:text-white ";
           } else if (isToday) {
             cellClass += "bg-transparent border-[#00BBA7] text-gray-800 dark:text-white ";
           } else if (status === "upcoming") {

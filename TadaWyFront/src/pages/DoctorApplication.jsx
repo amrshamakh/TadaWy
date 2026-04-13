@@ -323,7 +323,7 @@ dark:to-[#202326] flex items-center justify-center p-4 py-8">
           {/* File Uploads */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Years of experience:
+              {t("auth.doctor.yearsOfExperience")}
             </label>
             <input
               type="number"

@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import DurationCard from "./DurationCard"; 
 import FeeCard from "./FeeCard";
 import WeeklyAvailability from "./Weeklyavailability";
@@ -16,6 +17,7 @@ const INITIAL_SCHEDULE = {
 };
 
 export default function DoctorSchedule() {
+  const { t } = useTranslation();
   const [duration, setDuration] = useState(20);
   const [fee,      setFee]      = useState(150);
   const [schedule, setSchedule] = useState(INITIAL_SCHEDULE);
@@ -58,12 +60,12 @@ export default function DoctorSchedule() {
   const totalAppts   = totalSlots * Math.floor(240 / duration);
 
   return (
-    <div className="min-h-screen  p-7 font-sans">
+    <div className="min-h-screen p-7 font-sans">
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">My schedule</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
-          Set your available hours so patients can book appointments
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t("doctorDashboard.schedule.title")}</h1>
+        <p className="text-sm text-gray-400 dark:text-slate-400 mt-0.5">
+          {t("doctorDashboard.schedule.availability")}
         </p>
       </div>
 
