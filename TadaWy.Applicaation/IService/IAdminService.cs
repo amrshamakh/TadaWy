@@ -20,5 +20,6 @@ namespace TadaWy.Applicaation.IService
         Task<bool> BannDoctorAsync(int DoctorId, string? BannReason);
 
         Task<bool> UnbanDoctorAsync(int doctorId);
+        Task<string?> GetDoctorCvUrlAsync(int doctorId);
     }
 }

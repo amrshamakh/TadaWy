@@ -1,50 +1,43 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 using TadaWy.Applicaation.IService;
 
 namespace TadaWy.Infrastructure.Service
 {
     public class ImageService : IImageService
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public ImageService(IWebHostEnvironment env)
+        public ImageService(ICloudinaryService cloudinaryService)
         {
-            _env = env;
+            _cloudinaryService = cloudinaryService;
         }
 
         public async Task<string> SaveDoctorImageAsync(IFormFile image, int doctorId)
         {
-            var folder = Path.Combine(_env.WebRootPath, "images", "doctors");
-
-            if (!Directory.Exists(folder))
-                Directory.CreateDirectory(folder);
-
-            var fileName = $"doctor-{doctorId}-{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
-
-            var path = Path.Combine(folder, fileName);
-
-            using var stream = new FileStream(path, FileMode.Create);
-
-            await image.CopyToAsync(stream);
-
-            return $"/images/doctors/{fileName}";
+            return await _cloudinaryService.UploadFileAsync(image, "DoctorImages");
         }
 
-        public Task DeleteDoctorImageAsync(string imageUrl)
+        public async Task DeleteDoctorImageAsync(string imageUrl)
         {
             if (string.IsNullOrEmpty(imageUrl))
-                return Task.CompletedTask;
+                return;
 
-            var path = Path.Combine(_env.WebRootPath, imageUrl.TrimStart('/'));
-
-            if (File.Exists(path))
+            // Extract publicId from Cloudinary URL (e.g., https://res.cloudinary.com/cloudname/image/upload/v1/folder/publicId.jpg)
+            var uri = new Uri(imageUrl);
+            var path = uri.AbsolutePath; // /cloudname/image/upload/v1/folder/publicId.jpg
+            var segments = path.Split('/');
+            var publicIdWithExtension = segments[^1];
+            var publicId = Path.GetFileNameWithoutExtension(publicIdWithExtension);
+            
+            // If it's in a folder, we need the folder name too
+            var folder = segments[^2];
+            if (folder != "upload" && !folder.StartsWith("v"))
             {
-                File.Delete(path);
+                publicId = $"{folder}/{publicId}";
             }
 
-            return Task.CompletedTask;
+            await _cloudinaryService.DeleteFileAsync(publicId);
         }
     }
-
 }

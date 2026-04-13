@@ -93,18 +93,13 @@ namespace TadaWy.API.Controllers
         [HttpGet("doctors/{doctorId}/cv")]
         public async Task<IActionResult> GetDoctorCv(int doctorId)
         {
-            var doctor = await _adminService.GetDoctorById(doctorId);
-            if (doctor == null || string.IsNullOrEmpty(doctor.VerificationDocumentPath))
+            var url = await _adminService.GetDoctorCvUrlAsync(doctorId);
+            if (string.IsNullOrEmpty(url))
                 return NotFound("CV not found");
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", doctor.VerificationDocumentPath.TrimStart('/'));
-
-            if (!System.IO.File.Exists(filePath))
-                return NotFound("File not found");
-
-            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            return File(fileBytes, "application/pdf", doctor.VerificationDocumentPath);
+            return Ok(new { url = url });
         }
+
 
     }
 }

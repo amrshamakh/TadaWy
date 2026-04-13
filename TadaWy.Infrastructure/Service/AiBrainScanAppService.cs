@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AiDTOS;
 using TadaWy.Applicaation.IService;
@@ -21,20 +19,20 @@ namespace TadaWy.Infrastructure.Services
         private readonly IAiBrainScanService _aiService;
         private readonly TadaWyDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IWebHostEnvironment _environment;
+        private readonly ICloudinaryService _cloudinaryService;
         private readonly IConfiguration _configuration;
 
         public AiBrainScanAppService(
             IAiBrainScanService aiService,
             TadaWyDbContext context,
             UserManager<ApplicationUser> userManager,
-            IWebHostEnvironment environment,
+            ICloudinaryService cloudinaryService,
             IConfiguration configuration)
         {
             _aiService = aiService;
             _context = context;
             _userManager = userManager;
-            _environment = environment;
+            _cloudinaryService = cloudinaryService;
             _configuration = configuration;
         }
 
@@ -48,44 +46,31 @@ namespace TadaWy.Infrastructure.Services
             if (user == null)
                 throw new UnauthorizedAccessException("Login to use AI.");
 
-            //var uploadsFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot", "BrainScans");
-
-            var userFolder = Path.Combine(_environment.WebRootPath ?? "wwwroot","BrainScans", userId);
-
-            if (!Directory.Exists(userFolder))
-                Directory.CreateDirectory(userFolder);
-
-            // Generate a unique file name to avoid conflicts
-            var fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(userFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            // Upload to Cloudinary
+            var imageUrl = await _cloudinaryService.UploadFileAsync(file, "AiImages");
 
             // Save scan record to database
             var scan = new AiBrainScan
             {
                 UserId = userId,
-                ImagePath = fileName,
+                ImagePath = imageUrl, // Store full Cloudinary URL
                 CreatedAt = DateTime.UtcNow
             };
 
             _context.AiBrainScans.Add(scan);
             await _context.SaveChangesAsync();
 
-            var result = await _aiService.AnalyzeAsync(filePath);
+            // Analyze using the URL (assuming IAiBrainScanService.AnalyzeAsync can handle URLs)
+            var result = await _aiService.AnalyzeAsync(imageUrl);
 
             scan.Description = result.Description;
 
             await _context.SaveChangesAsync();
-            var baseUrl = _configuration["AppSettings:BaseUrl"];
 
             return new UploadAiBrainScanResponseDto
             {
                 ScanId = scan.Id,
-                ImageUrl = $"{baseUrl}/BrainScans/{userId}/{scan.ImagePath}",
+                ImageUrl = imageUrl,
                 Description = result.Description,
                 CreatedAt = scan.CreatedAt
             };
@@ -94,8 +79,6 @@ namespace TadaWy.Infrastructure.Services
         /////////Get user's scan history/////////
         public async Task<AiBrainScanHistoryResponseDto> GetHistoryAsync(string userId, DateTime? lastCreatedAt)
         {
-            var baseUrl = _configuration["AppSettings:BaseUrl"];
-
             var query = _context.AiBrainScans
                 .Where(x => x.UserId == userId);
 
@@ -109,7 +92,7 @@ namespace TadaWy.Infrastructure.Services
                 .Take(6) 
                 .Select(x => new AiBrainScanHistoryDto
                 {
-                    ImageUrl = $"{baseUrl}/BrainScans/{x.UserId}/{x.ImagePath}",
+                    ImageUrl = x.ImagePath, // Path is already the full URL
                     Description = x.Description,
                     CreatedAt = x.CreatedAt
                 })

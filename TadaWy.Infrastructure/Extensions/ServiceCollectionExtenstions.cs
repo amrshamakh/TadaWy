@@ -31,6 +31,7 @@ namespace TadaWy.Infrastructure.Extensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IPatientService, PatientService>();
             services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<ICloudinaryService, CloudinaryService>();
         }
     }
 }

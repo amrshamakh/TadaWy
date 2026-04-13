@@ -10,6 +10,7 @@ using TadaWy.API.Middleware;
 using TadaWy.Applicaation.Extensions;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
+using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Extensions;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
@@ -33,6 +34,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHangfireServer();
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<TadaWyDbContext>()
     .AddDefaultTokenProviders();

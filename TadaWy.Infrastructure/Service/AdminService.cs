@@ -169,5 +169,11 @@ namespace TadaWy.Infrastructure.Service
             return true;
         }
 
+        public async Task<string?> GetDoctorCvUrlAsync(int doctorId)
+        {
+            var doctor = await _TadaWyDbContext.Doctors.FindAsync(doctorId);
+            return doctor?.VerificationDocumentPath;
+        }
+
     }
 }
