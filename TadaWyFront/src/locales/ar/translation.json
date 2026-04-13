@@ -46,11 +46,17 @@
   "profile": {
     "title": "ملفي الشخصي",
     "subtitle": "إدارة معلوماتك الشخصية والطبية",
+    "edit": "تعديل",
+    "save": "حفظ",
     "personalInfo": {
       "title": "المعلومات الشخصية",
       "subtitle": "تفاصيلك الشخصية الأساسية",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
+      "nameMap": {
+        "Ahmed": "أحمد",
+        "Khaled": "خالد"
+      },
       "email": "البريد الإلكتروني",
       "phoneNumber": "رقم الهاتف",
       "age": "العمر",
@@ -114,6 +120,7 @@
       "specialization": "التخصص",
       "specializationPlaceholder": "مثل: أمراض القلب، طب الأطفال",
       "uploadCV": "ارفع سيرتك الذاتية متضمنة الخبرات، الشهادات، وبطاقة الهوية",
+      "yearsOfExperience": "سنوات الخبرة:",
       "uploadID": "ارفع الهوية",
       "uploadFile": "ارفع ملفك",
       "uploadImage": "ارفع صورتك",
@@ -359,11 +366,17 @@
     "cvUploaded": "السيرة الذاتية المرفوعة",
     "emailAddress": "البريد الإلكتروني",
     "specialization": "التخصص",
+    "banReason": "سبب الحظر",
+    "noBanReason": "لم يتم إدخال سبب",
+    "banReasonPrompt": "اكتب سبب حظر هذا الطبيب",
+    "banReasonPlaceholder": "اكتب سبب الحظر...",
     "actions": {
       "approve": "موافقة",
       "reject": "رفض",
       "ban": "حظر",
-      "unban": "رفع الحظر"
+      "unban": "رفع الحظر",
+      "cancel": "إلغاء",
+      "confirmBan": "تأكيد الحظر"
     },
     "status": {
       "Approved": "معتمد",
@@ -415,6 +428,8 @@
       "location": "الموقع",
       "locationDetails": "تفاصيل الموقع",
       "locationPlaceholder": "اختر موقعك",
+      "locationFetchError": "تعذر الحصول على تفاصيل الموقع",
+      "locationPermissionDenied": "تم رفض إذن الوصول للموقع",
       "email": "البريد الإلكتروني",
       "telephone": "رقم الهاتف",
       "firstName": "الاسم الأول",
@@ -490,7 +505,6 @@
       "notAvailable": "غير متوفر",
       "aboutPlaceholder": "يقع في الطابق الخامس من مبنى ميديكال بلازا، مع سهولة الوصول من الشارع الرئيسي. تتوفر مواقف للسيارات في مرآب المبنى."
     },
-    },
     "locationCard": {
       "title": "الموقع",
       "address": "العنوان",
@@ -499,7 +513,6 @@
     "reviewsSection": {
       "title": "التقييمات",
       "overallRating": "التقييم العام",
-      "aboutPlaceholder": "يقع في الطابق الخامس من مبنى ميديكال بلازا، مع سهولة الوصول من الشارع الرئيسي. تتوفر مواقف للسيارات في مرآب المبنى.",
       "reviews": [
         {
           "author": "جون سميث",
@@ -544,6 +557,7 @@
         "specialization": "التخصص",
         "phone": "رقم الهاتف",
         "locationDetails": "تفاصيل موقع الطبيب",
+        "locationDetailsPlaceholder": "يقع في الطابق الخامس من مبنى ميديكال بلازا، مع سهولة الوصول من الشارع الرئيسي. تتوفر مواقف للسيارات في مرآب المبنى.",
         "appointmentDate": "تاريخ الموعد",
         "paymentMethod": "وسيلة الدفع",
         "paidOnline": "دفع أونلاين",
@@ -580,13 +594,37 @@
         "expiryPlaceholder": "MM/YY",
         "cvvLabel": "رمز الأمان (CVV)",
         "cvvPlaceholder": "كود",
-        "confirmBtn": "تأكيد"
+        "confirmBtn": "تأكيد",
+        "cancel": "إلغاء"
       }
     }
   },
+  "checksChat": {
+    "title": "الفحوصات الطبية",
+    "subtitle": "ارفع الصور للتحليل",
+    "welcome": "مرحبًا! أنا مساعد تداوي للفحوصات الطبية. ارفع صور الأشعة الطبية للمخ (أشعة سينية، رنين، مقطعية...) وسأعرض لك نتيجة مفصلة.",
+    "diagnosis": "التشخيص",
+    "analyzeError": "عذرًا، لم أتمكن من تحليل الصورة. حاول مرة أخرى.",
+    "uploadHint": "ارفع الأشعة الطبية لتحليل مدعوم بالذكاء الاصطناعي. هذا لا يغني عن التشخيص الطبي المتخصص.",
+    "uploadButton": "رفع صورة الأشعة",
+    "waitingForResults": "جاري انتظار النتيجة",
+    "closeAria": "إغلاق الشات الطبي",
+    "openAria": "فتح الشات الطبي"
+  },
   "common": {
-    "am": "صباحاً",
-    "pm": "مساءً",
+    "am": "ص",
+    "pm": "م",
     "reviews": "التقييمات"
+  },
+  "changePassword": {
+    "title": "تغيير كلمة المرور",
+    "currentPassword": "كلمة المرور الحالية",
+    "newPassword": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirm": "تأكيد",
+    "success": "تم تحديث كلمة المرور بنجاح",
+    "errors": {
+      "passwordMismatch": "كلمتا المرور غير متطابقتين!"
+    }
   }
 }

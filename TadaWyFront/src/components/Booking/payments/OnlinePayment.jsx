@@ -252,7 +252,7 @@ export default function OnlinePayment() {
                 onClick={() => navigate(-1)}
                 className="px-6 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-700 dark:text-gray-300 font-semibold rounded-3xl hover:bg-gray-50 dark:hover:bg-[#475569] transition"
               >
-                {t("common.cancel")}
+                {t("booking.modals.onlinePayment.cancel")}
               </button>
               <button
                 type="submit"

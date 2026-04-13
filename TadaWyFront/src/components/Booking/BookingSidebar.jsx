@@ -132,7 +132,7 @@ export default function BookingSidebar({ doctor }) {
         <div className="booking-sidebar-section">
           <p className="booking-sidebar-label flex items-center gap-1.5">
             {t("booking.sidebar.selectDay")}
-            <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0 dark:invert-[.9] dark:sepia-[.9] dark:hue-rotate-[130deg] dark:saturate-[500%]" />
+            <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0 dark:invert dark:opacity-90" />
           </p>
           <div className="booking-date-carousel">
             <button type="button" className="booking-carousel-nav" onClick={handlePrev} aria-label="Previous options">

@@ -6,29 +6,15 @@ export default function ReviewsSection({ doctor }) {
   const { t } = useTranslation();
   if (!doctor) return null;
 
-  const reviews = [
-    {
-      id: 1,
-      author: "John Smith",
-      date: "February 15, 2020",
-      rating: 4.5,
-      text: "Excellent care and very professional staff. Dr. Johnson took the time to explain everything clearly.",
-    },
-    {
-      id: 2,
-      author: "Mary Davis",
-      date: "February 10, 2026",
-      rating: 4,
-      text: "The best cardiologist I've ever visited. Highly recommend!",
-    },
-    {
-      id: 3,
-      author: "Robert Brown",
-      date: "February 10, 2026",
-      rating: 3.5,
-      text: "Very thorough examination. Wait time was a bit long but worth it.",
-    },
-  ];
+  const localizedReviews = t("booking.reviewsSection.reviews", { returnObjects: true });
+  const defaultRatings = [4.5, 4, 3.5];
+  const reviews = Array.isArray(localizedReviews)
+    ? localizedReviews.map((review, idx) => ({
+        id: idx + 1,
+        rating: defaultRatings[idx] ?? 4,
+        ...review,
+      }))
+    : [];
 
   return (
     <section className="booking-card booking-reviews-card">

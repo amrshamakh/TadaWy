@@ -46,11 +46,17 @@
   "profile": {
     "title": "My Profile",
     "subtitle": "Manage your personal and medical information",
+    "edit": "Edit",
+    "save": "Save",
     "personalInfo": {
       "title": "Personal Information",
       "subtitle": "Your basic personal details",
       "firstName": "First Name",
       "lastName": "Last Name",
+      "nameMap": {
+        "Ahmed": "Ahmed",
+        "Khaled": "Khaled"
+      },
       "email": "Email",
       "phoneNumber": "Phone Number",
       "age": "Age",
@@ -114,6 +120,7 @@
       "specialization": "Specialization",
       "specializationPlaceholder": "e.g., Cardiology, Pediatrics",
       "uploadCV": "Upload Your CV including Experience, certificates, and ID card",
+      "yearsOfExperience": "Years of experience:",
       "uploadID": "Upload Your ID",
       "uploadFile": "Upload your File",
       "uploadImage": "Upload your Img",
@@ -359,11 +366,17 @@
     "cvUploaded": "CV Uploaded",
     "emailAddress": "Email Address",
     "specialization": "Specialization",
+      "banReason": "Ban Reason",
+      "noBanReason": "No reason provided",
+      "banReasonPrompt": "Write the reason for banning this doctor",
+      "banReasonPlaceholder": "Type the ban reason...",
     "actions": {
       "approve": "Approve",
       "reject": "Reject",
       "ban": "BAN",
-      "unban": "Unban"
+        "unban": "Unban",
+        "cancel": "Cancel",
+        "confirmBan": "Confirm Ban"
     },
     "status": {
       "Approved": "Approved",
@@ -410,6 +423,8 @@
       "location": "Location",
       "locationDetails": "Location Details",
       "locationPlaceholder": "Select your location",
+      "locationFetchError": "Failed to get location details",
+      "locationPermissionDenied": "Location permission denied",
       "email": "Email Address",
       "telephone": "Telephone Number",
       "firstName": "First Name",
@@ -537,6 +552,7 @@
         "specialization": "Specialization",
         "phone": "Phone Number",
         "locationDetails": "Doctor Location Details",
+        "locationDetailsPlaceholder": "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage.",
         "appointmentDate": "Appointment Date",
         "paymentMethod": "Payment method",
         "paidOnline": "Paid Online",
@@ -573,13 +589,37 @@
         "expiryPlaceholder": "MM/YY",
         "cvvLabel": "CVV",
         "cvvPlaceholder": "Code",
-        "confirmBtn": "Confirm"
+        "confirmBtn": "Confirm",
+        "cancel": "Cancel"
       }
     }
+  },
+  "checksChat": {
+    "title": "Medical Checks",
+    "subtitle": "Upload scans for analysis",
+    "welcome": "Hello! I'm your TadaWy Medical Check. Upload medical scan images for brain (X-rays, MRI, CT scans, etc.) and I'll provide a detailed result.",
+    "diagnosis": "Diagnosis",
+    "analyzeError": "Sorry, I was unable to analyze the image. Please try again.",
+    "uploadHint": "Upload medical scans for AI-assisted analysis. Not a replacement for professional diagnosis.",
+    "uploadButton": "Upload Scan Image",
+    "waitingForResults": "Waiting for Results",
+    "closeAria": "Close Medical Chat",
+    "openAria": "Open Medical Chat"
   },
   "common": {
     "am": "AM",
     "pm": "PM",
     "reviews": "Reviews"
+  },
+  "changePassword": {
+    "title": "Change your Password",
+    "currentPassword": "Current password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "confirm": "Confirm",
+    "success": "Password updated successfully",
+    "errors": {
+      "passwordMismatch": "Passwords do not match!"
+    }
   }
 }

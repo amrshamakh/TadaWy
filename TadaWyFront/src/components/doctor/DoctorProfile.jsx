@@ -136,30 +136,35 @@ const DoctorProfile = () => {
   );
 
   const reviews = useMemo(
-    () => [
-      {
-        id: 1,
-        name: "John Smith",
-        date: "February 15, 2020",
-        rating: 4.5,
-        text: "Excellent care and very professional staff. Dr. Johnson took the time to explain everything clearly.",
-      },
-      {
-        id: 2,
-        name: "Mary Davis",
-        date: "February 10, 2020",
-        rating: 4.5,
-        text: "The best cardiologist I've ever visited. Highly recommend!",
-      },
-    ],
-    []
+    () => {
+      const localizedReviews = t("booking.reviewsSection.reviews", { returnObjects: true });
+      const defaultRatings = [4.5, 4, 3.5];
+      if (!Array.isArray(localizedReviews)) return [];
+
+      return localizedReviews.slice(0, 2).map((review, idx) => ({
+        id: idx + 1,
+        rating: defaultRatings[idx] ?? 4,
+        name: review.author,
+        date: review.date,
+        text: review.text,
+      }));
+    },
+    [t]
   );
 
   const disabled = !isEditing;
 
-  const doctorNameOnly = `${form.firstName} ${form.lastName}`.replace(/\s+/g, " ").trim();
+  const localizedFirstName = isRtl
+    ? t(`doctorDashboard.profile.nameMap.${form.firstName}`, { defaultValue: form.firstName })
+    : form.firstName;
+  const localizedLastName = isRtl
+    ? t(`doctorDashboard.profile.nameMap.${form.lastName}`, { defaultValue: form.lastName })
+    : form.lastName;
+  const doctorNameOnly = `${localizedFirstName} ${localizedLastName}`.replace(/\s+/g, " ").trim();
   const doctorDisplayName = `${isRtl ? "د." : "Dr."} ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
   const doctorId = `${t("doctorDashboard.profile.id")}:123231`;
+  const localizedSpecialty =
+    t(`discover.specialties.${form.specialty}`, { defaultValue: form.specialty }) || form.specialty;
 
   useEffect(() => {
     try {
@@ -236,7 +241,7 @@ const DoctorProfile = () => {
       }));
     } catch (error) {
       console.error("Geocoding error:", error);
-      alert("Failed to get location details");
+      alert(t("doctorDashboard.profile.locationFetchError"));
     }
   };
 
@@ -265,7 +270,7 @@ const DoctorProfile = () => {
         await reverseGeocode(lat, lng);
         setShowMap(false);
       },
-      () => alert("Location permission denied")
+      () => alert(t("doctorDashboard.profile.locationPermissionDenied"))
     );
   };
 
@@ -286,7 +291,7 @@ const DoctorProfile = () => {
           {/* Header */}
           <div className="relative bg-teal-500 h-[124px] sm:h-[140px]">
             {/* Avatar overlapping boundary */}
-            <div className="absolute left-6 sm:left-10 top-full -translate-y-1/2">
+            <div className={`absolute top-full -translate-y-1/2 ${isRtl ? "right-6 sm:right-10" : "left-6 sm:left-10"}`}>
             <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
                 <UserIcon
                   
@@ -299,7 +304,7 @@ const DoctorProfile = () => {
             {/* Name + badge (right of avatar) */}
             <div className="h-full px-6 sm:px-10">
               <div className="h-full flex items-end pb-4">
-                <div className="pl-[158px] sm:pl-[180px]">
+                <div className={isRtl ? "pr-[158px] sm:pr-[180px]" : "pl-[158px] sm:pl-[180px]"}>
                   <div className="flex items-center gap-3">
                     <h2 className="text-lg sm:text-xl font-semibold text-white leading-snug">
                       {doctorDisplayName}
@@ -316,9 +321,9 @@ const DoctorProfile = () => {
           {/* Body */}
           <div className="px-6 sm:px-10 pb-10 pt-3 sm:pt-4">
             <div className="flex items-start justify-between gap-4 -translate-y-1 sm:-translate-y-2">
-              <div className="pl-[158px] sm:pl-[180px] text-left">
+              <div className={`${isRtl ? "pr-[158px] sm:pr-[180px] text-right" : "pl-[158px] sm:pl-[180px] text-left"}`}>
                 <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 space-y-0.5 mt-0">
-                  <div>{form.specialty}</div>
+                  <div>{localizedSpecialty}</div>
                   <div>{doctorId}</div>
                 </div>
               </div>
@@ -352,7 +357,7 @@ const DoctorProfile = () => {
                       </span>
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      97 {t("doctorDashboard.profile.reviews")}
+                      {isRtl ? "97 تقييم" : `97 ${t("doctorDashboard.profile.reviews")}`}
                     </div>
                   </div>
 
@@ -402,7 +407,7 @@ const DoctorProfile = () => {
                 onChange={(v) => updateForm({ telephone: v })}
               />
               <Field
-                label="Specialty"
+                label={t("doctorDashboard.profile.specialty")}
                 value={form.specialty}
                 disabled={disabled}
                 onChange={(v) => updateForm({ specialty: v })}
@@ -433,7 +438,7 @@ const DoctorProfile = () => {
                     ].join(" ")}
                   />
                   <div
-                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-teal-500 dark:text-[#00BBA7]" : "text-slate-400 border-slate-200"
+                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 dark:text-slate-500" : "text-teal-500 dark:text-[#00BBA7]"
                       }`}
                   >
                     <MapPin className="w-5 h-5" />

@@ -56,7 +56,7 @@ export default function BookingReceiptModal({
           <p className="receipt-label">{t("booking.modals.receipt.locationDetails")}</p>
           <p className="receipt-value">
             {doctor?.location_description ||
-              "Located on the 5th floor of Medical Plaza building, with easy access from Main Street."}
+              t("booking.modals.receipt.locationDetailsPlaceholder")}
           </p>
           <div className="receipt-divider" />
           <div className="receipt-section">

@@ -17,6 +17,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 3, Building 5",
     clinicDetails_ar: "الطابق 3، المبنى 5",
     cv: "ahmed_cv.pdf",
+    banReason: "",
   },
   {
     id: "323145",
@@ -33,6 +34,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 1, Building 2",
     clinicDetails_ar: "الطابق 1، المبنى 2",
     cv: "mohamed_cv.pdf",
+    banReason: "",
   },
   {
     id: "1234",
@@ -49,6 +51,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 2, Building 8",
     clinicDetails_ar: "الطابق 2، المبنى 8",
     cv: "khalid_cv.pdf",
+    banReason: "",
   },
   {
     id: "231234",
@@ -65,6 +68,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 4, Building 3",
     clinicDetails_ar: "الطابق 4، المبنى 3",
     cv: "tawfik_cv.pdf",
+    banReason: "",
   },
   {
     id: "1234-2",
@@ -81,6 +85,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 5, Building 1",
     clinicDetails_ar: "الطابق 5، المبنى 1",
     cv: "maram_cv.pdf",
+    banReason: "",
   },
   {
     id: "323145-2",
@@ -97,6 +102,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 6, Building 7",
     clinicDetails_ar: "الطابق 6، المبنى 7",
     cv: "maiada_cv.pdf",
+    banReason: "",
   },
   {
     id: "231234-2",
@@ -113,6 +119,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 2, Building 4",
     clinicDetails_ar: "الطابق 2، المبنى 4",
     cv: "menna_cv.pdf",
+    banReason: "",
   },
   {
     id: "323145-3",
@@ -129,6 +136,7 @@ const mockDoctors = [
     clinicDetails_en: "Floor 3, Building 9",
     clinicDetails_ar: "الطابق 3، المبنى 9",
     cv: "mahmoud_cv.pdf",
+    banReason: "",
   },
 ];
 
@@ -143,17 +151,20 @@ export function DoctorsProvider({ children }) {
     );
   };
 
-  const banDoctor = (doctor) => {
+  const banDoctor = (doctor, reason = "") => {
     setDoctors((prev) =>
-      prev.map((d) => (d.id === doctor.id ? { ...d, status: "Banned" } : d))
+      prev.map((d) =>
+        d.id === doctor.id
+          ? { ...d, status: "Banned", banReason: reason.trim() }
+          : d
+      )
     );
-    // Use i18n.t() directly outside of a component
-    alert(i18n.t("admin.doctorContext.banAlert", { name: doctor.name }));
+    alert(i18n.t("admin.doctorContext.banAlert", { name: doctor.name_en || doctor.name_ar || doctor.id }));
   };
 
   const unbanDoctor = (doctor) => {
     setDoctors((prev) =>
-      prev.map((d) => (d.id === doctor.id ? { ...d, status: "Pending" } : d))
+      prev.map((d) => (d.id === doctor.id ? { ...d, status: "Pending", banReason: "" } : d))
     );
   };
 

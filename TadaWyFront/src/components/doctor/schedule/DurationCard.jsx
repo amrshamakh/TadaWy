@@ -1,7 +1,11 @@
 // components/DurationCard.jsx
+import { useTranslation } from "react-i18next";
+
 const DURATIONS = [15, 20, 30, 45, 60];
 
 export default function DurationCard({ duration, onChange }) {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-100 dark:border-[#334155] shadow-sm p-5 flex-1 min-w-[260px]">
       <div className="flex items-center gap-2 mb-1">
@@ -10,9 +14,9 @@ export default function DurationCard({ duration, onChange }) {
             <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
           </svg>
         </span>
-        <span className="font-semibold text-gray-800 dark:text-slate-200 text-sm">Appointment Duration</span>
+        <span className="font-semibold text-gray-800 dark:text-slate-200 text-sm">{t("doctorDashboard.schedule.duration")}</span>
       </div>
-      <p className="text-xs text-gray-400 dark:text-slate-400 mb-4">Each appointment will set this duration</p>
+      <p className="text-xs text-gray-400 dark:text-slate-400 mb-4">{t("doctorDashboard.schedule.durationSubtitle")}</p>
 
       <div className="flex flex-wrap gap-2">
         {DURATIONS.map((d) => (
@@ -25,7 +29,7 @@ export default function DurationCard({ duration, onChange }) {
                 : "border-gray-200 dark:border-[#334155] bg-gray-50 dark:bg-[#0F172A] text-gray-500 dark:text-slate-400 hover:border-teal-300 hover:text-teal-500 dark:hover:text-teal-400"
               }`}
           >
-            {d} min
+            {d} {t("doctorDashboard.schedule.minutes")}
           </button>
         ))}
       </div>

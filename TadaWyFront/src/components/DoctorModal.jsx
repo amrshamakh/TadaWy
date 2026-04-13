@@ -1,4 +1,5 @@
 import { FileText, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
 import { useLocalizedField } from "../hooks/useLocalizedField";
@@ -13,6 +14,13 @@ const statusStyles = {
 export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBan, onUnban }) {
   const { t } = useTranslation();
   const localize = useLocalizedField();
+  const [showBanReasonInput, setShowBanReasonInput] = useState(false);
+  const [banReason, setBanReason] = useState("");
+
+  useEffect(() => {
+    setShowBanReasonInput(false);
+    setBanReason("");
+  }, [doctor?.id]);
 
   if (!doctor) return null;
 
@@ -117,10 +125,20 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
               {localize(doctor, "specialization") || "—"}
             </div>
           </div>
+          {isBanned && (
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
+                {t("admin.doctorModal.banReason")}
+              </label>
+              <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 min-h-10">
+                {doctor.banReason || t("admin.doctorModal.noBanReason")}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Modal Footer */}
-        <div className="px-6 pb-6 flex justify-end gap-3">
+        <div className="px-6 pb-6 flex justify-end gap-3 flex-wrap">
           {isBanned && (
             <button onClick={() => { onUnban(doctor); onClose(); }} className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
               {t("admin.doctorModal.actions.unban")}
@@ -128,7 +146,7 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
           )}
           {isApproved && (
             <>
-              <button onClick={() => { onBan(doctor); onClose(); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => { setShowBanReasonInput(true); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.ban")}
               </button>
               <button onClick={() => { onReject(doctor); onClose(); }} className="border border-red-400 text-red-500 hover:bg-red-50 text-sm font-medium px-5 py-2 rounded-lg transition-colors">
@@ -138,7 +156,7 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
           )}
           {isRejected && (
             <>
-              <button onClick={() => { onBan(doctor); onClose(); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => { setShowBanReasonInput(true); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.ban")}
               </button>
               <button onClick={() => { onApprove(doctor); onClose(); }} className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
@@ -148,7 +166,7 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
           )}
           {isPending && (
             <>
-              <button onClick={() => { onBan(doctor); onClose(); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => { setShowBanReasonInput(true); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.ban")}
               </button>
               <button onClick={() => { onReject(doctor); onClose(); }} className="border border-red-400 text-red-500 hover:bg-red-50 text-sm font-medium px-5 py-2 rounded-lg transition-colors">
@@ -160,6 +178,45 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
             </>
           )}
         </div>
+        {showBanReasonInput && (
+          <div className="px-6 pb-6">
+            <div className="rounded-xl border border-gray-200 dark:border-[#334155] bg-gray-50 dark:bg-[#111827] p-4 space-y-3">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                {t("admin.doctorModal.banReasonPrompt")}
+              </label>
+              <textarea
+                value={banReason}
+                onChange={(e) => setBanReason(e.target.value)}
+                placeholder={t("admin.doctorModal.banReasonPlaceholder")}
+                className="w-full min-h-24 rounded-lg border border-gray-300 dark:border-[#475569] bg-white dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 p-3 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowBanReasonInput(false);
+                    setBanReason("");
+                  }}
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-[#475569] text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] text-sm"
+                >
+                  {t("admin.doctorModal.actions.cancel")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onBan(doctor, banReason);
+                    setShowBanReasonInput(false);
+                    setBanReason("");
+                    onClose();
+                  }}
+                  className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white text-sm"
+                >
+                  {t("admin.doctorModal.actions.confirmBan")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

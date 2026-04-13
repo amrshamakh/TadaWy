@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function getDaysGrid(year, monthIndex) {
   const firstDay = new Date(year, monthIndex, 1).getDay();
@@ -11,6 +12,8 @@ function getDaysGrid(year, monthIndex) {
 }
 
 export default function DayFilter({ activeDay, onDayChange, onDatePick, selectedDateKey }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language === "ar" ? "ar-EG" : "en-US";
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [stripStartDate, setStripStartDate] = useState(() => {
@@ -26,13 +29,14 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
       const d = new Date(stripStartDate);
       d.setDate(stripStartDate.getDate() + i);
       list.push({
-        label: d.toLocaleDateString("en-US", { weekday: "short" }),
-        date: d.toLocaleDateString("en-US", { day: "numeric" }),
+        label: d.toLocaleDateString(locale, { weekday: "short" }),
+        date: d.toLocaleDateString(locale, { day: "numeric" }),
         value: d.toISOString().split("T")[0],
+        dayKey: d.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase(),
       });
     }
     return list;
-  }, [stripStartDate]);
+  }, [locale, stripStartDate]);
 
   const pickDate = (day) => {
     const dateObj = new Date(year, monthIndex, day);
@@ -44,20 +48,20 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
   return (
     <div className="relative bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-[#334155] shadow-sm px-5 py-3 mb-3 flex items-center gap-2 flex-wrap">
       <Calendar className="w-4 h-4 text-[#00BBA7]" />
-      <span className="text-sm font-medium text-gray-500 dark:text-slate-400">Filter By Day:</span>
+      <span className="text-sm font-medium text-gray-500 dark:text-slate-400">{t("doctorDashboard.appointments.filterByDay")}</span>
 
       <button
         onClick={() => {
-          onDayChange("All Days");
+          onDayChange("all");
           onDatePick(null);
         }}
         className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors cursor-pointer ${
-          activeDay === "All Days" && !selectedDateKey
+          activeDay === "all" && !selectedDateKey
             ? "bg-teal-500 text-white"
             : "text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800"
         }`}
       >
-        All Days
+        {t("doctorDashboard.appointments.allDays")}
       </button>
 
       <button
@@ -76,7 +80,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
         <button
           key={d.value}
           onClick={() => {
-            onDayChange(d.label);
+            onDayChange(d.dayKey);
             onDatePick(d.value);
           }}
           className={`flex flex-col items-center justify-center min-w-[4.75rem] px-5 py-2 rounded-lg text-xs transition-colors cursor-pointer ${
@@ -111,7 +115,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
       </button>
 
       {showCalendar && (
-        <div className="absolute right-4 top-14 z-20 w-80 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-[#334155] shadow-lg p-4">
+        <div className={`absolute top-14 z-20 w-80 bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-[#334155] shadow-lg p-4 ${i18n.language === "ar" ? "left-4" : "right-4"}`}>
           <div className="flex items-center justify-between mb-4">
             <button
               type="button"
@@ -128,7 +132,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
               >
                 {Array.from({ length: 12 }).map((_, idx) => (
                   <option key={idx} value={idx} className="dark:bg-[#0B1220]">
-                    {new Date(2026, idx, 1).toLocaleDateString("en-US", { month: "short" })}
+                    {new Date(2026, idx, 1).toLocaleDateString(locale, { month: "short" })}
                   </option>
                 ))}
               </select>
@@ -153,9 +157,12 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
             </button>
           </div>
           <div className="grid grid-cols-7 text-center text-xs text-gray-400 dark:text-slate-500 mb-2">
-            {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((day) => (
-              <span key={day}>{day}</span>
-            ))}
+            {Array.from({ length: 7 }).map((_, dayIndex) => {
+              const dayName = new Date(2026, 0, 4 + dayIndex).toLocaleDateString(locale, {
+                weekday: "short",
+              });
+              return <span key={dayIndex}>{dayName}</span>;
+            })}
           </div>
           <div className="grid grid-cols-7 gap-1.5">
             {daysGrid.map((day, idx) => {

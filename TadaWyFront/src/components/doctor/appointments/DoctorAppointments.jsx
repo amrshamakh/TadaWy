@@ -1,31 +1,36 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import StatsRow from "./components/StatsRow";
 import DayFilter from "./components/Dayfilter";
 import PaymentFilter from "./components/PaymentFilter";
 import DateGroup from "./components/DateGroup";
 import {
   appointments,
-  DATE_LABELS,
   DAY_TO_DATE,
 } from "./data/appointmentsData";
 
 export default function DoctorAppointments() {
-  const [activeDay, setActiveDay] = useState("All Days");
+  const { i18n } = useTranslation();
+  const [activeDay, setActiveDay] = useState("all");
   const [pickedDate, setPickedDate] = useState(null);
-  const [activePayment, setActivePayment] = useState("All Payments");
+  const [activePayment, setActivePayment] = useState("all");
 
   const filtered = appointments.filter((apt) => {
-    const dateByDay = activeDay === "All Days" ? null : DAY_TO_DATE[activeDay];
-    const dayMatch = pickedDate ? apt.date === pickedDate : (activeDay === "All Days" || apt.date === dateByDay);
+    const dateByDay = activeDay === "all" ? null : DAY_TO_DATE[activeDay];
+    const dayMatch = pickedDate ? apt.date === pickedDate : (activeDay === "all" || apt.date === dateByDay);
 
     const paymentMatch =
-      activePayment === "All Payments" || apt.payment === activePayment;
+      activePayment === "all" || apt.payment === activePayment;
 
     return dayMatch && paymentMatch;
   });
 
   const grouped = filtered.reduce((acc, apt) => {
-    const key = DATE_LABELS[apt.date] ?? apt.date;
+    const fallbackDate = new Date(apt.date).toLocaleDateString(
+      i18n.language === "ar" ? "ar-EG" : "en-US",
+      { weekday: "long", month: "long", day: "numeric", year: "numeric" }
+    );
+    const key = fallbackDate;
     if (!acc[key]) acc[key] = [];
     acc[key].push(apt);
     return acc;
@@ -39,11 +44,11 @@ export default function DoctorAppointments() {
         selectedDateKey={pickedDate}
         onDayChange={(day) => {
           setActiveDay(day);
-          setPickedDate(day === "All Days" ? null : DAY_TO_DATE[day] || null);
+          setPickedDate(day === "all" ? null : DAY_TO_DATE[day] || null);
         }}
         onDatePick={(dateStr) => {
           setPickedDate(dateStr);
-          if (dateStr) setActiveDay("All Days");
+          if (dateStr) setActiveDay("all");
         }}
       />
       <PaymentFilter

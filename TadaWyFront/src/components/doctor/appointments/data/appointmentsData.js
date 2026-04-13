@@ -1,9 +1,9 @@
 export const appointments = [
-  { id: "Apt-001", name: "John Mitchhell", date: "2026-03-04", time: "09:00 AM", duration: "30 min", status: "Confirmed", payment: "Paid Online", phone: null },
-  { id: "Apt-002", name: "John Mitchhell", date: "2026-03-04", time: "09:30 AM", duration: "30 min", status: "Cancelled", payment: "Paid Online", phone: null },
-  { id: "Apt-003", name: "John Mitchhell", date: "2026-03-04", time: "10:00 AM", duration: "30 min", status: "Confirmed", payment: "Paid Online", phone: null },
-  { id: "Apt-004", name: "John Mitchhell", date: "2026-03-05", time: "09:00 AM", duration: "30 min", status: "Pending", payment: "Pay at Clinic", phone: "+20 1187428342" },
-  { id: "Apt-005", name: "John Mitchhell", date: "2026-03-05", time: "09:30 AM", duration: "30 min", status: "Confirmed", payment: "Paid Online", phone: null },
+  { id: "Apt-001", name: "John Mitchhell", date: "2026-03-04", time: "09:00 AM", duration: "30 min", status: "confirmed", payment: "online", phone: null },
+  { id: "Apt-002", name: "John Mitchhell", date: "2026-03-04", time: "09:30 AM", duration: "30 min", status: "cancelled", payment: "online", phone: null },
+  { id: "Apt-003", name: "John Mitchhell", date: "2026-03-04", time: "10:00 AM", duration: "30 min", status: "confirmed", payment: "online", phone: null },
+  { id: "Apt-004", name: "John Mitchhell", date: "2026-03-05", time: "09:00 AM", duration: "30 min", status: "pending", payment: "clinic", phone: "+20 1187428342" },
+  { id: "Apt-005", name: "John Mitchhell", date: "2026-03-05", time: "09:30 AM", duration: "30 min", status: "confirmed", payment: "online", phone: null },
 ];
 
 export const days = [
@@ -15,13 +15,13 @@ export const days = [
   { label: "Thu", date: "-" },
 ];
 
-export const paymentOptions = ["All Payments", "Paid Online", "Pay at Clinic"];
+export const paymentOptions = ["all", "online", "clinic"];
 
 export const stats = [
-  { label: "All Appointments", value: 9, color: "text-gray-800" },
-  { label: "Confirmed",        value: 5, color: "text-teal-500" },
-  { label: "pending",          value: 2, color: "text-orange-400" },
-  { label: "Cancelled",        value: 2, color: "text-red-400" },
+  { label: "all", value: 9, color: "text-gray-800" },
+  { label: "confirmed", value: 5, color: "text-teal-500" },
+  { label: "pending", value: 2, color: "text-orange-400" },
+  { label: "cancelled", value: 2, color: "text-red-400" },
 ];
 
 export const generateDateLabels = (start, days) => {
@@ -52,10 +52,10 @@ export const DATE_LABELS = generateDateLabels("2026-03-15", 7);
 
 
 export const DAY_TO_DATE = {
-  Sat: "2026-03-01",
-  Sun: "2026-03-02",
-  Mon: "2026-03-03",
-  Tue: "2026-03-04",
-  Wed: "2026-03-05",
-  Thu: "2026-03-06",
+  sat: "2026-03-01",
+  sun: "2026-03-02",
+  mon: "2026-03-03",
+  tue: "2026-03-04",
+  wed: "2026-03-05",
+  thu: "2026-03-06",
 };

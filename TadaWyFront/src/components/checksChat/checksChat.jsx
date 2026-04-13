@@ -4,14 +4,16 @@ import { assets } from "../../assets/assets";
 import Header from "./Header";
 import Messages from "./Messages";
 import { predictAlzheimer } from "./api";
+import { useTranslation } from "react-i18next";
 
 export default function MedicalChecksChat() {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
       type: "bot",
-      text: "Hello! I'm your TadaWy Medical Check. Upload medical scan images for brain (X-rays, MRI, CT scans, etc.) and I'll provide a detailed result.",
+      text: t("checksChat.welcome"),
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,13 +30,25 @@ export default function MedicalChecksChat() {
     return {
       id: Date.now() + 2,
       type: "divider",
-      text: now.toLocaleDateString("en-US", {
+      text: now.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
         weekday: "long",
         month: "long",
         day: "numeric",
         year: "numeric",
       }),
     };
+  };
+
+  const translateToArabic = async (text) => {
+    try {
+      const response = await fetch(
+        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`
+      );
+      const data = await response.json();
+      return data?.responseData?.translatedText || text;
+    } catch {
+      return text;
+    }
   };
 
   const handleImageUpload = async (e) => {
@@ -56,7 +70,14 @@ export default function MedicalChecksChat() {
       try {
         const data = await predictAlzheimer(file);
         console.log("API Response:", data);
-        const resultText = `Diagnosis: ${data.description}`;
+        const localizedDescription =
+          i18n.language === "ar"
+            ? await translateToArabic(data.description)
+            : data.description;
+        const resultText =
+          i18n.language === "ar"
+            ? `${t("checksChat.diagnosis")}: ${localizedDescription}`
+            : `Diagnosis: ${localizedDescription}`;
 
         setMessages((prev) => [
           ...prev,
@@ -71,7 +92,7 @@ export default function MedicalChecksChat() {
           {
             id: Date.now() + 1,
             type: "bot",
-            text: "Sorry, I was unable to analyze the image. Please try again.",
+            text: t("checksChat.analyzeError"),
           },
           buildSessionDivider(),
         ]);
@@ -104,8 +125,7 @@ export default function MedicalChecksChat() {
               <div className="flex items-start gap-1.5 mb-3 text-[#64748B] dark:text-[#94A3B8] ">
                 <Info className="text-xl  -mt-0.75" />
                 <span className="font-normal text-[12px] leading-4">
-                  Upload medical scans for AI-assisted analysis. Not a
-                  replacement for professional diagnosis.
+                  {t("checksChat.uploadHint")}
                 </span>
               </div>
               <input
@@ -121,7 +141,7 @@ export default function MedicalChecksChat() {
                 className=" bg-[#00BBA7] text-white  text-sm w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
               >
                 <Upload className="text-xs w-4 h-4" />
-                Upload Scan Image
+                {t("checksChat.uploadButton")}
               </button>
             </div>
           )}
@@ -132,7 +152,7 @@ export default function MedicalChecksChat() {
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
-        aria-label={isOpen ? "Close Medical Chat" : "Open Medical Chat"}
+        aria-label={isOpen ? t("checksChat.closeAria") : t("checksChat.openAria")}
       >
         {isOpen ? (
           <X className="w-6 h-6 text-white" />

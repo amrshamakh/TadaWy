@@ -11,7 +11,7 @@ export default function Navbar({ onToggleSidebar }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const isAdmin = location.pathname.includes("/admin");
 
@@ -151,6 +151,14 @@ export default function Navbar({ onToggleSidebar }) {
             // Not logged in - Show Sign In and Sign Up buttons
             <div className="flex items-center gap-3">
               <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={i18n.language === "ar" ? "Switch to English" : "تغيير للغة العربية"}
+              >
+                <MdOutlineLanguage size={20} className="text-teal-500" />
+                <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
+              </button>
+              <button
                 onClick={() => goTo("/login")}
                 className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
               >
@@ -163,7 +171,19 @@ export default function Navbar({ onToggleSidebar }) {
                 {t("auth.signup.signUp")}
               </button>
             </div>
-          ) : (<span className="text-lg font-medium dark:text-white">ADMIN</span>))}
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={toggleLanguage}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={i18n.language === "ar" ? "Switch to English" : "تغيير للغة العربية"}
+              >
+                <MdOutlineLanguage size={20} className="text-teal-500" />
+                <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
+              </button>
+              <span className="text-lg font-medium dark:text-white">ADMIN</span>
+            </div>
+          ))}
         </div>
       </div>
     </nav>

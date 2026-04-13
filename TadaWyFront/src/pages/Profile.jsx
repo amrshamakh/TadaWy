@@ -48,7 +48,7 @@ const Profile = () => {
           onClick={() => setIsEditing(!isEditing)}
           className="bg-teal-500 text-white rounded-lg w-25 md:w-30 rtl:w-auto h-10 px-3 text-sm md:text-base  lg:text-lg hover:bg-teal-600 transition-colors"
         >
-          {isEditing ? t('common.save') : t('common.edit')}
+          {isEditing ? t('profile.save') : t('profile.edit')}
         </button>
       </div>
 

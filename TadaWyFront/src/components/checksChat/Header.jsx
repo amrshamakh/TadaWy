@@ -1,8 +1,10 @@
 import React from 'react'
 import { assets } from '../../assets/assets'
 import { X } from 'lucide-react'
+import { useTranslation } from "react-i18next";
 
 const Header = ({ setIsOpen }) => {
+  const { t } = useTranslation();
   return (
       <div
                 className="flex items-center gap-3 px-4 py-3 relative bg-[#00BBA7]"
@@ -16,12 +18,12 @@ const Header = ({ setIsOpen }) => {
                   <div className="text-lg text-white "
                     
                   >
-                    Medical Checks
+                    {t("checksChat.title")}
                   </div>
                   <div className="text-white text-sm font-normal"
                     
                   >
-                    Upload scans for analysis
+                    {t("checksChat.subtitle")}
                   </div>
                 </div>
                  <X  onClick={() => setIsOpen(false)} className=" 
