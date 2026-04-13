@@ -21,7 +21,7 @@ namespace TadaWy.Infrastructure.Extensions
             });
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileStorageService, FileStorageService>();
-            services.AddScoped<IAppointmentService, ApointmentService>();
+            services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<ILookupService, LookupService>();
             services.AddHttpClient<IGeocodingService, OpenStreetMapGeocodingService>();
             services.AddScoped<IDoctorService,DoctorService>();

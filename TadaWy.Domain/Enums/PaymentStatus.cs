@@ -10,6 +10,6 @@ namespace TadaWy.Domain.Enums
     {
         Pending = 0,
         Paid = 1,
-        NotPaid = 2
+        Failed = 2
     }
 }

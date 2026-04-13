@@ -16,13 +16,25 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.Amount)
-                   .IsRequired();
+                   .IsRequired()
+                   .HasColumnType("decimal(18,2)");
 
             builder.Property(p => p.PaymentDate)
-                   .IsRequired();
+                   .IsRequired(false); 
 
             builder.Property(p => p.Status)
                    .IsRequired();
+
+            builder.Property(p => p.Method)
+                   .IsRequired();
+
+            builder.Property(p => p.ExternalOrderId)
+                   .HasMaxLength(100);
+
+            builder.Property(p => p.ExternalTransactionId)
+                   .HasMaxLength(100);
+
+            builder.HasIndex(p => p.ExternalOrderId); 
         }
     }
 }

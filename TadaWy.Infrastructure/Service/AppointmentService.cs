@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +11,11 @@ using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.Infrastructure.Service
 {
-    public class ApointmentService:IAppointmentService
+    public class AppointmentService:IAppointmentService
     {
         private readonly TadaWyDbContext _tadaWyDbContext;
 
-        public ApointmentService(TadaWyDbContext tadaWyDbContext)
+        public AppointmentService(TadaWyDbContext tadaWyDbContext)
         {
            _tadaWyDbContext = tadaWyDbContext;
         }
@@ -43,11 +43,11 @@ namespace TadaWy.Infrastructure.Service
                             a.Date.Date == date.Date)
                 .Select(a => new AppointmentDto
                 {
-                    DoctorName = a.Doctor.FirstName+a.Doctor.LastName,
-                    Specialty = a.Doctor.Specialization.ToString(),
+                    DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
+                    Specialty = a.Doctor.Specialization.Name,
                     Date = a.Date,
                     Status = a.Status,
-                    IsPaid = a.PaymentStatus
+                    IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
                 })
                 .ToListAsync();
         }
@@ -63,11 +63,11 @@ namespace TadaWy.Infrastructure.Service
                 .OrderBy(a => a.Date)
                 .Select(a => new AppointmentDto
                 {
-                    DoctorName = a.Doctor.FirstName + a.Doctor.LastName,
-                    Specialty = a.Doctor.Specialization.ToString(),
+                    DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
+                    Specialty = a.Doctor.Specialization.Name,
                     Date = a.Date,
                     Status = a.Status,
-                    IsPaid = a.PaymentStatus
+                    IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
                 })
                 .ToListAsync();
         }
@@ -75,7 +75,7 @@ namespace TadaWy.Infrastructure.Service
         public int GetPatientId(string userid)
         {
             var patient = _tadaWyDbContext.Patients.FirstOrDefault(p => p.UserID == userid);
-            return patient.Id;
+            return patient == null ? 0 : patient.Id;
         }
     }
 }

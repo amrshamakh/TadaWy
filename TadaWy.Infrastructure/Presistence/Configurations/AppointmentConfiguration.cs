@@ -21,8 +21,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.Property(a => a.Status)
                    .IsRequired();
 
-            builder.Property(a => a.PaymentStatus)
-                   .IsRequired();
+
 
             builder.HasOne(a => a.Payment)
                    .WithOne(p => p.Appointment)

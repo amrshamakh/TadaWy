@@ -8,7 +8,6 @@ namespace TadaWy.Domain.Entities
         public DateTime Date { get; set; }
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
-        public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
         public Patient Patient { get; set; }
