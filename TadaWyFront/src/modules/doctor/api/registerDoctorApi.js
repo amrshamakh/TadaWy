@@ -1,4 +1,4 @@
-import ApiClient from "@/services/ApiClient";
+import axiosInstance from "@/services/AxiosConfig";
 
 export function registerDoctor(data) {
   const formData = new FormData();
@@ -13,17 +13,21 @@ export function registerDoctor(data) {
   
   // Location
   formData.append("AddressDescription", data.addressDetails || "");
-  formData.append("Latitude", data.latitude);
-  formData.append("Longitude", data.longitude);
+  formData.append("Latitude", String(data.latitude));
+  formData.append("Longitude", String(data.longitude));
   
   // Professional
-  formData.append("SpecializationId", data.specializationId);
+  formData.append("SpecializationId", String(data.specializationId));
   formData.append("CareerStartDate", data.careerStartDate);
   
-  // Files
+  // Files — must be a real File object
   if (data.cv) {
-    formData.append("VerificationDocument", data.cv);
+    formData.append("VerificationDocument", data.cv, data.cv.name);
   }
 
-  return ApiClient.post("/Auth/RegisterDoctor", formData);
+  // Clear Content-Type so axios can set multipart/form-data with the correct boundary
+  return axiosInstance.post("/Auth/RegisterDoctor", formData, {
+    headers: { "Content-Type": undefined },
+  }).then((res) => res.data);
 }
+
