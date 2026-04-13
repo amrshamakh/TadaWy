@@ -1,7 +1,9 @@
 import { Star } from "lucide-react";
 import "./Booking.css";
+import { useTranslation } from "react-i18next";
 
 export default function ReviewsSection({ doctor }) {
+  const { t } = useTranslation();
   if (!doctor) return null;
 
   const reviews = [
@@ -31,8 +33,8 @@ export default function ReviewsSection({ doctor }) {
   return (
     <section className="booking-card booking-reviews-card">
       <div className="booking-reviews-header">
-        <h3 className="booking-section-title">Reviews</h3>
-        <span className="booking-reviews-count">245 total reviews</span>
+        <h3 className="booking-section-title">{t("booking.reviewsSection.title")}</h3>
+        <span className="booking-reviews-count">{245} {t("common.reviews")}</span>
       </div>
 
       <div className="booking-reviews-list">

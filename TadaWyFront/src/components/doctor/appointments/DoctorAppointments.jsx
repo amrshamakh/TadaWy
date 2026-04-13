@@ -9,7 +9,7 @@ import {
   DAY_TO_DATE,
 } from "./data/appointmentsData";
 
-export default function DoctorAppointements() {
+export default function DoctorAppointments() {
   const [activeDay, setActiveDay] = useState("All Days");
   const [pickedDate, setPickedDate] = useState(null);
   const [activePayment, setActivePayment] = useState("All Payments");

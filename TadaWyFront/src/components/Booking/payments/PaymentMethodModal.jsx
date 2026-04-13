@@ -1,7 +1,9 @@
 import offlineIcon from "../../../assets/accounting-bill-21.svg";
 import onlineIcon from "../../../assets/Component.svg";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentMethodModal({ onSelectMethod }) {
+  const { t } = useTranslation();
   return (
     <div
       className="booking-modal payment-method-modal"
@@ -20,7 +22,7 @@ export default function PaymentMethodModal({ onSelectMethod }) {
         className="payment-modal-title"
         style={{ fontWeight: 600, fontSize: "1.45rem", marginBottom: 14 }}
       >
-        Choose your payment method:
+        {t("booking.modals.payment.title")}
       </h3>
       <div className="payment-method-grid" style={{ gap: 12 }}>
         <button
@@ -32,8 +34,8 @@ export default function PaymentMethodModal({ onSelectMethod }) {
           <span className="payment-method-icon payment-method-icon-offline">
             <img src={offlineIcon} alt="" style={{ width: 20, height: 20 }} />
           </span>
-          <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>Pay Offline</span>
-          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>Pay at the clinic</span>
+          <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>{t("booking.modals.payment.offline")}</span>
+          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>{t("booking.modals.payment.offlineSub")}</span>
         </button>
 
         <button
@@ -45,8 +47,8 @@ export default function PaymentMethodModal({ onSelectMethod }) {
           <span className="payment-method-icon payment-method-icon-online">
             <img src={onlineIcon} alt="" style={{ width: 20, height: 20 }} />
           </span>
-          <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>Pay Online</span>
-          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>Visa / Digital Wallet</span>
+          <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>{t("booking.modals.payment.online")}</span>
+          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>{t("booking.modals.payment.onlineSub")}</span>
         </button>
       </div>
     </div>

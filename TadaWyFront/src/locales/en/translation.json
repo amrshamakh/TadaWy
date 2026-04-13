@@ -130,7 +130,8 @@
     "settings": "Settings",
     "notifications": "Notifications",
     "signOut": "Sign Out",
-    "search": "Search for clinic, doctor, or specialty..."
+    "search": "Search for clinic, doctor, or specialty...",
+    "doctorDashboard": "Doctor Dashboard"
   },
   "common": {
     "save": "Save",
@@ -375,16 +376,210 @@
     "banAlert": "Dr. {{name}} has been banned successfully."
   }
 },
-"calendar": {
-  "title": "My Calendar",
-  "subtitle": "View and manage your medical appointments",
-  "selectDate": "Select a date",
-  "selectDateHint": "Select a date to view appointments",
-  "noAppointments": "No appointments",
-  "allAppointments": "All Appointments",
-  "status": {
-    "completed": "Completed",
-    "upcoming": "Upcoming"
+  "calendar": {
+    "title": "My Calendar",
+    "subtitle": "View and manage your medical appointments",
+    "selectDate": "Select a date",
+    "selectDateHint": "Select a date to view appointments",
+    "noAppointments": "No appointments",
+    "allAppointments": "All Appointments",
+    "status": {
+      "completed": "Completed",
+      "upcoming": "Upcoming",
+      "missed": "Missed"
+    },
+    "legend": {
+      "today": "Today",
+      "pressedOn": "Pressed on",
+      "appointment": "Appointment",
+      "paid": "Paid",
+      "notPaid": "Not paid"
+    }
+  },
+  "doctorDashboard": {
+    "profile": {
+      "title": "Doctor Profile",
+      "verified": "Verified",
+      "id": "ID",
+      "specialty": "Specialty",
+      "patients": "Patients",
+      "reviews": "Reviews",
+      "experience": "Years of Experience",
+      "experienceSubtitle": "{{count}} Years",
+      "about": "About",
+      "location": "Location",
+      "locationDetails": "Location Details",
+      "locationPlaceholder": "Select your location",
+      "email": "Email Address",
+      "telephone": "Telephone Number",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "save": "Save",
+      "edit": "Edit"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "filterByDay": "Filter By Day:",
+      "allDays": "All Days",
+      "paymentStatus": "Payment status:",
+      "total": "Total Appointments",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "today": "Today",
+      "viewProfile": "View Profile",
+      "cancel": "Cancel",
+      "phone": "Phone Number:",
+      "payment": "Payment:",
+      "details": "Appointment Details",
+      "allPayments": "All Payments",
+      "paidOnline": "Paid Online",
+      "payAtClinic": "Pay at Clinic",
+      "stats": {
+        "all": "All Appointments",
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "cancelled": "Cancelled",
+        "today": "Today"
+      },
+      "details": "Details"
+    },
+    "schedule": {
+      "title": "Weekly Schedule",
+      "availability": "Weekly Availability",
+      "duration": "Appointment Duration",
+      "durationSubtitle": "Each appointment will set this duration",
+      "fee": "Appointment Fee",
+      "feeSubtitle": "Fee shown to patients when booking",
+      "summary": "Weekly Summary",
+      "totalSessions": "Total Sessions",
+      "totalRevenue": "Total Revenue",
+      "averageFee": "Average Fee",
+      "workingDays": "Working Days",
+      "totalAppts": "Total appts/week",
+      "apptDuration": "Appt duration",
+      "perAppt": "Per appointment",
+      "minutes": "min",
+      "le": "L.E",
+      "dayOff": "Day Off",
+      "addSlot": "+ Add time slot",
+      "slot": "slot",
+      "slots": "slots",
+      "days": {
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday",
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday"
+      }
+    }
+  },
+  "booking": {
+    "doctorCard": {
+      "specialization": "Specialization",
+      "experience": "Years of Experience",
+      "phone": "Phone Number",
+      "rating": "General Rating",
+      "about": "About Doctor",
+      "notAvailable": "N/A",
+      "aboutPlaceholder": "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage."
+    },
+    "locationCard": {
+      "title": "Location",
+      "address": "Address",
+      "locationDetailsPlaceholder": "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage."
+    },
+    "reviewsSection": {
+      "title": "Reviews",
+      "overallRating": "Overall Rating",
+      "reviews": [
+        {
+          "author": "John Smith",
+          "date": "February 15, 2026",
+          "text": "Excellent care and very professional staff. Dr. Johnson took the time to explain everything clearly."
+        },
+        {
+          "author": "Mary Davis",
+          "date": "February 10, 2026",
+          "text": "The best cardiologist I've ever visited. Highly recommend!"
+        },
+        {
+          "author": "Robert Brown",
+          "date": "February 5, 2026",
+          "text": "Very thorough examination. Wait time was a bit long but worth it."
+        }
+      ]
+    },
+    "sidebar": {
+      "title": "Book your appointment",
+      "selectDay": "Select Day/Date:",
+      "availableTime": "Available Times:",
+      "cost": "Appointment Cost:",
+      "bookBtn": "Book Appointment",
+      "currency": "L.E"
+    },
+    "modals": {
+      "payment": {
+        "title": "Choose your payment method:",
+        "offline": "Pay Offline",
+        "offlineSub": "Pay at the clinic",
+        "online": "Pay Online",
+        "onlineSub": "Visa / Digital Wallet"
+      },
+      "receipt": {
+        "title": "PAYMENT RECEIPT",
+        "receiptNo": "Receipt No.",
+        "patientName": "Patient Name",
+        "patientEmail": "Patient Email",
+        "doctorName": "Doctor Name",
+        "doctorLocation": "Doctor Location",
+        "specialization": "Specialization",
+        "phone": "Phone Number",
+        "locationDetails": "Doctor Location Details",
+        "appointmentDate": "Appointment Date",
+        "paymentMethod": "Payment method",
+        "paidOnline": "Paid Online",
+        "payAtClinic": "Pay at the Clinic",
+        "paymentRef": "Payment Reference",
+        "receiptDate": "Receipt Date",
+        "price": "Price",
+        "printBtn": "Print Receipt",
+        "exporting": "Exporting...",
+        "doneBtn": "Done"
+      },
+      "success": {
+        "title": "Booked Successfully",
+        "subTitle": "Thank you for Booking with Us"
+      },
+      "onlinePayment": {
+        "billingTitle": "Billing Details",
+        "fullNameLabel": "Full name",
+        "fullNamePlaceholder": "Full name",
+        "addressLabel": "Billing Address",
+        "addressPlaceholder": "Billing Address",
+        "cityLabel": "City",
+        "cityPlaceholder": "City",
+        "zipLabel": "Zip/Postal Code",
+        "zipPlaceholder": "Zip/Postal Code",
+        "countryLabel": "Country",
+        "countryPlaceholder": "Country",
+        "paymentTitle": "Payment Information",
+        "cardLabel": "Card Number",
+        "cardPlaceholder": "xxxx xxxx xxxx",
+        "nameOnCardLabel": "Name on Card",
+        "nameOnCardPlaceholder": "Full Name",
+        "expiryLabel": "Expiry Date",
+        "expiryPlaceholder": "MM/YY",
+        "cvvLabel": "CVV",
+        "cvvPlaceholder": "Code",
+        "confirmBtn": "Confirm"
+      }
+    }
+  },
+  "common": {
+    "am": "AM",
+    "pm": "PM",
+    "reviews": "Reviews"
   }
-}
 }

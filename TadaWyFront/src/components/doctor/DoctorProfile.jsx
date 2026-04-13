@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaStar } from "react-icons/fa";
-import { FiChevronDown, FiEdit2 } from "react-icons/fi";
+import { FiChevronDown, FiEdit2, FiCheck } from "react-icons/fi";
 import { MapPin, Crosshair ,UserIcon} from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   MapContainer,
   TileLayer,
@@ -86,6 +87,8 @@ const Field = ({
 };
 
 const DoctorProfile = () => {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === "ar";
   const [isEditing, setIsEditing] = useState(false);
   const LOCATION_STORAGE_KEY = "doctor_location";
 
@@ -116,20 +119,20 @@ const DoctorProfile = () => {
 
   const specialtyOptions = useMemo(
     () => [
-      "Cardiology",
-      "Orthopedics",
-      "Dentistry",
-      "Ophthalmology",
-      "Dermatology",
-      "General Practice",
-      "Pediatrics",
-      "Gynecology",
-      "Psychiatry",
-      "Neurology",
-      "Pulmonology",
-      "Gastroenterology",
+      t("discover.specialties.Cardiology"),
+      t("discover.specialties.Orthopedics"),
+      t("discover.specialties.Dentistry"),
+      t("discover.specialties.Ophthalmology"),
+      t("discover.specialties.Dermatology"),
+      t("discover.specialties.General Practice"),
+      t("discover.specialties.Pediatrics"),
+      t("discover.specialties.Gynecology"),
+      t("discover.specialties.Psychiatry"),
+      t("discover.specialties.Neurology"),
+      t("discover.specialties.Pulmonology"),
+      t("discover.specialties.Gastroenterology"),
     ],
-    []
+    [t]
   );
 
   const reviews = useMemo(
@@ -155,8 +158,8 @@ const DoctorProfile = () => {
   const disabled = !isEditing;
 
   const doctorNameOnly = `${form.firstName} ${form.lastName}`.replace(/\s+/g, " ").trim();
-  const doctorDisplayName = `Dr. ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
-  const doctorId = "ID:123231";
+  const doctorDisplayName = `${isRtl ? "د." : "Dr."} ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
+  const doctorId = `${t("doctorDashboard.profile.id")}:123231`;
 
   useEffect(() => {
     try {
@@ -302,7 +305,7 @@ const DoctorProfile = () => {
                       {doctorDisplayName}
                     </h2>
                     <span className="inline-flex items-center rounded-xl bg-[#ECFDF5] px-3 py-1 text-xs font-medium text-[#00BBA7]">
-                      Verified
+                      {t("doctorDashboard.profile.verified")}
                     </span>
                   </div>
                 </div>
@@ -322,18 +325,18 @@ const DoctorProfile = () => {
 
               <button
                 onClick={() => setIsEditing((p) => !p)}
-                className="
+                className={`
                   self-center sm:self-start
                   px-5 py-2.5 rounded-xl text-sm font-medium
-                  border border-[#00BBA7] text-[#00BBA7] bg-white
-                  hover:bg-teal-50 transition-colors
-                  dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30
-                "
+                  transition-all duration-200 shadow-sm flex items-center gap-2 cursor-pointer
+                  ${isEditing 
+                    ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500" 
+                    : "border border-[#00BBA7] text-[#00BBA7] bg-white hover:bg-teal-50 dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30"
+                  }
+                `}
               >
-                <span className="inline-flex items-center gap-2">
-                  {!isEditing && <FiEdit2 className="text-[#00BBA7] dark:text-[#00BBA7]" />}
-                  {isEditing ? "Save" : "Edit"}
-                </span>
+                {isEditing ? <FiCheck size={18} /> : <FiEdit2 size={16} />}
+                {isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
               </button>
             </div>
 
@@ -349,7 +352,7 @@ const DoctorProfile = () => {
                       </span>
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      97 Reviews
+                      97 {t("doctorDashboard.profile.reviews")}
                     </div>
                   </div>
 
@@ -360,7 +363,7 @@ const DoctorProfile = () => {
                       157
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      Patients
+                      {t("doctorDashboard.profile.patients")}
                     </div>
                   </div>
 
@@ -368,10 +371,10 @@ const DoctorProfile = () => {
 
                   <div className="flex-1 text-center">
                     <div className="font-semibold text-slate-800 dark:text-white text-[1.02rem] sm:text-[1.05rem]">
-                      Years of Experience
+                      {t("doctorDashboard.profile.experience")}
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      4 Years
+                      {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
                     </div>
                   </div>
                 </div>
@@ -381,19 +384,19 @@ const DoctorProfile = () => {
             {/* Form */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               <Field
-                label="First Name"
+                label={t("doctorDashboard.profile.firstName")}
                 value={form.firstName}
                 disabled={disabled}
                 onChange={(v) => updateForm({ firstName: v })}
               />
               <Field
-                label="Last Name"
+                label={t("doctorDashboard.profile.lastName")}
                 value={form.lastName}
                 disabled={disabled}
                 onChange={(v) => updateForm({ lastName: v })}
               />
               <Field
-                label="Telephone Number"
+                label={t("doctorDashboard.profile.telephone")}
                 value={form.telephone}
                 disabled={disabled}
                 onChange={(v) => updateForm({ telephone: v })}
@@ -409,7 +412,7 @@ const DoctorProfile = () => {
               {/* Location Input overriding generic Field to add Map modal support */}
               <div className="space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Location
+                  {t("doctorDashboard.profile.location")}
                 </label>
                 <div
                   className={`relative ${!disabled ? "cursor-pointer" : ""}`}
@@ -421,7 +424,7 @@ const DoctorProfile = () => {
                     readOnly
                     type="text"
                     value={form.location || ""}
-                    placeholder="Select your location"
+                    placeholder={t("doctorDashboard.profile.locationPlaceholder")}
                     className={[
                       "w-full rounded-[22px] border px-4 py-3 pr-10 text-sm outline-none transition-colors",
                       disabled
@@ -438,13 +441,13 @@ const DoctorProfile = () => {
                 </div>
               </div>
               <Field
-                label="Location’s Details"
+                label={t("doctorDashboard.profile.locationDetails")}
                 value={form.locationDetails}
                 disabled={disabled}
                 onChange={(v) => setForm((p) => ({ ...p, locationDetails: v }))}
               />
               <Field
-                label="Email Address"
+                label={t("doctorDashboard.profile.email")}
                 value={form.email}
                 disabled={disabled}
                 onChange={(v) => updateForm({ email: v })}
@@ -453,7 +456,7 @@ const DoctorProfile = () => {
 
               <div className="md:col-span-2 space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  About
+                  {t("doctorDashboard.profile.about")}
                 </label>
                 <textarea
                   value={form.about}
@@ -473,7 +476,7 @@ const DoctorProfile = () => {
             {/* Reviews */}
             <div className="mt-10">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Reviews
+                {t("doctorDashboard.profile.reviews")}
               </h3>
 
               <div className="mt-5 space-y-4">
@@ -517,7 +520,7 @@ const DoctorProfile = () => {
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-xl w-full max-w-3xl p-4 space-y-3">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-              Select Your Location
+              {t("doctorDashboard.profile.locationPlaceholder")}
             </h3>
 
             {/* Current Location Button */}
@@ -528,7 +531,7 @@ const DoctorProfile = () => {
                 className="w-full flex items-center justify-center gap-2 border-2 border-teal-500 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-500/10 py-2.5 rounded-lg transition font-medium"
               >
                 <Crosshair size={20} />
-                Use Current Location
+                {t("auth.signup.useLocation")}
               </button>
             )}
 
@@ -551,7 +554,7 @@ const DoctorProfile = () => {
               onClick={() => setShowMap(false)}
               className="w-full bg-gray-200 dark:bg-[#334155] hover:bg-gray-300 dark:hover:bg-[#475569] text-gray-800 dark:text-white py-2.5 rounded-lg font-medium transition"
             >
-              Close
+              {t("common.close")}
             </button>
           </div>
         </div>

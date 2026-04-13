@@ -56,7 +56,7 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
-              {localize(doctor,"clinicLocation")}
+              {t("admin.doctorModal.clinicLocation")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
              {localize(doctor,"clinicLocation")}
@@ -74,7 +74,7 @@ export default function DoctorModal({ doctor, onClose, onApprove, onReject, onBa
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
-              {localize(doctor,"clinicDetails")}
+              {t("admin.doctorModal.clinicDetails")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
                {localize(doctor,"clinicDetails")}

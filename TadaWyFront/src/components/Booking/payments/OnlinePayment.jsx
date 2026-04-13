@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import BookingReceiptModal from "./BookingReceiptModal";
 import BookingSuccessModal from "./BookingSuccessModal";
 import html2canvas from "html2canvas";
+import { useTranslation } from "react-i18next";
 
 export default function OnlinePayment() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -94,18 +96,18 @@ export default function OnlinePayment() {
           <form onSubmit={handleConfirm}>
             {/* Billing Details Section */}
             <h2 className="text-[20px] font-bold text-gray-800 dark:text-white mb-5">
-              Billing Details
+              {t("booking.modals.onlinePayment.billingTitle")}
             </h2>
 
             <div className="space-y-4 mb-7">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                  Full name
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                  {t("booking.modals.onlinePayment.fullNameLabel")}
                 </label>
                 <input
                   type="text"
                   name="fullName"
-                  placeholder="Full name"
+                  placeholder={t("booking.modals.onlinePayment.fullNamePlaceholder")}
                   value={formData.fullName}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -114,13 +116,13 @@ export default function OnlinePayment() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                  Billing Address
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                  {t("booking.modals.onlinePayment.addressLabel")}
                 </label>
                 <input
                   type="text"
                   name="billingAddress"
-                  placeholder="Billing Address"
+                  placeholder={t("booking.modals.onlinePayment.addressPlaceholder")}
                   value={formData.billingAddress}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -130,13 +132,13 @@ export default function OnlinePayment() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                    City
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                    {t("booking.modals.onlinePayment.cityLabel")}
                   </label>
                   <input
                     type="text"
                     name="city"
-                    placeholder="City"
+                    placeholder={t("booking.modals.onlinePayment.cityPlaceholder")}
                     value={formData.city}
                     onChange={handleChange}
                     className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -144,13 +146,13 @@ export default function OnlinePayment() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                    Zip/Postal Code
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                    {t("booking.modals.onlinePayment.zipLabel")}
                   </label>
                   <input
                     type="text"
                     name="zipCode"
-                    placeholder="Zip/Postal Code"
+                    placeholder={t("booking.modals.onlinePayment.zipPlaceholder")}
                     value={formData.zipCode}
                     onChange={handleChange}
                     className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -160,13 +162,13 @@ export default function OnlinePayment() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                  Country
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                  {t("booking.modals.onlinePayment.countryLabel")}
                 </label>
                 <input
                   type="text"
                   name="country"
-                  placeholder="Country"
+                  placeholder={t("booking.modals.onlinePayment.countryPlaceholder")}
                   value={formData.country}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -177,18 +179,18 @@ export default function OnlinePayment() {
 
             {/* Payment Information Section */}
             <h2 className="text-[20px] font-bold text-gray-800 dark:text-white mb-5">
-              Payment Information
+              {t("booking.modals.onlinePayment.paymentTitle")}
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                  Card Number
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                  {t("booking.modals.onlinePayment.cardLabel")}
                 </label>
                 <input
                   type="text"
                   name="cardNumber"
-                  placeholder="xxxx xxxx xxxx"
+                  placeholder={t("booking.modals.onlinePayment.cardPlaceholder")}
                   value={formData.cardNumber}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -197,13 +199,13 @@ export default function OnlinePayment() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                  Name on Card
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                  {t("booking.modals.onlinePayment.nameOnCardLabel")}
                 </label>
                 <input
                   type="text"
                   name="nameOnCard"
-                  placeholder="Full Name"
+                  placeholder={t("booking.modals.onlinePayment.nameOnCardPlaceholder")}
                   value={formData.nameOnCard}
                   onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -213,13 +215,13 @@ export default function OnlinePayment() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                    Expiry Date
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                    {t("booking.modals.onlinePayment.expiryLabel")}
                   </label>
                   <input
                     type="text"
                     name="expiryDate"
-                    placeholder="MM/YY"
+                    placeholder={t("booking.modals.onlinePayment.expiryPlaceholder")}
                     value={formData.expiryDate}
                     onChange={handleChange}
                     className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -227,13 +229,13 @@ export default function OnlinePayment() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 text-left">
-                    CVV
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5 rtl:text-right text-left">
+                    {t("booking.modals.onlinePayment.cvvLabel")}
                   </label>
                   <input
                     type="text"
                     name="cvv"
-                    placeholder="Code"
+                    placeholder={t("booking.modals.onlinePayment.cvvPlaceholder")}
                     value={formData.cvv}
                     onChange={handleChange}
                     className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
@@ -250,13 +252,13 @@ export default function OnlinePayment() {
                 onClick={() => navigate(-1)}
                 className="px-6 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-700 dark:text-gray-300 font-semibold rounded-3xl hover:bg-gray-50 dark:hover:bg-[#475569] transition"
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="submit"
                 className="px-6 py-2.5 bg-[#00BBA7] hover:bg-[#00a693] text-white font-semibold rounded-3xl transition"
               >
-                Confirm
+                {t("booking.modals.onlinePayment.confirmBtn")}
               </button>
             </div>
           </form>

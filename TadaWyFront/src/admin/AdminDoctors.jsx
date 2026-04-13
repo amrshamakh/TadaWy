@@ -84,7 +84,7 @@ useEffect(() => {
             <DoctorCard key={doctor.id} doctor={doctor} onClick={setSelectedDoctor} />
           ))
         ) : (
-          <p className="text-gray-400 text-sm col-span-2 text-center py-10">No doctors found.</p>
+          <p className="text-gray-400 text-sm col-span-2 text-center py-10">{t("admin.doctors.noResults")}</p>
         )}
       </div>
        </div>

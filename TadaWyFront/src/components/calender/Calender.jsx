@@ -137,9 +137,9 @@ export default function Calender() {
   );
 
   const statusTabs = [
-    { key: "completed", label: "Completed" },
-    { key: "missed", label: "Missed" },
-    { key: "upcoming", label: "Upcoming" },
+    { key: "completed", label: t("calendar.status.completed") },
+    { key: "missed", label: t("calendar.status.missed") },
+    { key: "upcoming", label: t("calendar.status.upcoming") },
   ];
 
   const getStatusTabClass = (statusKey) => {
@@ -242,12 +242,16 @@ export default function Calender() {
                 className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#334155]"
                 aria-label="Payment legend"
               >
-                <img src={infoIcon} alt="" className="w-5 h-5" />
+                <img src={infoIcon} alt="" className="w-5 h-5 dark:invert-[.9] dark:sepia-[.9] dark:hue-rotate-[130deg] dark:saturate-[500%]" />
               </button>
               {showPaymentLegend && (
-                <div className="absolute right-0 top-10 z-20 min-w-[140px] border-2 border-[#A7F3D0] bg-white dark:bg-[#1E293B] rounded-xl px-4 py-3 shadow-lg">
-                  <p className="m-0 text-[#00BBA7] font-semibold text-sm">✓ Paid</p>
-                  <p className="m-0 text-[#EF4444] font-semibold text-sm mt-1">✕ Not paid</p>
+                <div 
+                  className={`absolute top-10 z-20 min-w-[140px] border-2 border-[#A7F3D0] bg-white dark:bg-[#1E293B] rounded-xl px-4 py-3 shadow-lg ${
+                    i18n.language === "ar" ? "left-0" : "right-0"
+                  }`}
+                >
+                  <p className="m-0 text-[#00BBA7] font-semibold text-sm">✓ {t("calendar.legend.paid")}</p>
+                  <p className="m-0 text-[#EF4444] font-semibold text-sm mt-1">✕ {t("calendar.legend.notPaid")}</p>
                 </div>
               )}
             </div>

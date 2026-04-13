@@ -1,4 +1,6 @@
 import { Route, Routes } from "react-router-dom";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Calender from "./pages/Calender";
 import LandingPage from "./pages/LandingPage";
 import Layout from "../Layout";
@@ -18,10 +20,18 @@ import BannedDoctors from "./admin/BannedDoctors";
 import MedicalChecksChat from "./components/checksChat/checksChat";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
-import DoctorAppointments from "./components/doctor/appointements/DoctorAppointements";
+import DoctorAppointments from "./components/doctor/appointments/DoctorAppointments";
 import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 
 const App = () => {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    const lang = i18n.language || 'en';
+    document.documentElement.setAttribute('lang', lang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  }, [i18n.language]);
+
   return (
     <div className="max-h-[70vh]">
       <Routes>

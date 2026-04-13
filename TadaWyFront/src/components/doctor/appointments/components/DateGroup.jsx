@@ -1,5 +1,5 @@
 import { Calendar } from "lucide-react";
-import AppointmentCard from "./AppointementsCard";
+import AppointmentCard from "./AppointmentCard";
 
 export default function DateGroup({ dateLabel, apts }) {
   return (
