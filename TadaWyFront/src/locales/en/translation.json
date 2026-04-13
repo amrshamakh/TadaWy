@@ -366,17 +366,23 @@
     "cvUploaded": "CV Uploaded",
     "emailAddress": "Email Address",
     "specialization": "Specialization",
-      "banReason": "Ban Reason",
-      "noBanReason": "No reason provided",
-      "banReasonPrompt": "Write the reason for banning this doctor",
-      "banReasonPlaceholder": "Type the ban reason...",
+    "banReason": "Ban Reason",
+    "noBanReason": "No reason provided",
+    "banReasonPrompt": "Write the reason for banning this doctor",
+    "banReasonPlaceholder": "Type the ban reason...",
+    "rejectReason": "Rejection Reason",
+    "noRejectReason": "No reason provided",
+    "rejectReasonPrompt": "Write the reason for rejecting this doctor",
+    "rejectReasonPlaceholder": "Type the rejection reason...",
+    "reasonRequired": "Reason is required.",
     "actions": {
       "approve": "Approve",
       "reject": "Reject",
       "ban": "BAN",
-        "unban": "Unban",
-        "cancel": "Cancel",
-        "confirmBan": "Confirm Ban"
+      "unban": "Unban",
+      "cancel": "Cancel",
+      "confirmBan": "Confirm Ban",
+      "confirmReject": "Confirm Reject"
     },
     "status": {
       "Approved": "Approved",
@@ -386,7 +392,8 @@
     }
   },
   "doctorContext": {
-    "banAlert": "Dr. {{name}} has been banned successfully."
+    "banAlert": "Dr. {{name}} has been banned successfully.",
+    "rejectAlert": "Dr. {{name}} has been rejected successfully."
   }
 },
   "calendar": {
@@ -619,6 +626,31 @@
     "confirm": "Confirm",
     "success": "Password updated successfully",
     "errors": {
+      "passwordMismatch": "Passwords do not match!"
+    }
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email and we will send you password reset instructions.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "sendButton": "Send Reset Link",
+    "sentSuccess": "A password reset link has been sent to your email address."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "subtitle": "Set your new password to continue.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPassword": "Confirm New Password",
+    "confirmPasswordPlaceholder": "Re-enter your new password",
+    "passwordHint": "Password must be at least 8 characters and include letters and numbers.",
+    "confirm": "Reset Password",
+    "success": "Password has been reset successfully.",
+    "errors": {
+      "weakPassword": "Password must be at least 6 characters.",
       "passwordMismatch": "Passwords do not match!"
     }
   }

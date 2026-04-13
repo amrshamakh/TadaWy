@@ -13,6 +13,7 @@ const AdminDoctors = () => {
   const [filter, setFilter] = useState("Approved");
   const [search, setSearch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [toastMessage, setToastMessage] = useState("");
   const { doctors, updateStatus, banDoctor } = useDoctors();
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -97,9 +98,18 @@ useEffect(() => {
         doctor={selectedDoctor}
         onClose={() => setSelectedDoctor(null)}
         onApprove={(d) => updateStatus(d, "Approved")}
-        onReject={(d) => updateStatus(d, "Rejected")}
+        onReject={(d, reason) => updateStatus(d, "Rejected", reason)}
         onBan={banDoctor}
+        onActionSuccess={(message) => {
+          setToastMessage(message);
+          setTimeout(() => setToastMessage(""), 2600);
+        }}
       />
+      {toastMessage && (
+        <div className="fixed top-4 right-4 z-[70] rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm shadow-lg">
+          {toastMessage}
+        </div>
+      )}
       
     </div>
   );

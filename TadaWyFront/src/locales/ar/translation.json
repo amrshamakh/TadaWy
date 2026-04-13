@@ -370,13 +370,19 @@
     "noBanReason": "لم يتم إدخال سبب",
     "banReasonPrompt": "اكتب سبب حظر هذا الطبيب",
     "banReasonPlaceholder": "اكتب سبب الحظر...",
+    "rejectReason": "سبب الرفض",
+    "noRejectReason": "لم يتم إدخال سبب",
+    "rejectReasonPrompt": "اكتب سبب رفض هذا الطبيب",
+    "rejectReasonPlaceholder": "اكتب سبب الرفض...",
+    "reasonRequired": "يجب إدخال السبب.",
     "actions": {
       "approve": "موافقة",
       "reject": "رفض",
       "ban": "حظر",
       "unban": "رفع الحظر",
       "cancel": "إلغاء",
-      "confirmBan": "تأكيد الحظر"
+      "confirmBan": "تأكيد الحظر",
+      "confirmReject": "تأكيد الرفض"
     },
     "status": {
       "Approved": "معتمد",
@@ -386,7 +392,8 @@
     }
   },
   "doctorContext": {
-    "banAlert": "تم حظر الطبيب {{name}} بنجاح."
+    "banAlert": "تم حظر الطبيب {{name}} بنجاح.",
+    "rejectAlert": "تم رفض الطبيب {{name}} بنجاح."
     },
     "common": {
       "am": "صباحاً",
@@ -624,6 +631,31 @@
     "confirm": "تأكيد",
     "success": "تم تحديث كلمة المرور بنجاح",
     "errors": {
+      "passwordMismatch": "كلمتا المرور غير متطابقتين!"
+    }
+  },
+  "forgotPassword": {
+    "title": "نسيت كلمة المرور",
+    "subtitle": "أدخل بريدك الإلكتروني وسنرسل لك تعليمات إعادة تعيين كلمة المرور.",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "name@example.com",
+    "sendButton": "إرسال رابط إعادة التعيين",
+    "sentSuccess": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني."
+  },
+  "resetPassword": {
+    "title": "إعادة تعيين كلمة المرور",
+    "subtitle": "قم بتعيين كلمة المرور الجديدة للمتابعة.",
+    "email": "البريد الإلكتروني",
+    "emailPlaceholder": "name@example.com",
+    "newPassword": "كلمة المرور الجديدة",
+    "newPasswordPlaceholder": "أدخل كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور الجديدة",
+    "passwordHint": "يجب أن تكون كلمة المرور 8 أحرف على الأقل وتحتوي على حروف وأرقام.",
+    "confirm": "إعادة تعيين كلمة المرور",
+    "success": "تمت إعادة تعيين كلمة المرور بنجاح.",
+    "errors": {
+      "weakPassword": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
       "passwordMismatch": "كلمتا المرور غير متطابقتين!"
     }
   }
