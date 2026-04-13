@@ -145,7 +145,10 @@
     "cancel": "Cancel",
     "edit": "Edit Profile",
     "welcome": "Welcome to our application",
-    "close": "Close"
+    "close": "Close",
+    "search": "Search",
+    "add": "Add",
+    "adding": "Adding…"
   },
   "hero": {
     "badge": "Your Health, Simplified",

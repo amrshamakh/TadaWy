@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.IService;
 
@@ -10,26 +6,16 @@ namespace TadaWy.Infrastructure.Service
 {
     public class FileStorageService : IFileStorageService
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public FileStorageService(IWebHostEnvironment env)
+        public FileStorageService(ICloudinaryService cloudinaryService)
         {
-            _env = env;
+            _cloudinaryService = cloudinaryService;
         }
+
         public async Task<string> SaveFileAsync(Stream stream, string fileName)
         {
-            var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-            var uniqueName = Guid.NewGuid() + Path.GetExtension(fileName);
-            var filePath = Path.Combine(uploadsFolder, uniqueName);
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await stream.CopyToAsync(fileStream);
-            }
-            return $"/uploads/{fileName}";
+            return await _cloudinaryService.UploadFileAsync(stream, fileName, "DoctorCvs");
         }
     }
 }

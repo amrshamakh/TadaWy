@@ -28,7 +28,7 @@ const Login = () => {
       console.log("Login data:", formData);
       const res = await loginPatient(formData);
       if (res && res.token) {
-        await login(res.token);
+        await login(res.token, res.refreshToken);
         navigate("/discover");
       }
     } catch (error) {

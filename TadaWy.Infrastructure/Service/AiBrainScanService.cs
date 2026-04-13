@@ -17,7 +17,7 @@ namespace TadaWy.Infrastructure.Service
             _configuration = configuration;
         }
 
-        public async Task<UploadAiBrainScanResponseDto> AnalyzeAsync(string filePath)
+        public async Task<BrainScanResultDto> AnalyzeAsync(string imageUrl)
         {
             int maxRetries = 3;
 
@@ -27,12 +27,12 @@ namespace TadaWy.Infrastructure.Service
                 {
                     using var form = new MultipartFormDataContent();
 
-                    using var stream = File.OpenRead(filePath);
+                    using var stream = await _httpClient.GetStreamAsync(imageUrl);
 
                     var fileContent = new StreamContent(stream);
                     fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
 
-                    form.Add(fileContent, "file", Path.GetFileName(filePath));
+                    form.Add(fileContent, "file", "image.jpg");
 
                     var response = await _httpClient.PostAsync(
                         _configuration["AiSettings:BaseUrl"],
@@ -45,14 +45,12 @@ namespace TadaWy.Infrastructure.Service
 
                     using var document = JsonDocument.Parse(json);
 
-                    var description = document
-                        .RootElement
-                        .GetProperty("description")
-                        .GetString();
+                    var root = document.RootElement;
 
-                    return new UploadAiBrainScanResponseDto
+                    return new BrainScanResultDto
                     {
-                        Description = description!
+                        DescriptionEn = root.GetProperty("description_en").GetString()!,
+                        DescriptionAr = root.GetProperty("description_ar").GetString()!
                     };
                 }
                 catch (Exception ex)

@@ -151,6 +151,8 @@ namespace TadaWy.Infrastructure.service
                 CareerStartDate = authRegisterDoctorDTO.CareerStartDate,
                 VerificationDocumentPath = filePath,
                 CreatedAt= DateTime.UtcNow,
+                PhoneNumber = authRegisterDoctorDTO.PhoneNumber
+                
 
             };
              _tadaWyDbContext.Add(doctor);
