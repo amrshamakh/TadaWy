@@ -46,11 +46,17 @@
   "profile": {
     "title": "My Profile",
     "subtitle": "Manage your personal and medical information",
+    "edit": "Edit",
+    "save": "Save",
     "personalInfo": {
       "title": "Personal Information",
       "subtitle": "Your basic personal details",
       "firstName": "First Name",
       "lastName": "Last Name",
+      "nameMap": {
+        "Ahmed": "Ahmed",
+        "Khaled": "Khaled"
+      },
       "email": "Email",
       "phoneNumber": "Phone Number",
       "age": "Age",
@@ -114,6 +120,7 @@
       "specialization": "Specialization",
       "specializationPlaceholder": "e.g., Cardiology, Pediatrics",
       "uploadCV": "Upload Your CV including Experience, certificates, and ID card",
+      "yearsOfExperience": "Years of experience:",
       "uploadID": "Upload Your ID",
       "uploadFile": "Upload your File",
       "uploadImage": "Upload your Img",
@@ -130,7 +137,8 @@
     "settings": "Settings",
     "notifications": "Notifications",
     "signOut": "Sign Out",
-    "search": "Search for clinic, doctor, or specialty..."
+    "search": "Search for clinic, doctor, or specialty...",
+    "doctorDashboard": "Doctor Dashboard"
   },
   "common": {
     "save": "Save",
@@ -361,11 +369,23 @@
     "cvUploaded": "CV Uploaded",
     "emailAddress": "Email Address",
     "specialization": "Specialization",
+    "banReason": "Ban Reason",
+    "noBanReason": "No reason provided",
+    "banReasonPrompt": "Write the reason for banning this doctor",
+    "banReasonPlaceholder": "Type the ban reason...",
+    "rejectReason": "Rejection Reason",
+    "noRejectReason": "No reason provided",
+    "rejectReasonPrompt": "Write the reason for rejecting this doctor",
+    "rejectReasonPlaceholder": "Type the rejection reason...",
+    "reasonRequired": "Reason is required.",
     "actions": {
       "approve": "Approve",
       "reject": "Reject",
       "ban": "BAN",
-      "unban": "Unban"
+      "unban": "Unban",
+      "cancel": "Cancel",
+      "confirmBan": "Confirm Ban",
+      "confirmReject": "Confirm Reject"
     },
     "status": {
       "Approved": "Approved",
@@ -375,19 +395,266 @@
     }
   },
   "doctorContext": {
-    "banAlert": "Dr. {{name}} has been banned successfully."
+    "banAlert": "Dr. {{name}} has been banned successfully.",
+    "rejectAlert": "Dr. {{name}} has been rejected successfully."
   }
 },
-"calendar": {
-  "title": "My Calendar",
-  "subtitle": "View and manage your medical appointments",
-  "selectDate": "Select a date",
-  "selectDateHint": "Select a date to view appointments",
-  "noAppointments": "No appointments",
-  "allAppointments": "All Appointments",
-  "status": {
-    "completed": "Completed",
-    "upcoming": "Upcoming"
+  "calendar": {
+    "title": "My Calendar",
+    "subtitle": "View and manage your medical appointments",
+    "selectDate": "Select a date",
+    "selectDateHint": "Select a date to view appointments",
+    "noAppointments": "No appointments",
+    "allAppointments": "All Appointments",
+    "status": {
+      "completed": "Completed",
+      "upcoming": "Upcoming",
+      "missed": "Missed"
+    },
+    "legend": {
+      "today": "Today",
+      "pressedOn": "Pressed on",
+      "appointment": "Appointment",
+      "paid": "Paid",
+      "notPaid": "Not paid"
+    }
+  },
+  "doctorDashboard": {
+    "profile": {
+      "title": "Doctor Profile",
+      "verified": "Verified",
+      "id": "ID",
+      "specialty": "Specialty",
+      "patients": "Patients",
+      "reviews": "Reviews",
+      "experience": "Years of Experience",
+      "experienceSubtitle": "{{count}} Years",
+      "about": "About",
+      "location": "Location",
+      "locationDetails": "Location Details",
+      "locationPlaceholder": "Select your location",
+      "locationFetchError": "Failed to get location details",
+      "locationPermissionDenied": "Location permission denied",
+      "email": "Email Address",
+      "telephone": "Telephone Number",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "save": "Save",
+      "edit": "Edit"
+    },
+    "appointments": {
+      "title": "Appointments",
+      "filterByDay": "Filter By Day:",
+      "allDays": "All Days",
+      "paymentStatus": "Payment status:",
+      "total": "Total Appointments",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "today": "Today",
+      "viewProfile": "View Profile",
+      "cancel": "Cancel",
+      "phone": "Phone Number:",
+      "payment": "Payment:",
+      "details": "Appointment Details",
+      "allPayments": "All Payments",
+      "paidOnline": "Paid Online",
+      "payAtClinic": "Pay at Clinic",
+      "stats": {
+        "all": "All Appointments",
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "cancelled": "Cancelled",
+        "today": "Today"
+      },
+      "details": "Details"
+    },
+    "schedule": {
+      "title": "Weekly Schedule",
+      "availability": "Weekly Availability",
+      "duration": "Appointment Duration",
+      "durationSubtitle": "Each appointment will set this duration",
+      "fee": "Appointment Fee",
+      "feeSubtitle": "Fee shown to patients when booking",
+      "summary": "Weekly Summary",
+      "totalSessions": "Total Sessions",
+      "totalRevenue": "Total Revenue",
+      "averageFee": "Average Fee",
+      "workingDays": "Working Days",
+      "totalAppts": "Total appts/week",
+      "apptDuration": "Appt duration",
+      "perAppt": "Per appointment",
+      "minutes": "min",
+      "le": "L.E",
+      "dayOff": "Day Off",
+      "addSlot": "+ Add time slot",
+      "slot": "slot",
+      "slots": "slots",
+      "days": {
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday",
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday"
+      }
+    }
+  },
+  "booking": {
+    "doctorCard": {
+      "specialization": "Specialization",
+      "experience": "Years of Experience",
+      "phone": "Phone Number",
+      "rating": "General Rating",
+      "about": "About Doctor",
+      "notAvailable": "N/A",
+      "aboutPlaceholder": "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage."
+    },
+    "locationCard": {
+      "title": "Location",
+      "address": "Address",
+      "locationDetailsPlaceholder": "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage."
+    },
+    "reviewsSection": {
+      "title": "Reviews",
+      "overallRating": "Overall Rating",
+      "reviews": [
+        {
+          "author": "John Smith",
+          "date": "February 15, 2026",
+          "text": "Excellent care and very professional staff. Dr. Johnson took the time to explain everything clearly."
+        },
+        {
+          "author": "Mary Davis",
+          "date": "February 10, 2026",
+          "text": "The best cardiologist I've ever visited. Highly recommend!"
+        },
+        {
+          "author": "Robert Brown",
+          "date": "February 5, 2026",
+          "text": "Very thorough examination. Wait time was a bit long but worth it."
+        }
+      ]
+    },
+    "sidebar": {
+      "title": "Book your appointment",
+      "selectDay": "Select Day/Date:",
+      "availableTime": "Available Times:",
+      "cost": "Appointment Cost:",
+      "bookBtn": "Book Appointment",
+      "currency": "L.E"
+    },
+    "modals": {
+      "payment": {
+        "title": "Choose your payment method:",
+        "offline": "Pay Offline",
+        "offlineSub": "Pay at the clinic",
+        "online": "Pay Online",
+        "onlineSub": "Visa / Digital Wallet"
+      },
+      "receipt": {
+        "title": "PAYMENT RECEIPT",
+        "receiptNo": "Receipt No.",
+        "patientName": "Patient Name",
+        "patientEmail": "Patient Email",
+        "doctorName": "Doctor Name",
+        "doctorLocation": "Doctor Location",
+        "specialization": "Specialization",
+        "phone": "Phone Number",
+        "locationDetails": "Doctor Location Details",
+        "locationDetailsPlaceholder": "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage.",
+        "appointmentDate": "Appointment Date",
+        "paymentMethod": "Payment method",
+        "paidOnline": "Paid Online",
+        "payAtClinic": "Pay at the Clinic",
+        "paymentRef": "Payment Reference",
+        "receiptDate": "Receipt Date",
+        "price": "Price",
+        "printBtn": "Print Receipt",
+        "exporting": "Exporting...",
+        "doneBtn": "Done"
+      },
+      "success": {
+        "title": "Booked Successfully",
+        "subTitle": "Thank you for Booking with Us"
+      },
+      "onlinePayment": {
+        "billingTitle": "Billing Details",
+        "fullNameLabel": "Full name",
+        "fullNamePlaceholder": "Full name",
+        "addressLabel": "Billing Address",
+        "addressPlaceholder": "Billing Address",
+        "cityLabel": "City",
+        "cityPlaceholder": "City",
+        "zipLabel": "Zip/Postal Code",
+        "zipPlaceholder": "Zip/Postal Code",
+        "countryLabel": "Country",
+        "countryPlaceholder": "Country",
+        "paymentTitle": "Payment Information",
+        "cardLabel": "Card Number",
+        "cardPlaceholder": "xxxx xxxx xxxx",
+        "nameOnCardLabel": "Name on Card",
+        "nameOnCardPlaceholder": "Full Name",
+        "expiryLabel": "Expiry Date",
+        "expiryPlaceholder": "MM/YY",
+        "cvvLabel": "CVV",
+        "cvvPlaceholder": "Code",
+        "confirmBtn": "Confirm",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "checksChat": {
+    "title": "Medical Checks",
+    "subtitle": "Upload scans for analysis",
+    "welcome": "Hello! I'm your TadaWy Medical Check. Upload medical scan images for brain (X-rays, MRI, CT scans, etc.) and I'll provide a detailed result.",
+    "diagnosis": "Diagnosis",
+    "analyzeError": "Sorry, I was unable to analyze the image. Please try again.",
+    "uploadHint": "Upload medical scans for AI-assisted analysis. Not a replacement for professional diagnosis.",
+    "uploadButton": "Upload Scan Image",
+    "waitingForResults": "Waiting for Results",
+    "closeAria": "Close Medical Chat",
+    "openAria": "Open Medical Chat"
+  },
+  "common": {
+    "am": "AM",
+    "pm": "PM",
+    "reviews": "Reviews"
+  },
+  "changePassword": {
+    "title": "Change your Password",
+    "currentPassword": "Current password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "confirm": "Confirm",
+    "success": "Password updated successfully",
+    "errors": {
+      "passwordMismatch": "Passwords do not match!"
+    }
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email and we will send you password reset instructions.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "sendButton": "Send Reset Link",
+    "sentSuccess": "A password reset link has been sent to your email address."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "subtitle": "Set your new password to continue.",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter your new password",
+    "confirmPassword": "Confirm New Password",
+    "confirmPasswordPlaceholder": "Re-enter your new password",
+    "passwordHint": "Password must be at least 8 characters and include letters and numbers.",
+    "confirm": "Reset Password",
+    "success": "Password has been reset successfully.",
+    "errors": {
+      "weakPassword": "Password must be at least 6 characters.",
+      "passwordMismatch": "Passwords do not match!"
+    }
   }
-}
 }

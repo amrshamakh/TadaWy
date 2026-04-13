@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ChangePassword = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     currentPassword: "",
     newPassword: "",
@@ -17,11 +19,11 @@ const ChangePassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      alert(t("changePassword.errors.passwordMismatch"));
       return;
     }
     console.log("Changing password", formData);
-    alert("Password updated successfully");
+    alert(t("changePassword.success"));
     navigate(-1);
   };
 
@@ -38,7 +40,7 @@ const ChangePassword = () => {
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-white mb-6">
-          Change your Password
+          {t("changePassword.title")}
         </h2>
 
         {/* Form */}
@@ -46,7 +48,7 @@ const ChangePassword = () => {
           {/* Current Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-left">
-              Current password
+              {t("changePassword.currentPassword")}
             </label>
             <div className="relative">
               <input
@@ -62,7 +64,7 @@ const ChangePassword = () => {
           {/* New Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-left">
-              New Password
+              {t("changePassword.newPassword")}
             </label>
             <div className="relative">
               <input
@@ -78,7 +80,7 @@ const ChangePassword = () => {
           {/* Confirm Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-left">
-              Confirm Password
+              {t("changePassword.confirmPassword")}
             </label>
             <div className="relative">
               <input
@@ -96,7 +98,7 @@ const ChangePassword = () => {
             type="submit"
             className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
           >
-            Confirm
+            {t("changePassword.confirm")}
           </button>
         </form>
       </div>

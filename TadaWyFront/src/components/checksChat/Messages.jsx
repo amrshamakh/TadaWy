@@ -2,8 +2,10 @@
 import React from "react";
 import { assets } from "../../assets/assets";
 import { LoaderCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const Messages = ({ messages, isLoading, messagesEndRef }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-50 max-h-80">
       {messages.map((msg) => (
@@ -59,7 +61,7 @@ const Messages = ({ messages, isLoading, messagesEndRef }) => {
              <LoaderCircle className="animate-spin w-7 h-7 text-[#00BBA7] " />
           </div>
            <div>
-             <span className="text-lg font-normal">Waiting for Results</span>
+             <span className="text-lg font-normal">{t("checksChat.waitingForResults")}</span>
            </div>
          
         </div>

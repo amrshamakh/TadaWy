@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 
 export default function AppointmentCard({ clinic, doctor, specialty, date, time, status, paid }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const isUpcoming = status === "upcoming";
   const isMissed = status === "missed";
   const isCompleted = status === "completed";
 
-  const statusLabel = isUpcoming ? "Upcoming" : isMissed ? "Missed" : "Completed";
+  const statusLabel = isUpcoming ? t("calendar.status.upcoming") : isMissed ? t("calendar.status.missed") : t("calendar.status.completed");
   const statusPillClass = isUpcoming
     ? "text-[#00BBA7] border-[#00BBA7] bg-transparent"
     : isMissed
@@ -55,20 +57,20 @@ export default function AppointmentCard({ clinic, doctor, specialty, date, time,
             type="button"
             className="px-4 py-1.5 text-sm rounded-full border border-gray-200 bg-white text-[#EF4444] hover:bg-red-50 active:bg-red-100 dark:bg-[#0F172A] dark:border-[#334155] transition-colors"
           >
-            Cancel
+            {t("doctorDashboard.appointments.cancel")}
           </button>
           <button
             type="button"
             className="px-4 py-1.5 text-sm rounded-full border border-gray-200 bg-white text-[#00BBA7] hover:bg-teal-50 active:bg-teal-100 dark:bg-[#0F172A] dark:border-[#334155] transition-colors"
           >
-            Details
+            {t("doctorDashboard.appointments.details")}
           </button>
           {isCompleted && (
             <button
               type="button"
               className="px-4 py-1.5 text-sm rounded-full bg-[#00BBA7] text-white hover:bg-[#009e8f] active:bg-[#008f82] transition-colors"
             >
-              Review
+              {t("doctorDashboard.profile.reviews")}
             </button>
           )}
         </div>

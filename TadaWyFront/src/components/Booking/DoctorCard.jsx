@@ -1,7 +1,9 @@
 import UserIcon from "../../assets/User.svg";
 import "./Booking.css";
+import { useTranslation } from "react-i18next";
 
 export default function DoctorCard({ doctor }) {
+  const { t } = useTranslation();
   if (!doctor) return null;
 
   return (
@@ -15,28 +17,32 @@ export default function DoctorCard({ doctor }) {
           />
         </div>
         <div className="booking-doctor-main">
-          <h2 className="booking-doctor-name">{doctor.doctor}</h2>
+          <h2 className="booking-doctor-name">
+            {doctor.id ? t(`discover.clinicsData.${doctor.id}.doctor`) : doctor.doctor}
+          </h2>
 
           <div className="booking-doctor-tags">
             <div className="booking-doctor-tag">
-              <span className="booking-doctor-tag-label">Specialization:</span>
-              <span className="booking-doctor-tag-value">{doctor.specialty}</span>
-            </div>
-
-            <div className="booking-doctor-tag">
-              <span className="booking-doctor-tag-label">Years of experience:</span>
+              <span className="booking-doctor-tag-label">{t("booking.doctorCard.specialization")}:</span>
               <span className="booking-doctor-tag-value">
-                {doctor.experience || "4 Years"}
+                {doctor.id ? t(`discover.clinicsData.${doctor.id}.specialty`) : doctor.specialty}
               </span>
             </div>
 
             <div className="booking-doctor-tag">
-              <span className="booking-doctor-tag-label">Phone Number:</span>
-              <span className="booking-doctor-tag-value">{doctor.phone || "Not available"}</span>
+              <span className="booking-doctor-tag-label">{t("booking.doctorCard.experience")}:</span>
+              <span className="booking-doctor-tag-value">
+                {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
+              </span>
             </div>
 
             <div className="booking-doctor-tag">
-              <span className="booking-doctor-tag-label">Rating Overall</span>
+              <span className="booking-doctor-tag-label">{t("booking.doctorCard.phone")}:</span>
+              <span className="booking-doctor-tag-value">{doctor.phone || t("booking.doctorCard.notAvailable")}</span>
+            </div>
+
+            <div className="booking-doctor-tag">
+              <span className="booking-doctor-tag-label">{t("booking.doctorCard.rating")}</span>
               <span className="booking-doctor-tag-value">
                 {doctor.rating?.toFixed ? doctor.rating.toFixed(1) : doctor.rating}/5
               </span>
@@ -46,9 +52,9 @@ export default function DoctorCard({ doctor }) {
       </div>
 
       <div className="booking-doctor-about">
-        <h3 className="booking-section-title">About</h3>
+        <h3 className="booking-section-title">{t("booking.doctorCard.about")}</h3>
         <p className="booking-about-desc">
-          {doctor.about || "Located on the 5th floor of Medical Plaza building, with easy access from Main Street. Parking available in the building garage."}
+          {doctor.about || t("booking.doctorCard.aboutPlaceholder")}
         </p>
       </div>
     </section>

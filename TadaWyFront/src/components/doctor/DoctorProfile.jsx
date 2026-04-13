@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { FaStar } from "react-icons/fa";
-import { FiChevronDown, FiEdit2 } from "react-icons/fi";
+import { FiChevronDown, FiEdit2, FiCheck } from "react-icons/fi";
 import { MapPin, Crosshair ,UserIcon} from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   MapContainer,
   TileLayer,
@@ -50,10 +51,9 @@ const Field = ({
             disabled={disabled}
             className={[
               "w-full appearance-none rounded-[22px] border px-4 py-3 pr-11 text-sm outline-none transition-colors",
-              "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
               disabled
-                ? "bg-slate-50 text-slate-600 border-slate-200"
-                : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30",
+                ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
             ].join(" ")}
           >
             {options.map((opt) => (
@@ -76,10 +76,9 @@ const Field = ({
           placeholder={placeholder}
           className={[
             "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors",
-            "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
             disabled
-              ? "bg-slate-50 text-slate-600 border-slate-200"
-              : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30",
+              ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+              : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
           ].join(" ")}
         />
       )}
@@ -88,6 +87,8 @@ const Field = ({
 };
 
 const DoctorProfile = () => {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === "ar";
   const [isEditing, setIsEditing] = useState(false);
   const LOCATION_STORAGE_KEY = "doctor_location";
 
@@ -118,47 +119,52 @@ const DoctorProfile = () => {
 
   const specialtyOptions = useMemo(
     () => [
-      "Cardiology",
-      "Orthopedics",
-      "Dentistry",
-      "Ophthalmology",
-      "Dermatology",
-      "General Practice",
-      "Pediatrics",
-      "Gynecology",
-      "Psychiatry",
-      "Neurology",
-      "Pulmonology",
-      "Gastroenterology",
+      t("discover.specialties.Cardiology"),
+      t("discover.specialties.Orthopedics"),
+      t("discover.specialties.Dentistry"),
+      t("discover.specialties.Ophthalmology"),
+      t("discover.specialties.Dermatology"),
+      t("discover.specialties.General Practice"),
+      t("discover.specialties.Pediatrics"),
+      t("discover.specialties.Gynecology"),
+      t("discover.specialties.Psychiatry"),
+      t("discover.specialties.Neurology"),
+      t("discover.specialties.Pulmonology"),
+      t("discover.specialties.Gastroenterology"),
     ],
-    []
+    [t]
   );
 
   const reviews = useMemo(
-    () => [
-      {
-        id: 1,
-        name: "John Smith",
-        date: "February 15, 2020",
-        rating: 4.5,
-        text: "Excellent care and very professional staff. Dr. Johnson took the time to explain everything clearly.",
-      },
-      {
-        id: 2,
-        name: "Mary Davis",
-        date: "February 10, 2020",
-        rating: 4.5,
-        text: "The best cardiologist I've ever visited. Highly recommend!",
-      },
-    ],
-    []
+    () => {
+      const localizedReviews = t("booking.reviewsSection.reviews", { returnObjects: true });
+      const defaultRatings = [4.5, 4, 3.5];
+      if (!Array.isArray(localizedReviews)) return [];
+
+      return localizedReviews.slice(0, 2).map((review, idx) => ({
+        id: idx + 1,
+        rating: defaultRatings[idx] ?? 4,
+        name: review.author,
+        date: review.date,
+        text: review.text,
+      }));
+    },
+    [t]
   );
 
   const disabled = !isEditing;
 
-  const doctorNameOnly = `${form.firstName} ${form.lastName}`.replace(/\s+/g, " ").trim();
-  const doctorDisplayName = `Dr. ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
-  const doctorId = "ID:123231";
+  const localizedFirstName = isRtl
+    ? t(`doctorDashboard.profile.nameMap.${form.firstName}`, { defaultValue: form.firstName })
+    : form.firstName;
+  const localizedLastName = isRtl
+    ? t(`doctorDashboard.profile.nameMap.${form.lastName}`, { defaultValue: form.lastName })
+    : form.lastName;
+  const doctorNameOnly = `${localizedFirstName} ${localizedLastName}`.replace(/\s+/g, " ").trim();
+  const doctorDisplayName = `${isRtl ? "د." : "Dr."} ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
+  const doctorId = `${t("doctorDashboard.profile.id")}:123231`;
+  const localizedSpecialty =
+    t(`discover.specialties.${form.specialty}`, { defaultValue: form.specialty }) || form.specialty;
 
   useEffect(() => {
     try {
@@ -235,7 +241,7 @@ const DoctorProfile = () => {
       }));
     } catch (error) {
       console.error("Geocoding error:", error);
-      alert("Failed to get location details");
+      alert(t("doctorDashboard.profile.locationFetchError"));
     }
   };
 
@@ -264,7 +270,7 @@ const DoctorProfile = () => {
         await reverseGeocode(lat, lng);
         setShowMap(false);
       },
-      () => alert("Location permission denied")
+      () => alert(t("doctorDashboard.profile.locationPermissionDenied"))
     );
   };
 
@@ -281,12 +287,12 @@ const DoctorProfile = () => {
   return (
     <div className="w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] -mx-4 sm:-mx-6 -my-4 sm:-my-6 bg-[#F8FAFC] dark:bg-[#0F172A] min-h-[calc(100vh-64px)] py-6 sm:py-8">
       <div className="max-w-[980px] mx-auto px-4 sm:px-0">
-        <div className="rounded-3xl border border-slate-200 bg-white dark:bg-[#0B1220] dark:border-[#1E293B] shadow-sm overflow-hidden">
+        <div className="rounded-3xl border border-slate-200 bg-white dark:bg-[#1E293B] dark:border-[#334155] shadow-sm overflow-hidden">
           {/* Header */}
           <div className="relative bg-teal-500 h-[124px] sm:h-[140px]">
             {/* Avatar overlapping boundary */}
-            <div className="absolute left-6 sm:left-10 top-full -translate-y-1/2">
-              <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
+            <div className={`absolute top-full -translate-y-1/2 ${isRtl ? "right-6 sm:right-10" : "left-6 sm:left-10"}`}>
+            <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
                 <UserIcon
                   
                   alt="Doctor"
@@ -298,13 +304,13 @@ const DoctorProfile = () => {
             {/* Name + badge (right of avatar) */}
             <div className="h-full px-6 sm:px-10">
               <div className="h-full flex items-end pb-4">
-                <div className="pl-[158px] sm:pl-[180px]">
+                <div className={isRtl ? "pr-[158px] sm:pr-[180px]" : "pl-[158px] sm:pl-[180px]"}>
                   <div className="flex items-center gap-3">
                     <h2 className="text-lg sm:text-xl font-semibold text-white leading-snug">
                       {doctorDisplayName}
                     </h2>
                     <span className="inline-flex items-center rounded-xl bg-[#ECFDF5] px-3 py-1 text-xs font-medium text-[#00BBA7]">
-                      Verified
+                      {t("doctorDashboard.profile.verified")}
                     </span>
                   </div>
                 </div>
@@ -315,27 +321,27 @@ const DoctorProfile = () => {
           {/* Body */}
           <div className="px-6 sm:px-10 pb-10 pt-3 sm:pt-4">
             <div className="flex items-start justify-between gap-4 -translate-y-1 sm:-translate-y-2">
-              <div className="pl-[158px] sm:pl-[180px] text-left">
+              <div className={`${isRtl ? "pr-[158px] sm:pr-[180px] text-right" : "pl-[158px] sm:pl-[180px] text-left"}`}>
                 <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 space-y-0.5 mt-0">
-                  <div>{form.specialty}</div>
+                  <div>{localizedSpecialty}</div>
                   <div>{doctorId}</div>
                 </div>
               </div>
 
               <button
                 onClick={() => setIsEditing((p) => !p)}
-                className="
+                className={`
                   self-center sm:self-start
                   px-5 py-2.5 rounded-xl text-sm font-medium
-                  border border-[#00BBA7] text-[#00BBA7] bg-white
-                  hover:bg-teal-50 transition-colors
-                  dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30
-                "
+                  transition-all duration-200 shadow-sm flex items-center gap-2 cursor-pointer
+                  ${isEditing 
+                    ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500" 
+                    : "border border-[#00BBA7] text-[#00BBA7] bg-white hover:bg-teal-50 dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30"
+                  }
+                `}
               >
-                <span className="inline-flex items-center gap-2">
-                  {!isEditing && <FiEdit2 className="text-[#00BBA7] dark:text-[#00BBA7]" />}
-                  {isEditing ? "Save" : "Edit"}
-                </span>
+                {isEditing ? <FiCheck size={18} /> : <FiEdit2 size={16} />}
+                {isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
               </button>
             </div>
 
@@ -351,7 +357,7 @@ const DoctorProfile = () => {
                       </span>
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      97 Reviews
+                      {isRtl ? "97 تقييم" : `97 ${t("doctorDashboard.profile.reviews")}`}
                     </div>
                   </div>
 
@@ -362,7 +368,7 @@ const DoctorProfile = () => {
                       157
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      Patients
+                      {t("doctorDashboard.profile.patients")}
                     </div>
                   </div>
 
@@ -370,10 +376,10 @@ const DoctorProfile = () => {
 
                   <div className="flex-1 text-center">
                     <div className="font-semibold text-slate-800 dark:text-white text-[1.02rem] sm:text-[1.05rem]">
-                      Years of Experience
+                      {t("doctorDashboard.profile.experience")}
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      4 Years
+                      {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
                     </div>
                   </div>
                 </div>
@@ -383,25 +389,25 @@ const DoctorProfile = () => {
             {/* Form */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               <Field
-                label="First Name"
+                label={t("doctorDashboard.profile.firstName")}
                 value={form.firstName}
                 disabled={disabled}
                 onChange={(v) => updateForm({ firstName: v })}
               />
               <Field
-                label="Last Name"
+                label={t("doctorDashboard.profile.lastName")}
                 value={form.lastName}
                 disabled={disabled}
                 onChange={(v) => updateForm({ lastName: v })}
               />
               <Field
-                label="Telephone Number"
+                label={t("doctorDashboard.profile.telephone")}
                 value={form.telephone}
                 disabled={disabled}
                 onChange={(v) => updateForm({ telephone: v })}
               />
               <Field
-                label="Specialty"
+                label={t("doctorDashboard.profile.specialty")}
                 value={form.specialty}
                 disabled={disabled}
                 onChange={(v) => updateForm({ specialty: v })}
@@ -411,7 +417,7 @@ const DoctorProfile = () => {
               {/* Location Input overriding generic Field to add Map modal support */}
               <div className="space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  Location
+                  {t("doctorDashboard.profile.location")}
                 </label>
                 <div
                   className={`relative ${!disabled ? "cursor-pointer" : ""}`}
@@ -423,17 +429,16 @@ const DoctorProfile = () => {
                     readOnly
                     type="text"
                     value={form.location || ""}
-                    placeholder="Select your location"
+                    placeholder={t("doctorDashboard.profile.locationPlaceholder")}
                     className={[
                       "w-full rounded-[22px] border px-4 py-3 pr-10 text-sm outline-none transition-colors",
-                      "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
                       disabled
-                        ? "bg-slate-50 text-slate-600 border-slate-200 cursor-not-allowed"
-                        : "bg-white border-slate-200 hover:border-teal-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30 cursor-pointer pointer-events-none",
+                        ? "bg-slate-50 text-slate-600 border-slate-200 cursor-not-allowed dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                        : "bg-white border-slate-200 hover:border-teal-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30 cursor-pointer pointer-events-none",
                     ].join(" ")}
                   />
                   <div
-                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 border-slate-200" : "text-black"
+                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 dark:text-slate-500" : "text-teal-500 dark:text-[#00BBA7]"
                       }`}
                   >
                     <MapPin className="w-5 h-5" />
@@ -441,13 +446,13 @@ const DoctorProfile = () => {
                 </div>
               </div>
               <Field
-                label="Location’s Details"
+                label={t("doctorDashboard.profile.locationDetails")}
                 value={form.locationDetails}
                 disabled={disabled}
                 onChange={(v) => setForm((p) => ({ ...p, locationDetails: v }))}
               />
               <Field
-                label="Email Address"
+                label={t("doctorDashboard.profile.email")}
                 value={form.email}
                 disabled={disabled}
                 onChange={(v) => updateForm({ email: v })}
@@ -456,7 +461,7 @@ const DoctorProfile = () => {
 
               <div className="md:col-span-2 space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  About
+                  {t("doctorDashboard.profile.about")}
                 </label>
                 <textarea
                   value={form.about}
@@ -465,10 +470,9 @@ const DoctorProfile = () => {
                   rows={5}
                   className={[
                     "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors resize-none",
-                    "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
                     disabled
-                      ? "bg-slate-50 text-slate-600 border-slate-200"
-                      : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30",
+                      ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                      : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
                   ].join(" ")}
                 />
               </div>
@@ -477,7 +481,7 @@ const DoctorProfile = () => {
             {/* Reviews */}
             <div className="mt-10">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Reviews
+                {t("doctorDashboard.profile.reviews")}
               </h3>
 
               <div className="mt-5 space-y-4">
@@ -521,7 +525,7 @@ const DoctorProfile = () => {
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-xl w-full max-w-3xl p-4 space-y-3">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-              Select Your Location
+              {t("doctorDashboard.profile.locationPlaceholder")}
             </h3>
 
             {/* Current Location Button */}
@@ -532,7 +536,7 @@ const DoctorProfile = () => {
                 className="w-full flex items-center justify-center gap-2 border-2 border-teal-500 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-500/10 py-2.5 rounded-lg transition font-medium"
               >
                 <Crosshair size={20} />
-                Use Current Location
+                {t("auth.signup.useLocation")}
               </button>
             )}
 
@@ -555,7 +559,7 @@ const DoctorProfile = () => {
               onClick={() => setShowMap(false)}
               className="w-full bg-gray-200 dark:bg-[#334155] hover:bg-gray-300 dark:hover:bg-[#475569] text-gray-800 dark:text-white py-2.5 rounded-lg font-medium transition"
             >
-              Close
+              {t("common.close")}
             </button>
           </div>
         </div>

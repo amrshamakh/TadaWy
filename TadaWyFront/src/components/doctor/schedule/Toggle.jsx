@@ -3,8 +3,8 @@ export default function Toggle({ enabled, onChange }) {
   return (
     <button
       onClick={() => onChange(!enabled)}
-      className={`relative w-10 h-[22px] rounded-full border-none cursor-pointer transition-colors duration-200 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-300
-        ${enabled ? "bg-teal-400" : "bg-gray-200"}`}
+      className={`relative w-10 h-[22px] rounded-full border-none cursor-pointer transition-colors duration-200 flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-teal-300 dark:focus:ring-teal-900/40
+        ${enabled ? "bg-teal-400 dark:bg-teal-500" : "bg-gray-200 dark:bg-slate-700"}`}
       aria-checked={enabled}
       role="switch"
     >
