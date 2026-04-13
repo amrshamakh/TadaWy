@@ -108,7 +108,7 @@ export default function OnlinePayment() {
                   placeholder="Full name"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                   required
                 />
               </div>
@@ -123,7 +123,7 @@ export default function OnlinePayment() {
                   placeholder="Billing Address"
                   value={formData.billingAddress}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                   required
                 />
               </div>
@@ -139,7 +139,7 @@ export default function OnlinePayment() {
                     placeholder="City"
                     value={formData.city}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                     required
                   />
                 </div>
@@ -153,7 +153,7 @@ export default function OnlinePayment() {
                     placeholder="Zip/Postal Code"
                     value={formData.zipCode}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                     required
                   />
                 </div>
@@ -169,7 +169,7 @@ export default function OnlinePayment() {
                   placeholder="Country"
                   value={formData.country}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                   required
                 />
               </div>
@@ -191,7 +191,7 @@ export default function OnlinePayment() {
                   placeholder="xxxx xxxx xxxx"
                   value={formData.cardNumber}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                   required
                 />
               </div>
@@ -206,7 +206,7 @@ export default function OnlinePayment() {
                   placeholder="Full Name"
                   value={formData.nameOnCard}
                   onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                  className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                   required
                 />
               </div>
@@ -222,7 +222,7 @@ export default function OnlinePayment() {
                     placeholder="MM/YY"
                     value={formData.expiryDate}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                     required
                   />
                 </div>
@@ -236,7 +236,7 @@ export default function OnlinePayment() {
                     placeholder="Code"
                     value={formData.cvv}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
+                    className="w-full px-4 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00BBA7]"
                     required
                   />
                 </div>
@@ -248,7 +248,7 @@ export default function OnlinePayment() {
               <button
                 type="button"
                 onClick={() => navigate(-1)}
-                className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold rounded-3xl hover:bg-gray-50 transition"
+                className="px-6 py-2.5 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-700 dark:text-gray-300 font-semibold rounded-3xl hover:bg-gray-50 dark:hover:bg-[#475569] transition"
               >
                 Cancel
               </button>

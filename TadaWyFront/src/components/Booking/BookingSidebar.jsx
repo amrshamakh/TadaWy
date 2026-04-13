@@ -194,8 +194,7 @@ export default function BookingSidebar({ doctor }) {
 
       {activeModal && (
         <div
-          className="fixed inset-0 z-[98]"
-          style={{ backgroundColor: "rgba(255,255,255,0.78)" }}
+          className="fixed inset-0 z-[98] bg-white/78 dark:bg-[#0f172a]/80 backdrop-blur-[5px]"
         />
       )}
 

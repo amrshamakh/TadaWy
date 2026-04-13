@@ -58,11 +58,11 @@ export default function DoctorSchedule() {
   const totalAppts   = totalSlots * Math.floor(240 / duration);
 
   return (
-    <div className="min-h-screen  p-7 font-sans">
+    <div className="min-h-screen p-7 font-sans">
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">My schedule</h1>
-        <p className="text-sm text-gray-400 mt-0.5">
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">My schedule</h1>
+        <p className="text-sm text-gray-400 dark:text-slate-400 mt-0.5">
           Set your available hours so patients can book appointments
         </p>
       </div>

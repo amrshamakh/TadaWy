@@ -7,7 +7,7 @@ export default function BookingSuccessModal({ isInline = false }) {
         <img
           src={successFireworks}
           alt=""
-          className="success-fireworks-bg"
+          className="success-fireworks-bg dark:opacity-20 dark:invert"
           style={{ opacity: 0.38 }}
         />
         <div className="success-content" style={{ minHeight: 240 }}>

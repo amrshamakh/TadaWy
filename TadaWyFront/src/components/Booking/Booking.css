@@ -32,6 +32,11 @@
   border: 1px solid #E9ECEF;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
   padding: 32px;
+  cursor: default;
+}
+
+.booking-doctor-card {
+  cursor: default;
 }
 
 .booking-section-title {
@@ -307,7 +312,8 @@
 
 .booking-carousel-nav:hover {
   background: #F9FAFB;
-  color: #111827;
+  color: #00BBA7;
+  border-color: #00BBA7;
 }
 
 .booking-date-grid {
@@ -604,6 +610,11 @@
   gap: 12px;
 }
 
+.receipt-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(0.95);
+}
+
 .receipt-divider {
   border-top: 1px dashed #D1D5DB;
   margin: 12px 0;
@@ -798,17 +809,220 @@
   .receipt-price strong {
     font-size: 1.3rem;
   }
-
-  .success-card,
-  .success-content {
-    min-height: 200px;
-  }
-
-  .success-content h3 {
-    font-size: 1.5rem;
-  }
-
-  .success-content p {
-    font-size: 1.1rem;
-  }
 }
+
+/* Dark Mode Styles */
+.dark .booking-page-wrapper {
+  background-color: #0F172A;
+}
+
+.dark .booking-card {
+  background: #1E293B;
+  border-color: #334155;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.dark .booking-section-title {
+  color: #FFFFFF;
+}
+
+.dark .booking-doctor-name {
+  color: #F3F4F6;
+}
+
+.dark .booking-doctor-tag {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark .booking-doctor-tag-label {
+  color: #94A3B8;
+}
+
+.dark .booking-doctor-tag-value {
+  color: #FFFFFF;
+}
+
+.dark .booking-doctor-avatar {
+  background: #1E293B;
+  border-color: #00BBA7;
+}
+
+.dark .booking-location-address-main {
+  color: #F3F4F6;
+}
+
+.dark .booking-location-desc,
+.dark .booking-about-desc {
+  color: #94A3B8;
+}
+
+.dark .booking-location-icon {
+  color: #94A3B8;
+}
+
+.dark .booking-reviews-count {
+  color: #E5E7EB;
+}
+
+.dark .booking-review-item {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+.dark .booking-review-author {
+  color: #F3F4F6;
+}
+
+.dark .booking-review-date {
+  color: #94A3B8;
+}
+
+.dark .booking-review-text {
+  color: #E5E7EB;
+}
+
+.dark .booking-review-badge {
+  background: #0f766e;
+  color: #ccfbf1;
+}
+
+.dark .booking-sidebar-label {
+  color: #E5E7EB;
+}
+
+.dark .booking-carousel-nav {
+  border-color: #334155;
+  color: #E5E7EB;
+}
+
+.dark .booking-carousel-nav:hover {
+  background: #334155;
+}
+
+.dark .booking-date-pill,
+.dark .booking-time-pill {
+  background: #334155;
+  border-color: #475569;
+  color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.dark .booking-date-pill-day {
+  color: #94A3B8;
+}
+
+.dark .booking-date-pill-date {
+  color: #FFFFFF;
+}
+
+.dark .booking-date-pill-selected,
+.dark .booking-time-pill-selected {
+  background: #0f766e;
+  border-color: #00BBA7;
+}
+
+.dark .booking-date-pill-selected .booking-date-pill-day,
+.dark .booking-date-pill-selected .booking-date-pill-date,
+.dark .booking-time-pill-selected {
+  color: #ccfbf1;
+}
+
+.dark .booking-price-label {
+  color: #94A3B8;
+}
+
+.dark .booking-price-currency {
+  color: #E5E7EB;
+}
+
+/* Modals Dark Mode */
+.dark .payment-method-modal {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.dark .payment-modal-title {
+  color: #FFFFFF;
+}
+
+.dark .payment-method-option {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark .payment-method-option:hover {
+  border-color: #00BBA7;
+}
+
+.dark .payment-method-name {
+  color: #FFFFFF;
+}
+
+.dark .payment-method-subtitle {
+  color: #94A3B8;
+}
+
+.dark .payment-method-icon-offline {
+  background-color: #78350f;
+  color: #fde68a;
+}
+
+.dark .payment-method-icon-online {
+  background-color: #134e4a;
+  color: #99f6e4;
+}
+
+/* Receipt Dark Mode */
+.dark .receipt-shell {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.dark .receipt-header-content {
+  color: #FFFFFF;
+}
+
+.dark .receipt-label {
+  color: #94A3B8;
+}
+
+.dark .receipt-value {
+  color: #FFFFFF;
+}
+
+.dark .receipt-divider {
+  border-color: #334155;
+}
+
+.dark .receipt-price {
+  color: #94A3B8;
+}
+
+.dark .receipt-price strong {
+  color: #FFFFFF;
+}
+
+.dark .receipt-btn-print {
+  background: #334155;
+  border-color: #475569;
+  color: #FFFFFF;
+}
+
+.dark .receipt-btn-print:hover {
+  background: #475569;
+}
+
+/* Success Modal Dark Mode */
+.dark .success-card {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark .success-content h3 {
+  color: #FFFFFF;
+}
+
+.dark .success-content p {
+  color: #94A3B8;
+}

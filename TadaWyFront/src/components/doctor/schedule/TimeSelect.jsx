@@ -11,7 +11,7 @@ export default function TimeSelect({ value, onChange }) {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-50 cursor-pointer outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-200 transition"
+      className="border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-slate-200 bg-gray-50 dark:bg-[#0F172A] cursor-pointer outline-none focus:border-teal-400 dark:focus:border-teal-500 focus:ring-1 focus:ring-teal-200 dark:focus:ring-teal-900/30 transition shadow-sm"
     >
       {TIMES.map((t) => (
         <option key={t} value={t}>{t}</option>

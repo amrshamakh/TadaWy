@@ -63,7 +63,7 @@ export default function BookingReceiptModal({
             <div className="receipt-row-grid" style={{ marginTop: '10px' }}>
               <div>
                 <p className="receipt-label">Payment method</p>
-                <p className="receipt-value receipt-highlight" style={{ color: isOnline ? "#00BBA7" : "#E3B341" }}>
+                <p className="receipt-value receipt-highlight" style={{ color: isOnline ? "#00BBA7" : "#FACC15" }}>
                   {isOnline ? "Paid Online" : "Pay at the Clinic"}
                 </p>
               </div>

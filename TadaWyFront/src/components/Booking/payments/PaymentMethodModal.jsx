@@ -33,7 +33,7 @@ export default function PaymentMethodModal({ onSelectMethod }) {
             <img src={offlineIcon} alt="" style={{ width: 20, height: 20 }} />
           </span>
           <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>Pay Offline</span>
-          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem", color: "#64748B" }}>Pay at the clinic</span>
+          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>Pay at the clinic</span>
         </button>
 
         <button
@@ -46,7 +46,7 @@ export default function PaymentMethodModal({ onSelectMethod }) {
             <img src={onlineIcon} alt="" style={{ width: 20, height: 20 }} />
           </span>
           <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>Pay Online</span>
-          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem", color: "#64748B" }}>Visa / Digital Wallet</span>
+          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>Visa / Digital Wallet</span>
         </button>
       </div>
     </div>

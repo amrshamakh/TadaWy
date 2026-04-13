@@ -50,10 +50,9 @@ const Field = ({
             disabled={disabled}
             className={[
               "w-full appearance-none rounded-[22px] border px-4 py-3 pr-11 text-sm outline-none transition-colors",
-              "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
               disabled
-                ? "bg-slate-50 text-slate-600 border-slate-200"
-                : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30",
+                ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
             ].join(" ")}
           >
             {options.map((opt) => (
@@ -76,10 +75,9 @@ const Field = ({
           placeholder={placeholder}
           className={[
             "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors",
-            "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
             disabled
-              ? "bg-slate-50 text-slate-600 border-slate-200"
-              : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30",
+              ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+              : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
           ].join(" ")}
         />
       )}
@@ -281,12 +279,12 @@ const DoctorProfile = () => {
   return (
     <div className="w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] -mx-4 sm:-mx-6 -my-4 sm:-my-6 bg-[#F8FAFC] dark:bg-[#0F172A] min-h-[calc(100vh-64px)] py-6 sm:py-8">
       <div className="max-w-[980px] mx-auto px-4 sm:px-0">
-        <div className="rounded-3xl border border-slate-200 bg-white dark:bg-[#0B1220] dark:border-[#1E293B] shadow-sm overflow-hidden">
+        <div className="rounded-3xl border border-slate-200 bg-white dark:bg-[#1E293B] dark:border-[#334155] shadow-sm overflow-hidden">
           {/* Header */}
           <div className="relative bg-teal-500 h-[124px] sm:h-[140px]">
             {/* Avatar overlapping boundary */}
             <div className="absolute left-6 sm:left-10 top-full -translate-y-1/2">
-              <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
+            <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
                 <UserIcon
                   
                   alt="Doctor"
@@ -426,14 +424,13 @@ const DoctorProfile = () => {
                     placeholder="Select your location"
                     className={[
                       "w-full rounded-[22px] border px-4 py-3 pr-10 text-sm outline-none transition-colors",
-                      "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
                       disabled
-                        ? "bg-slate-50 text-slate-600 border-slate-200 cursor-not-allowed"
-                        : "bg-white border-slate-200 hover:border-teal-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30 cursor-pointer pointer-events-none",
+                        ? "bg-slate-50 text-slate-600 border-slate-200 cursor-not-allowed dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                        : "bg-white border-slate-200 hover:border-teal-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30 cursor-pointer pointer-events-none",
                     ].join(" ")}
                   />
                   <div
-                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 border-slate-200" : "text-black"
+                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-teal-500 dark:text-[#00BBA7]" : "text-slate-400 border-slate-200"
                       }`}
                   >
                     <MapPin className="w-5 h-5" />
@@ -465,10 +462,9 @@ const DoctorProfile = () => {
                   rows={5}
                   className={[
                     "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors resize-none",
-                    "dark:bg-[#0B1220] dark:text-white dark:border-[#1E293B]",
                     disabled
-                      ? "bg-slate-50 text-slate-600 border-slate-200"
-                      : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:focus:ring-teal-900/30",
+                      ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                      : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
                   ].join(" ")}
                 />
               </div>

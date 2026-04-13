@@ -6,10 +6,10 @@ export default function StatsRow() {
       {stats.map((s) => (
         <div
           key={s.label}
-          className="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4"
+          className="bg-white dark:bg-[#1E293B] rounded-xl border border-gray-100 dark:border-[#334155] shadow-sm px-5 py-4"
         >
           <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-          <p className="text-sm text-gray-500 mt-0.5">{s.label}</p>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mt-0.5">{s.label}</p>
         </div>
       ))}
     </div>
