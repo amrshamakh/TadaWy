@@ -25,11 +25,14 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      console.log("Login data:", formData);
       const res = await loginPatient(formData);
       if (res && res.token) {
         await login(res.token);
-        navigate("/discover");
+        if (Array.isArray(res.role) && res.role.includes("Doctor")) {
+          navigate("/doctor/schedule");
+        } else {
+          navigate("/discover");
+        }
       }
     } catch (error) {
       console.error("Login failed", error);
