@@ -63,7 +63,8 @@ namespace TadaWy.Infrastructure.Services
             // Analyze using the URL (assuming IAiBrainScanService.AnalyzeAsync can handle URLs)
             var result = await _aiService.AnalyzeAsync(imageUrl);
 
-            scan.Description = result.Description;
+            scan.DescriptionEn = result.DescriptionEn;
+            scan.DescriptionAr = result.DescriptionAr;
 
             await _context.SaveChangesAsync();
 
@@ -71,7 +72,8 @@ namespace TadaWy.Infrastructure.Services
             {
                 ScanId = scan.Id,
                 ImageUrl = imageUrl,
-                Description = result.Description,
+                DescriptionEn = result.DescriptionEn,
+                DescriptionAr = result.DescriptionAr,
                 CreatedAt = scan.CreatedAt
             };
         }
@@ -93,7 +95,8 @@ namespace TadaWy.Infrastructure.Services
                 .Select(x => new AiBrainScanHistoryDto
                 {
                     ImageUrl = x.ImagePath, // Path is already the full URL
-                    Description = x.Description,
+                    DescriptionEn = x.DescriptionEn,
+                    DescriptionAr = x.DescriptionAr,
                     CreatedAt = x.CreatedAt
                 })
                 .ToListAsync();

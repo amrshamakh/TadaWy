@@ -10,7 +10,8 @@ namespace TadaWy.Applicaation.DTO.AiDTOS
     {
         public int ScanId { get; set; }
         public string ImageUrl { get; set; } = default!;
-        public string Description { get; set; } = default!;
+        public string DescriptionEn { get; set; } = default!;
+        public string DescriptionAr { get; set; } = default!;
 
         public DateTime CreatedAt { get; set; }
     }

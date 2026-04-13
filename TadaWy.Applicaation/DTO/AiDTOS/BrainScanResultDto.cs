@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace TadaWy.Applicaation.DTO.AiDTOS
 {
-    public class AiBrainScanHistoryDto
+    public class BrainScanResultDto
     {
-        public string ImageUrl { get; set; } = default!;
-
         public string DescriptionEn { get; set; } = default!;
         public string DescriptionAr { get; set; } = default!;
-
-        public DateTime CreatedAt { get; set; }
     }
 }

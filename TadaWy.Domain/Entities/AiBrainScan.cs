@@ -14,7 +14,8 @@ namespace TadaWy.Domain.Entities
 
         public string ImagePath { get; set; } = default!;
 
-        public string? Description { get; set; }
+        public string? DescriptionEn { get; set; }
+        public string? DescriptionAr { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

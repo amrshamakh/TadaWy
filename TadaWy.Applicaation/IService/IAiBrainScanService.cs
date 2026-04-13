@@ -9,6 +9,6 @@ namespace TadaWy.Applicaation.IService
 {
     public interface IAiBrainScanService
     {
-        Task<UploadAiBrainScanResponseDto> AnalyzeAsync(string filePath);
+        Task<BrainScanResultDto> AnalyzeAsync(string filePath);
     }
 }

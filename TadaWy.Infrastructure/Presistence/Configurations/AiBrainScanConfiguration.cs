@@ -24,7 +24,10 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                    .IsRequired()
                    .HasMaxLength(500);
 
-            builder.Property(x => x.Description)
+            builder.Property(x => x.DescriptionEn)
+                   .HasMaxLength(200);
+
+            builder.Property(x => x.DescriptionAr)
                    .HasMaxLength(200);
 
             builder.Property(x => x.CreatedAt)
