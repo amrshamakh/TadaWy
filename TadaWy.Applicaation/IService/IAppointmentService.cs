@@ -18,6 +18,8 @@ namespace TadaWy.Applicaation.IService
 
         Task<bool> CancelAppointmentAsync(int appointmentId, int patientId);
 
+        Task<ReceiptDTo> GetReceipt(int appointmentId);
+
         int GetPatientId(string Userid);
     }
 }

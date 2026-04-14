@@ -94,6 +94,39 @@ namespace TadaWy.Infrastructure.Service
                 .ToListAsync();
         }
 
+        public async Task<ReceiptDTo> GetReceipt(int appointmentId)
+        {
+            var appointment = await _tadaWyDbContext.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                    .ThenInclude(d => d.Specialization)
+                .Include(a => a.Payment)
+                .FirstOrDefaultAsync(a => a.Id == appointmentId);
+
+            if (appointment == null)
+                throw new Exception("Not Found");
+
+            return new ReceiptDTo
+            {
+                ReceiptDate = DateTime.UtcNow,
+
+                PatientName = appointment.Patient.FirstName + " " + appointment.Patient.LastName,
+                PatientEmail = appointment.Patient.User.Email,
+
+                DoctorName = appointment.Doctor.FirstName + " " + appointment.Doctor.LastName,
+                Specialty = appointment.Doctor.Specialization.Name,
+
+                DoctorLocation = appointment.Doctor.Address,
+                DoctorLocationDetails = appointment.Doctor.AddressDescription,
+                PhoneNumber = appointment.Doctor.PhoneNumber,
+
+                Date = appointment.Date,
+
+                PaymentMethod = appointment.Payment?.Method.ToString() ?? "Cash",
+
+                Price = appointment.Payment?.Amount ?? 0
+            };
+        }
         public int GetPatientId(string userid)
         {
             var patient = _tadaWyDbContext.Patients.FirstOrDefault(p => p.UserID == userid);

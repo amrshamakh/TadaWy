@@ -4,6 +4,7 @@ using System.Security.Claims;
 using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Enums;
 using TadaWy.Infrastructure.Presistence;
+using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
 {
@@ -52,6 +53,13 @@ namespace TadaWy.API.Controllers
             return Ok("Appointment cancelled successfully");
         }
 
+        [HttpGet("receipt/{appointmentId}")]
+        public async Task<IActionResult> GetReceipt(int appointmentId)
+        {
+            var data = await _service.GetReceipt(appointmentId);
+            return Ok(data);
+        }
+
         [HttpGet("by-date")]
         public async Task<IActionResult> GetByDate(DateTime date)
         {
@@ -65,7 +73,7 @@ namespace TadaWy.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
+        [HttpGet("by-status")]
         public async Task<IActionResult> GetbyStatus(AppointmentStatus status)
         {
             var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

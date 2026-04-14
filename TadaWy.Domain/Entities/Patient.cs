@@ -17,7 +17,7 @@ namespace TadaWy.Domain.Entities
     {
         public int Id { get; set; }
         public string UserID { get; set; } = default!;
-
+        public ApplicationUser User { get; set; }
         public string FirstName { get; set; } = default!;
         public string LastName { get; set; } = default!;
 
