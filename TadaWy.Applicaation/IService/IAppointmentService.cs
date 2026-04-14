@@ -16,6 +16,8 @@ namespace TadaWy.Applicaation.IService
 
         Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId, AppointmentStatus status);
 
-         int GetPatientId(string Userid);
+        Task<bool> CancelAppointmentAsync(int appointmentId, int patientId);
+
+        int GetPatientId(string Userid);
     }
 }

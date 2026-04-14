@@ -24,7 +24,8 @@ namespace TadaWy.Infrastructure.Service
             var appointments = await _tadaWyDbContext.Appointments
                 .Where(a => a.PatientId == patientId &&
                             a.Date.Month == month &&
-                            a.Date.Year == year)
+                            a.Date.Year == year &&
+                            a.Status != AppointmentStatus.Cancelled) 
                 .Select(a => a.Date.Date)
                 .Distinct()
                 .ToListAsync();
@@ -52,6 +53,27 @@ namespace TadaWy.Infrastructure.Service
                 .ToListAsync();
         }
 
+        public async Task<bool> CancelAppointmentAsync(int appointmentId, int patientId)
+        {
+            var appointment = await _tadaWyDbContext.Appointments
+                .FirstOrDefaultAsync(a => a.Id == appointmentId && a.PatientId == patientId);
+
+            if (appointment == null)
+                return false;
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
+                return false;
+
+            
+            if (appointment.Date < DateTime.Now)
+                return false;
+
+            appointment.Status = AppointmentStatus.Cancelled;
+
+            await _tadaWyDbContext.SaveChangesAsync();
+
+            return true;
+        }
         public async Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId,AppointmentStatus status)
         {
             var query = _tadaWyDbContext.Appointments

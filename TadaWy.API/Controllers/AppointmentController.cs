@@ -31,6 +31,27 @@ namespace TadaWy.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("cancel/{appointmentId}")]
+        public async Task<IActionResult> CancelAppointment(int appointmentId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var patientId =_service.GetPatientId(userId);
+
+            if (patientId == null)
+                return Unauthorized();
+
+            var result = await _service.CancelAppointmentAsync(appointmentId, patientId);
+
+            if (!result)
+                return BadRequest("Cannot cancel this appointment");
+
+            return Ok("Appointment cancelled successfully");
+        }
+
         [HttpGet("by-date")]
         public async Task<IActionResult> GetByDate(DateTime date)
         {
