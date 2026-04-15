@@ -9,42 +9,35 @@ import { useTranslation } from "react-i18next";
 const AdminDoctors = () => {
  
   const { t } = useTranslation();
-  const { i18n } = useTranslation();
   const [filter, setFilter] = useState("Approved");
   const [search, setSearch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const { doctors, updateStatus, banDoctor } = useDoctors();
+  const { doctors, totalCount, fetchDoctors, loading, updateStatus, banDoctor } = useDoctors();
   const [currentPage, setCurrentPage] = useState(1);
-  
-
-const filtered = doctors.filter((d) => {
-  if (d.status === "Banned") return false;
-  const matchesFilter = filter === "All" || d.status === filter;
-  const doctorName = i18n.language === "ar" ? d.name_ar : d.name_en;
-  const matchesSearch = doctorName.toLowerCase().includes(search.toLowerCase());
-  return matchesFilter && matchesSearch;
-});
   const ITEMS_PER_PAGE = 6;
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const paginated = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
- const filterOptions = [
-  { value: "Approved", label: t("admin.doctors.approvedFilter") },
-  { value: "Rejected", label: t("admin.doctors.rejectedFilter") },
-  { value: "Pending",  label: t("admin.doctors.pendingFilter") },
-];
-  useMemo(() => {
-      setCurrentPage(1);
-    }, [filter, search, selectedDoctor]);
-  
-    const handlePageChange = (page) => {
-      setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    };
 
-    
-useEffect(() => {
-  console.log(doctors);
-}, [doctors]);
+  useEffect(() => {
+    fetchDoctors({
+      Status: filter,
+      Search: search,
+      PageNumber: currentPage,
+      PageSize: ITEMS_PER_PAGE
+    });
+  }, [filter, search, currentPage]);
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
+  const paginated = doctors; // Since API already does pagination
+  
+  const filterOptions = [
+    { value: "Approved", label: t("admin.doctors.approvedFilter") },
+    { value: "Rejected", label: t("admin.doctors.rejectedFilter") },
+    { value: "Pending",  label: t("admin.doctors.pendingFilter") },
+  ];
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   
 
   return (
@@ -78,8 +71,12 @@ useEffect(() => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        {paginated.length > 0 ? (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 min-h-[400px]">
+        {loading ? (
+          <div className="col-span-2 flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-500"></div>
+          </div>
+        ) : paginated.length > 0 ? (
           paginated.map((doctor) => (
             <DoctorCard key={doctor.id} doctor={doctor} onClick={setSelectedDoctor} />
           ))
