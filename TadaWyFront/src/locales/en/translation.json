@@ -115,10 +115,12 @@
       "confirmPassword": "Confirm Password",
       "confirmPasswordPlaceholder": "Confirm your password",
       "selectLocation": "Select your location",
-      "addressDetails": "Address Details",
+      "addressDetails": "Address Description",
       "addressPlaceholder": "Building number, street name, floor, etc.",
+      "careerStartDate": "Career Start Date",
       "specialization": "Specialization",
       "specializationPlaceholder": "e.g., Cardiology, Pediatrics",
+      "searchSpecialization": "Search specialization...",
       "uploadCV": "Upload Your CV including Experience, certificates, and ID card",
       "yearsOfExperience": "Years of experience:",
       "uploadID": "Upload Your ID",
@@ -127,7 +129,10 @@
       "signUp": "Sign Up as Doctor",
       "haveAccount": "Already have an account?",
       "signIn": "Sign in",
-      "selectLocationTitle": "Select Your Location"
+      "selectLocationTitle": "Select Your Location",
+      "applicationSubmitted": "Application Submitted!",
+      "waitApproval": "Your application is currently being reviewed by our medical board. We will notify you via email once your account is approved.",
+      "checkEmail": "Expected review time: 1-3 business days."
     }
   },
   "nav": {
@@ -148,7 +153,8 @@
     "close": "Close",
     "search": "Search",
     "add": "Add",
-    "adding": "Adding…"
+    "adding": "Adding…",
+    "backToHome": "Back to Home"
   },
   "hero": {
     "badge": "Your Health, Simplified",

@@ -7,13 +7,14 @@ import { FiUser, FiMenu } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 
-export default function Navbar({ onToggleSidebar }) {
+export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const isAdmin = location.pathname.includes("/admin");
+  const isDoctor = location.pathname.startsWith("/doctor");
 
   const { user, logout } = useAuth();
   const isLoggedIn = !!user;
@@ -32,8 +33,9 @@ export default function Navbar({ onToggleSidebar }) {
     setOpen(false);
     navigate(path);
   };
-  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim() : "User";
-  const displayEmail = user ? user.email : "";
+  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim():"";
+  const displayEmail = user ? user.email :"";
+  const profilePath = isDoctor ? "/doctor" : "/profile";
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === "ar" ? "en" : "ar";
@@ -104,7 +106,7 @@ export default function Navbar({ onToggleSidebar }) {
                       <p className="text-xs text-gray-500 dark:text-gray-400">{displayEmail}</p>
                     </div>
                     <button
-                      onClick={() => goTo("/profile")}
+                      onClick={() => goTo(profilePath)}
                       className="flex gap-3 items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#334155] dark:text-white"
                     >
                       <FiUser size={16} />

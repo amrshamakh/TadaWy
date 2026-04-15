@@ -15,6 +15,7 @@ import ResetPassword from "./pages/ResetPassword";
 import OnlinePayment from "./components/Booking/payments/OnlinePayment";
 import DoctorApplication from "./pages/DoctorApplication";
 import DiscoverPage from "./pages/DiscoverPage";
+import ApplicationPending from "./pages/ApplicationPending";
 import Booking from "./pages/Booking";
 import AdminLayout from "./admin/AdminLayout";
 import AdminDoctors from "./admin/AdminDoctors";
@@ -38,6 +39,7 @@ const App = () => {
     <div className="max-h-[70vh]">
       <Routes>
         <Route path="/doctorApplication" element={<DoctorApplication />} />
+        <Route path="/application-pending" element={<ApplicationPending />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/change-password" element={<ChangePassword />} />

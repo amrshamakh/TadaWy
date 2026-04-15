@@ -1,20 +1,33 @@
-import ApiClient from "@/services/ApiClient";
+import axiosInstance from "@/services/AxiosConfig";
 
-export function registerDoctor(formData) {
-  const { day, month, year } = formData.dateOfBirth;
+export function registerDoctor(data) {
+  const formData = new FormData();
+  
+  // Basic fields
+  formData.append("Email", data.email);
+  formData.append("Password", data.password);
+  formData.append("ConfirmPassword", data.confirmPassword);
+  formData.append("FirstName", data.firstName);
+  formData.append("LastName", data.lastName);
+  formData.append("PhoneNumber", data.phoneNumber);
+  
+  // Location
+  formData.append("AddressDescription", data.addressDetails || "");
+  formData.append("Latitude", String(data.latitude));
+  formData.append("Longitude", String(data.longitude));
+  
+  // Professional
+  formData.append("SpecializationId", String(data.specializationId));
+  formData.append("CareerStartDate", data.careerStartDate);
+  
+  // Files — must be a real File object
+  if (data.cv) {
+    formData.append("VerificationDocument", data.cv, data.cv.name);
+  }
 
-  return ApiClient.post("/Auth/RegisterDoctor", {
-    email: formData.email,
-    password: formData.password,
-    ConfirmPassword: formData.confirmPassword,
-    AddressDescription: formData.addressDescription,
-    SpecializationId: formData.specializationId,
-    CareerStartDate: formData.careerStartDate,
-    Latitude: formData.latitude,
-    Longitude: formData.longitude,
-    FirstName: formData.firstName,
-    LastName: formData.lastName,
-    PhoneNumber: formData.phoneNumber,
-    VerificationDocument: formData.verificationDocument,
-  });
+  // Clear Content-Type so axios can set multipart/form-data with the correct boundary
+  return axiosInstance.post("/Auth/RegisterDoctor", formData, {
+    headers: { "Content-Type": undefined },
+  }).then((res) => res.data);
 }
+
