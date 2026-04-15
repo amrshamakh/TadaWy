@@ -51,6 +51,10 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task ChangePassword(string userId, ChangePasswordDto dto)
         {
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+                throw new Exception("password not match");
+
             var user = await _context.Users.FindAsync(userId);
 
             if (user == null)
