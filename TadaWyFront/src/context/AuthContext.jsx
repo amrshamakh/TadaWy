@@ -79,19 +79,15 @@ export function AuthProvider({ children }) {
     fetchUser();
   }, []);
 
-  const login = async (token, refreshToken) => {
-    TokenService.setToken(token, refreshToken);
+  const login = async (token) => {
+    TokenService.setToken(token);
     localStorage.setItem("userToken", token);
-    if (refreshToken) {
-      localStorage.setItem("refreshToken", refreshToken);
-    }
     await fetchUser();
   };
 
   const logout = () => {
     TokenService.removeToken();
     localStorage.removeItem("userToken");
-    localStorage.removeItem("refreshToken");
     setUser(null);
     setRole(null);
   };
