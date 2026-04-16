@@ -15,11 +15,10 @@ const AdminLayout = () => {
   const adminMenu = [
   { to: "", icon: assets.homeIcon, label: t("admin.adminLayout.doctors"), end: true },
   { to: "settings", icon: assets.settingIcon,label: t("admin.adminLayout.settings"), end: false },
-  { to: "banned", icon: assets.settingIcon, label: t("admin.adminLayout.bannedDoctors"), end: false },
 ];
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
-  const havingFooter = location.pathname === "/admin"|| location.pathname === "/admin/banned";
+  const havingFooter = location.pathname === "/admin";
   const isLandingPageUser = location.pathname === "/";
 
   const handleToggleSidebar = () => {
