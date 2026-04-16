@@ -22,53 +22,53 @@ export default function DoctorCard({ doctor, onClick }) {
 
   return (
     <div
-      className="group bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-[#334155] p-4 cursor-pointer hover:shadow-xl hover:border-teal-500/50 dark:hover:border-teal-500/50 transition-all duration-300"
+      className="group bg-white dark:bg-[#1E293B] flex flex-col justify-between rounded-2xl border border-gray-200 dark:border-[#334155] p-6 cursor-pointer hover:shadow-xl hover:border-teal-500/50 dark:hover:border-teal-500/50 transition-all duration-300 h-full"
       onClick={() => onClick(doctor)}
     >
       <div>
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-teal-50 dark:bg-teal-500/10 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
-              <User size={18} />
+        <div className="flex justify-between items-start mb-5">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full bg-teal-50 dark:bg-teal-500/10 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0">
+              <User size={26} />
             </div>
             <div className="min-w-0">
-              <h3 className="font-bold text-gray-800 dark:text-white text-base truncate group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+              <h3 className="font-bold text-gray-800 dark:text-white text-lg truncate group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
                 {localize(doctor, "name")}
               </h3>
-              <div className={`mt-0.5 flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[9px] font-bold w-fit ${statusStyles[doctor.status]}`}>
-                 <span className={`w-1 h-1 rounded-full ${statusColors[doctor.status]}`} />
+              <div className={`mt-1.5 flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold w-fit ${statusStyles[doctor.status]}`}>
+                <span className={`w-2 h-2 rounded-full ${statusColors[doctor.status]}`} />
                 {t(`admin.doctorCard.status.${doctor.status}`)}
               </div>
             </div>
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <Hash size={13} className="text-teal-500 shrink-0" />
-            <span className="font-medium text-xs whitespace-nowrap">{t("admin.doctorCard.id")}:</span>
-            <span className="font-mono text-[10px] opacity-80 truncate">{doctor.id}</span>
+        <div className="space-y-3 mt-2">
+          <div className="flex items-center gap-3 text-base text-gray-600 dark:text-gray-400">
+            <Hash size={18} className="text-teal-500 shrink-0" />
+            <span className="font-medium text-sm whitespace-nowrap">{t("admin.doctorCard.id")}:</span>
+            <span className="font-mono text-xs opacity-80 truncate">{doctor.id}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <Calendar size={13} className="text-teal-500 shrink-0" />
-            <span className="font-medium text-xs whitespace-nowrap">{t("admin.doctorCard.createdAt")}:</span>
-            <span className="text-xs">{doctor.createdAt}</span>
+          <div className="flex items-center gap-3 text-base text-gray-600 dark:text-gray-400">
+            <Calendar size={18} className="text-teal-500 shrink-0" />
+            <span className="font-medium text-sm whitespace-nowrap">{t("admin.doctorCard.createdAt")}:</span>
+            <span className="text-sm">{doctor.createdAt}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <Briefcase size={13} className="text-teal-500 shrink-0" />
-            <span className="font-medium text-xs whitespace-nowrap">{t("admin.doctorCard.specialization")}:</span>
-            <span className="truncate text-xs">{localize(doctor, "specialization") || "—"}</span>
+          <div className="flex items-center gap-3 text-base text-gray-600 dark:text-gray-400">
+            <Briefcase size={18} className="text-teal-500 shrink-0" />
+            <span className="font-medium text-sm whitespace-nowrap">{t("admin.doctorCard.specialization")}:</span>
+            <span className="truncate text-sm">{localize(doctor, "specialization") || "—"}</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-3 pt-2 border-t border-gray-100 dark:border-[#334155] flex justify-end">
+      <div className="mt-6 pt-4 border-t border-gray-100 dark:border-[#334155] flex justify-end">
         <button
-          className="flex items-center gap-1 text-teal-600 dark:text-teal-400 font-bold text-xs hover:gap-1.5 transition-all"
+          className="flex items-center gap-1.5 text-teal-600 dark:text-teal-400 font-bold text-sm hover:gap-2 transition-all"
           onClick={(e) => { e.stopPropagation(); onClick(doctor); }}
         >
           {t("admin.doctorCard.details")}
-          <ChevronRight size={14} />
+          <ChevronRight size={18} />
         </button>
       </div>
     </div>

@@ -60,8 +60,8 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
             <span className={`text-xs font-medium px-3 py-1 rounded-full ${statusStyles[doctor?.status || summaryDoctor.status]}`}>
               {t(`admin.doctorModal.status.${doctor?.status || summaryDoctor.status}`)}
             </span>
-            <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-[#1E293B] rounded-full transition-colors">
-              <X size={18} className="text-gray-500 dark:text-white" />
+            <button onClick={onClose} className="transition-colors">
+              <X size={20} className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300" />
             </button>
           </div>
         </div>
@@ -155,13 +155,13 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
             </div>
           </div>
 
-          {(doctor?.rejectionReason || doctor?.bannedReason) && (
+          {((isRejected && doctor?.rejectionReason) || (isBanned && doctor?.bannedReason)) && (
             <div className="col-span-2">
               <label className="block text-sm font-medium text-red-600 dark:text-red-400 mb-1">
-                {doctor?.rejectionReason ? "Rejection Reason" : "Banned Reason"}
+                {isRejected ? "Rejection Reason" : "Banned Reason"}
               </label>
               <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-lg px-3 py-2 text-sm text-red-700 dark:text-red-300">
-                {doctor?.rejectionReason || doctor?.bannedReason}
+                {isRejected ? doctor.rejectionReason : doctor.bannedReason}
               </div>
             </div>
           )}

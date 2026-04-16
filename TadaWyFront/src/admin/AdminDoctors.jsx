@@ -4,6 +4,7 @@ import DoctorModal from "../components/DoctorModal";
 import DoctorCard from "../components/AdminDoctorCard";
 import { useDoctors } from "../context/doctorContext";
 import { useTranslation } from "react-i18next";
+import { assets } from "../assets/assets";
 
 
 const AdminDoctors = () => {
@@ -42,7 +43,7 @@ const AdminDoctors = () => {
   
 
   return (
-    <div className="flex flex-col flex-1 min-h-screen" >
+    <div className="flex flex-col flex-1 h-full" >
        <div className="flex-1">
          {/* Search */}
       <input
@@ -71,7 +72,7 @@ const AdminDoctors = () => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12 min-h-[50vh]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 min-h-[50vh]">
         {loading ? (
           <div className="col-span-full flex flex-col items-center justify-center py-24 gap-4">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-500/20 border-t-teal-500"></div>
