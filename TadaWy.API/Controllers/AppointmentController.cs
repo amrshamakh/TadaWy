@@ -16,7 +16,7 @@ namespace TadaWy.API.Controllers
         private readonly IAppointmentService _service;
         private readonly IPatientService _patientService;
 
-        public AppointmentsController(IAppointmentService service,IPatientService patientService)
+        public AppointmentsController(IAppointmentService service, IPatientService patientService)
         {
             _service = service;
             _patientService = patientService;
@@ -25,8 +25,15 @@ namespace TadaWy.API.Controllers
         [HttpPost("offline")]
         public async Task<ActionResult> CreateOffline([FromBody] CreateAppointmentRequest model)
         {
-            var result= _service.CreateOfflineAppointmentAndReturnReciptAsync(model);
+            var result = await _service.CreateOfflineAppointmentAndReturnReciptAsync(model);
 
+            return Ok(result);
+        }
+
+        [HttpPost("online")]
+        public async Task<IActionResult> CreateOnline([FromBody] CreateAppointmentRequest model)
+        {
+           var result= await _service.CreateOnlineAppointmentAsync(model);
             return Ok(result);
         }
     }

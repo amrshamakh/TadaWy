@@ -13,6 +13,8 @@ namespace TadaWy.Applicaation.IService
 
         Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request);
 
-        
+        Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request);
+
+
     }
 }

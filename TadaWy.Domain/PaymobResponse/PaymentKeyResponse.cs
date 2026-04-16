@@ -1,4 +1,4 @@
-﻿namespace TadaWy.Domain.Helpers
+﻿namespace TadaWy.Domain.PaymobResponse
 {
     public class PaymentKeyResponse
     {

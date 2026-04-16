@@ -277,6 +277,7 @@ namespace TadaWy.Infrastructure.Service
                 .Include(a => a.Payment)
                 .FirstOrDefaultAsync(a => a.Id == appointmentId);
 
+            var user = await _context.Users.FindAsync(appointment.Patient.UserID);
             if (appointment == null)
                 throw new Exception("Not Found");
 
@@ -285,7 +286,7 @@ namespace TadaWy.Infrastructure.Service
                 ReceiptDate = DateTime.UtcNow,
 
                 PatientName = appointment.Patient.FirstName + " " + appointment.Patient.LastName,
-                PatientEmail = appointment.Patient.User.Email,
+                PatientEmail =user.Email,
 
                 DoctorName = appointment.Doctor.FirstName + " " + appointment.Doctor.LastName,
                 Specialty = appointment.Doctor.Specialization.Name,
