@@ -27,13 +27,21 @@ export function DoctorsProvider({ children }) {
   const mapDoctor = useCallback((d, specs = specializations) => {
     const sId = d.specializationId ?? d.SpecializationId;
     const spec = specs.find(s => s.id === sId || s.Id === sId);
+
+    const addr = d.address || d.Address || {};
+    const street = (addr.street || addr.Street || "").replace(/UnKnown/i, "").trim();
+    const city = (addr.city || addr.City || "").replace(/UnKnown/i, "").trim();
+    const state = (addr.state || addr.State || "").replace(/UnKnown/i, "").trim();
+    const clinicLocation = [street, city, state].filter(Boolean).join(", ") || "—";
+
     return {
       ...d,
       id: (d.id ?? d.Id)?.toString(),
       name: d.doctorName || d.DoctorName || "", 
       status: STATUS_MAP[d.status ?? d.Status] || "Pending",
       createdAt: (d.createdAt || d.CreatedAt) ? new Date(d.createdAt || d.CreatedAt).toLocaleDateString() : "00/00/0000",
-      specialization: spec ? (spec.name || spec.Name) : "—"
+      specialization: spec ? (spec.name || spec.Name) : "—",
+      clinicLocation
     };
   }, [specializations]);
 
@@ -76,6 +84,14 @@ export function DoctorsProvider({ children }) {
   const getDoctorDetails = async (id) => {
     try {
       const data = await AdminApi.getDoctorById(id);
+      let cvUrl = "";
+      try {
+        const cvResponse = await AdminApi.getDoctorCv(id);
+        cvUrl = cvResponse.url || cvResponse.Url || "";
+      } catch (err) {
+        console.error("Failed to fetch doctor CV URL", err);
+      }
+
       return {
         ...mapDoctor(data),
         phone: data.phoneNumber || data.PhoneNumber,
@@ -83,8 +99,7 @@ export function DoctorsProvider({ children }) {
         cv: (data.verificationDocumentPath || data.VerificationDocumentPath) 
           ? (data.verificationDocumentPath || data.VerificationDocumentPath).split("/").pop() 
           : "No file",
-        cvUrl: data.verificationDocumentPath || data.VerificationDocumentPath,
-        clinicLocation: (data.address || data.Address)?.city || (data.address || data.Address)?.City || "—",
+        cvUrl: cvUrl || (data.verificationDocumentPath || data.VerificationDocumentPath),
         clinicDetails: data.addressDescription || data.AddressDescription || "—",
         rejectionReason: data.rejectionReason || data.RejectionReason,
         bannedReason: data.bannedReason || data.BannedReason

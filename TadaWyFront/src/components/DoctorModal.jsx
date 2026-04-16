@@ -79,7 +79,7 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
 
           <div className="col-span-2 sm:col-span-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">
-              {localize(doctor || summaryDoctor, "clinicLocation")}
+              {t("admin.doctorModal.clinicLocation")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
               {doctor?.clinicLocation || "—"}
@@ -118,7 +118,21 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.cvUploaded")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 flex items-center justify-between">
-              <span className="dark:text-gray-300 truncate mr-2" title={doctor?.cv}>{doctor?.cv || "—"}</span>
+              {doctor?.cvUrl ? (
+                <a 
+                  href={doctor.cvUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="dark:text-gray-300 truncate mr-2 hover:underline hover:text-teal-500 transition-all cursor-pointer"
+                  title={doctor?.cv}
+                >
+                  {doctor?.cv || "—"}
+                </a>
+              ) : (
+                <span className="dark:text-gray-300 truncate mr-2" title={doctor?.cv}>
+                  {doctor?.cv || "—"}
+                </span>
+              )}
               <FileText size={16} className="text-gray-400 dark:text-gray-300" />
             </div>
           </div>

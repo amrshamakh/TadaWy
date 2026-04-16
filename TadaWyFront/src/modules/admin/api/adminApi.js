@@ -55,6 +55,13 @@ const AdminApi = {
    */
   getSpecializations: () => {
     return ApiClient.get("/Lookup/specializations");
+  },
+
+  /**
+   * Get doctor CV URL
+   */
+  getDoctorCv: (id) => {
+    return ApiClient.get(`/Admin/doctors/${id}/cv`);
   }
 };
 
