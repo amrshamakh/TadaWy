@@ -29,6 +29,8 @@ namespace TadaWy.Infrastructure.Presistence
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<Doctor> Doctors => Set<Doctor>();
+        public DbSet<DoctorWallet> DoctorWallets => Set<DoctorWallet>();
+        public DbSet<WalletTransaction> walletTransactions => Set<WalletTransaction>();
         public DbSet<Specialization> Specializations => Set<Specialization>();
         public DbSet<DoctorSchedule> DoctorSchedules => Set<DoctorSchedule>();
         public DbSet<DoctorTimeSlot> DoctorTimeSlots => Set<DoctorTimeSlot>();
