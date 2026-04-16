@@ -14,3 +14,4 @@ namespace TadaWy.Applicaation.DTO.AppointmentDTOs
         public PaymentStatus IsPaid { get; set; }
     }
 }
+

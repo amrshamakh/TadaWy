@@ -10,16 +10,11 @@ namespace TadaWy.Applicaation.IService
 {
     public interface IAppointmentService
     {
-        Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, int patientId);
 
-        Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, int patientId);
+        Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request);
 
-        Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId, AppointmentStatus status);
+        Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request);
 
-        Task<bool> CancelAppointmentAsync(int appointmentId, int patientId);
 
-        Task<ReceiptDTo> GetReceipt(int appointmentId);
-
-        int GetPatientId(string Userid);
     }
 }

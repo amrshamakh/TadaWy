@@ -6,131 +6,170 @@ using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AppointmentDTOs;
 using TadaWy.Applicaation.IService;
+using TadaWy.Domain.Entities;
 using TadaWy.Domain.Enums;
 using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.Infrastructure.Service
 {
-    public class AppointmentService:IAppointmentService
+    public class AppointmentService : IAppointmentService
     {
         private readonly TadaWyDbContext _tadaWyDbContext;
+        private readonly IPatientService _patientService;
+        private readonly IPaymentService _paymentService;
 
-        public AppointmentService(TadaWyDbContext tadaWyDbContext)
+        public AppointmentService(TadaWyDbContext tadaWyDbContext, IPatientService patientService, IPaymentService paymentService)
         {
-           _tadaWyDbContext = tadaWyDbContext;
+            _tadaWyDbContext = tadaWyDbContext;
+            _patientService = patientService;
+            _paymentService = paymentService;
         }
-        public async Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, int patientId)
+        public async Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request)
         {
-            var appointments = await _tadaWyDbContext.Appointments
-                .Where(a => a.PatientId == patientId &&
-                            a.Date.Month == month &&
-                            a.Date.Year == year &&
-                            a.Status != AppointmentStatus.Cancelled) 
-                .Select(a => a.Date.Date)
-                .Distinct()
-                .ToListAsync();
+            var doctor = await _tadaWyDbContext.Doctors
+                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
+                .FirstOrDefaultAsync(d => d.Id == request.DoctorId);
 
-            return appointments.Select(date => new CalendarDayDto
+            if (doctor == null)
+                throw new Exception("Doctor not found");
+
+            int duration = doctor.AppointmentDurationMinutes ?? 20;
+
+            var slotStart = request.Date;
+            var slotEnd = slotStart.AddMinutes(duration);
+
+            var date = slotStart.Date;
+            var schedule = doctor.Schedules
+                .FirstOrDefault(s => s.DayOfWeek == date.DayOfWeek && s.IsWorkingDay);
+
+            if (schedule == null || !schedule.TimeSlots.Any())
+                throw new Exception("Doctor is not working on this day.");
+
+         
+            bool withinWorkingHours = schedule.TimeSlots.Any(ts =>
             {
-                Date = date,
-                HasAppointments = true
-            }).ToList();
-        }
+                var tsStart = date + ts.StartTime;
+                var tsEnd = date + ts.EndTime;
+                return slotStart >= tsStart && slotEnd <= tsEnd;
+            });
 
-        public async Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, int patientId)
-        {
-            return await _tadaWyDbContext.Appointments
-                .Where(a => a.PatientId == patientId &&
-                            a.Date.Date == date.Date)
-                .Select(a => new AppointmentDto
-                {
-                    DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
-                    Specialty = a.Doctor.Specialization.Name,
-                    Date = a.Date,
-                    Status = a.Status,
-                    IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
-                })
-                .ToListAsync();
-        }
+            if (!withinWorkingHours)
+                throw new Exception("Selected time is outside doctor's working hours.");
 
-        public async Task<bool> CancelAppointmentAsync(int appointmentId, int patientId)
-        {
-            var appointment = await _tadaWyDbContext.Appointments
-                .FirstOrDefaultAsync(a => a.Id == appointmentId && a.PatientId == patientId);
+          
+            bool isTaken = await _tadaWyDbContext.Appointments.AnyAsync(a =>
+                a.DoctorId == request.DoctorId &&
+                a.Date >= slotStart &&
+                a.Date < slotEnd
+            );
 
-            if (appointment == null)
-                return false;
+            if (isTaken)
+                throw new Exception("This slot is already booked.");
 
-            if (appointment.Status == AppointmentStatus.Cancelled)
-                return false;
+         
+            var appointment = new Appointment
+            {
+                DoctorId = request.DoctorId,
+                PatientId = request.PatientId,
+                Date = slotStart,
+                Status = AppointmentStatus.Pending
+            };
 
-            
-            if (appointment.Date < DateTime.Now)
-                return false;
-
-            appointment.Status = AppointmentStatus.Cancelled;
-
+            _tadaWyDbContext.Appointments.Add(appointment);
             await _tadaWyDbContext.SaveChangesAsync();
 
-            return true;
-        }
-        public async Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId,AppointmentStatus status)
-        {
-            var query = _tadaWyDbContext.Appointments
-                .Where(a => a.PatientId == patientId);
-
-                query = query.Where(a => a.Status == status);
-
-            return await query
-                .OrderBy(a => a.Date)
-                .Select(a => new AppointmentDto
-                {
-                    DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
-                    Specialty = a.Doctor.Specialization.Name,
-                    Date = a.Date,
-                    Status = a.Status,
-                    IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
-                })
-                .ToListAsync();
-        }
-
-        public async Task<ReceiptDTo> GetReceipt(int appointmentId)
-        {
-            var appointment = await _tadaWyDbContext.Appointments
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
-                    .ThenInclude(d => d.Specialization)
-                .Include(a => a.Payment)
-                .FirstOrDefaultAsync(a => a.Id == appointmentId);
-
-            if (appointment == null)
-                throw new Exception("Not Found");
-
-            return new ReceiptDTo
+            var payment = new Payment
             {
-                ReceiptDate = DateTime.UtcNow,
-
-                PatientName = appointment.Patient.FirstName + " " + appointment.Patient.LastName,
-                PatientEmail = appointment.Patient.User.Email,
-
-                DoctorName = appointment.Doctor.FirstName + " " + appointment.Doctor.LastName,
-                Specialty = appointment.Doctor.Specialization.Name,
-
-                DoctorLocation = appointment.Doctor.Address,
-                DoctorLocationDetails = appointment.Doctor.AddressDescription,
-                PhoneNumber = appointment.Doctor.PhoneNumber,
-
-                Date = appointment.Date,
-
-                PaymentMethod = appointment.Payment?.Method.ToString() ?? "Cash",
-
-                Price = appointment.Payment?.Amount ?? 0
+                AppointmentId = appointment.Id,
+                DoctorId = request.DoctorId,
+                Amount = request.Amount,
+                Method = PaymentMethod.Offline,
+                Status = PaymentStatus.Pending,
             };
+
+            _tadaWyDbContext.Payments.Add(payment);
+            await _tadaWyDbContext.SaveChangesAsync();
+
+           
+            return await _patientService.GetReceipt(appointment.Id);
         }
-        public int GetPatientId(string userid)
+
+        public async Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request)
         {
-            var patient = _tadaWyDbContext.Patients.FirstOrDefault(p => p.UserID == userid);
-            return patient == null ? 0 : patient.Id;
+
+            var doctor = await _tadaWyDbContext.Doctors
+                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
+                .FirstOrDefaultAsync(d => d.Id == request.DoctorId);
+
+            if (doctor == null)
+                throw new Exception("Doctor not found");
+            int duration = doctor.AppointmentDurationMinutes ?? 20;
+
+            var slotStart = request.Date;
+            var slotEnd = slotStart.AddMinutes(duration);
+
+
+            var date = slotStart.Date;
+            var schedule = doctor.Schedules
+                .FirstOrDefault(s => s.DayOfWeek == date.DayOfWeek && s.IsWorkingDay);
+
+            if (schedule == null || !schedule.TimeSlots.Any())
+                throw new Exception("Doctor is not working on this day.");
+
+
+            bool withinWorkingHours = schedule.TimeSlots.Any(ts =>
+            {
+                var tsStart = date + ts.StartTime;
+                var tsEnd = date + ts.EndTime;
+                return slotStart >= tsStart && slotEnd <= tsEnd;
+            });
+
+            if (!withinWorkingHours)
+                throw new Exception("Selected time is outside doctor's working hours.");
+
+            bool isTaken = await _tadaWyDbContext.Appointments.AnyAsync(a =>
+                a.DoctorId == request.DoctorId &&
+                a.Date >= slotStart &&
+                a.Date < slotEnd
+            );
+
+            if (isTaken)
+                throw new Exception("This slot is already booked.");
+
+
+            var appointment = new Appointment
+            {
+                DoctorId = request.DoctorId,
+                PatientId = request.PatientId,
+                Date = slotStart,
+                Status = AppointmentStatus.Pending
+            };
+
+            _tadaWyDbContext.Appointments.Add(appointment);
+            await _tadaWyDbContext.SaveChangesAsync();
+
+
+            var payment = new Payment
+            {
+                AppointmentId = appointment.Id,
+                DoctorId = request.DoctorId,
+                Amount = request.Amount,
+                Method = PaymentMethod.Online,
+                Status = PaymentStatus.Pending,
+            };
+
+            _tadaWyDbContext.Payments.Add(payment);
+            await _tadaWyDbContext.SaveChangesAsync();
+
+            var orderId = await _paymentService.CreateOrder(payment.Id);
+
+            var paymentKey = await _paymentService.GetPaymentKey(orderId, payment);
+
+            var iframeUrl = _paymentService.GenerateIframeUrl(paymentKey);
+
+            return iframeUrl;
         }
+
+        
     }
 }

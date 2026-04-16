@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TadaWy.Applicaation.DTO.PatientDTOs;
 using TadaWy.Applicaation.IService;
+using TadaWy.Domain.Enums;
 
 namespace TadaWy.API.Controllers
 {
@@ -107,6 +108,73 @@ namespace TadaWy.API.Controllers
 
             await _patientService.SubmitReviewAsync(userId, dto);
             return Ok(new { message = "Review submitted successfully" });
+        }
+
+        [HttpGet("Appoiments/calendar")]
+        public async Task<IActionResult> GetCalendar(int month, int year)
+        {
+            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userid == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var patientId = _patientService.GetPatientId(userid);
+            var result = await _patientService.GetCalendarAsync(month, year, patientId);
+            return Ok(result);
+        }
+
+        [HttpPost("Appoiments/cancel/{appointmentId}")]
+        public async Task<IActionResult> CancelAppointment(int appointmentId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var patientId = _patientService.GetPatientId(userId);
+
+            if (patientId == null)
+                return Unauthorized();
+
+            var result = await _patientService.CancelAppointmentAsync(appointmentId, patientId);
+
+            if (!result)
+                return BadRequest("Cannot cancel this appointment");
+
+            return Ok("Appointment cancelled successfully");
+        }
+
+        [HttpGet("Appoiments/receipt/{appointmentId}")]
+        public async Task<IActionResult> GetReceipt(int appointmentId)
+        {
+            var data = await _patientService.GetReceipt(appointmentId);
+            return Ok(data);
+        }
+
+        [HttpGet("Appoiments/by-date")]
+        public async Task<IActionResult> GetByDate(DateTime date)
+        {
+            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userid == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var patientId = _patientService.GetPatientId(userid);
+            var result = await _patientService.GetAppointmentsByDateAsync(date, patientId);
+            return Ok(result);
+        }
+
+        [HttpGet("Appoiments/by-status")]
+        public async Task<IActionResult> GetbyStatus(AppointmentStatus status)
+        {
+            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userid == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var patientId = _patientService.GetPatientId(userid);
+            var result = await _patientService.GetPatientAppointmentsAsync(patientId, status);
+            return Ok(result);
         }
     }
 }

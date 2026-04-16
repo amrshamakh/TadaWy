@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TadaWy.Applicaation.DTO.AppointmentDTOs;
 using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Enums;
 using TadaWy.Infrastructure.Presistence;
@@ -13,79 +14,27 @@ namespace TadaWy.API.Controllers
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _service;
-       
-        public AppointmentsController(IAppointmentService service)
+        private readonly IPatientService _patientService;
+
+        public AppointmentsController(IAppointmentService service, IPatientService patientService)
         {
             _service = service;
+            _patientService = patientService;
         }
 
-        [HttpGet("calendar")]
-        public async Task<IActionResult> GetCalendar(int month, int year)
+        [HttpPost("offline")]
+        public async Task<ActionResult> CreateOffline([FromBody] CreateAppointmentRequest model)
         {
-            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userid == null)
-            {
-                return Unauthorized("User not Found");
-            }
-            var patientId = _service.GetPatientId(userid);
-            var result = await _service.GetCalendarAsync(month, year, patientId);
+            var result = await _service.CreateOfflineAppointmentAndReturnReciptAsync(model);
+
             return Ok(result);
         }
 
-        [HttpPost("cancel/{appointmentId}")]
-        public async Task<IActionResult> CancelAppointment(int appointmentId)
+        [HttpPost("online")]
+        public async Task<IActionResult> CreateOnline([FromBody] CreateAppointmentRequest model)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userId == null)
-            {
-                return Unauthorized("User not Found");
-            }
-            var patientId =_service.GetPatientId(userId);
-
-            if (patientId == null)
-                return Unauthorized();
-
-            var result = await _service.CancelAppointmentAsync(appointmentId, patientId);
-
-            if (!result)
-                return BadRequest("Cannot cancel this appointment");
-
-            return Ok("Appointment cancelled successfully");
-        }
-
-        [HttpGet("receipt/{appointmentId}")]
-        public async Task<IActionResult> GetReceipt(int appointmentId)
-        {
-            var data = await _service.GetReceipt(appointmentId);
-            return Ok(data);
-        }
-
-        [HttpGet("by-date")]
-        public async Task<IActionResult> GetByDate(DateTime date)
-        {
-            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userid == null)
-            {
-                return Unauthorized("User not Found");
-            }
-            var patientId = _service.GetPatientId(userid);
-            var result = await _service.GetAppointmentsByDateAsync(date, patientId);
+           var result= await _service.CreateOnlineAppointmentAsync(model);
             return Ok(result);
         }
-
-        [HttpGet("by-status")]
-        public async Task<IActionResult> GetbyStatus(AppointmentStatus status)
-        {
-            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userid == null)
-            {
-                return Unauthorized("User not Found");
-            }
-            var patientId = _service.GetPatientId(userid);
-            var result = await _service.GetPatientAppointmentsAsync(patientId, status);
-            return Ok(result);
-        }
-
-       
     }
 }
