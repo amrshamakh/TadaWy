@@ -19,7 +19,6 @@ import ApplicationPending from "./pages/ApplicationPending";
 import Booking from "./pages/Booking";
 import AdminLayout from "./admin/AdminLayout";
 import AdminDoctors from "./admin/AdminDoctors";
-import BannedDoctors from "./admin/BannedDoctors";
 import MedicalChecksChat from "./components/checksChat/checksChat";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
@@ -59,11 +58,7 @@ const App = () => {
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDoctors />} />
-
-          {/* <Route path="doctors" element={<AdminDoctors />} /> */}
-          {/* Add more admin pages here: */}
           <Route path="settings" element={<Settings />} />
-          <Route path="banned" element={<BannedDoctors />} />
         </Route>
         {/* Doctor routes */}
         <Route path="/doctor" element={<DoctorLayout />}>

@@ -345,6 +345,7 @@
     "approvedFilter": "Approved",
     "rejectedFilter": "Rejected",
     "pendingFilter": "Pending",
+    "bannedFilter": "Banned",
     "filterSuffix": "Doctors",
     "noResults": "No doctors found."
   },

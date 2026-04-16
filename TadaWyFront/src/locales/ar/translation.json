@@ -347,6 +347,7 @@
     "approvedFilter": "معتمد",
     "rejectedFilter": "مرفوض",
     "pendingFilter": "قيد الانتظار",
+    "bannedFilter": "محظور",
     "filterSuffix": "طبيب",
     "noResults": "لم يتم العثور على أطباء."
   },
