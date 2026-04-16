@@ -1,12 +1,21 @@
-import axios from "axios";
+import axiosInstance from "../../services/AxiosConfig";
 
-const API_URL = "https://omarahmed176-alzheimer-detection-api.hf.space/predict/";
+export const getAlzheimerHistory = async (pageNumber = 1, pageSize = 10) => {
+  const { data } = await axiosInstance.get("/AiBrainScan/history", {
+    params: { pageNumber, pageSize },
+  });
+  return data;
+};
 
 export const predictAlzheimer = async (imageFile) => {
   const formData = new FormData();
   formData.append("file", imageFile);
 
-  const { data } = await axios.post(API_URL, formData);
+  const { data } = await axiosInstance.post("/AiBrainScan/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   console.log("API Response:", data);
-  return data; // returns { predicted_class, mean, std, description }
-};
+  return data;
+};
