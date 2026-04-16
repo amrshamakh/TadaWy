@@ -135,7 +135,7 @@ namespace TadaWy.Infrastructure.Service
             result.Status =Domain.Enums.DoctorStatus.Rejected;
             result.RejectionReason = rejectionReason;
             await _TadaWyDbContext.SaveChangesAsync();
-            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please", "rejectionReason"));
+            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please", rejectionReason));
             return true;
         }
 
@@ -152,7 +152,7 @@ namespace TadaWy.Infrastructure.Service
             result.Status = Domain.Enums.DoctorStatus.Banned;
             result.BannedReason = BannReason;
             await _TadaWyDbContext.SaveChangesAsync();
-            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please", "rejectionReason"));
+            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please",BannReason));
             return true;
         }
 

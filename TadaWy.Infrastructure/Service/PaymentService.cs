@@ -164,7 +164,7 @@ namespace TadaWy.Infrastructure.Service
 
             var result = await response.Content.ReadFromJsonAsync<CreateOrderResponse>();
 
-            return result.id;
+            return result.id.ToString();
         }
 
         public async Task<string> GetPaymentKey(string orderId, Payment payment) // send payment data(amount)and order id to recive token use it for pay
