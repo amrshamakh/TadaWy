@@ -154,7 +154,7 @@ namespace TadaWy.Infrastructure.Service
                 AppointmentId = appointment.Id,
                 DoctorId = request.DoctorId,
                 Amount = request.Amount,
-                Method = PaymentMethod.Offline,
+                Method = PaymentMethod.Online,
                 Status = PaymentStatus.Pending,
             };
 

@@ -9,7 +9,6 @@ namespace TadaWy.Applicaation.DTO.AppointmentDTOs
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
 
-        public PaymentMethod Method { get; set; } // Offline or Online
     }
 }
 
