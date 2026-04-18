@@ -196,9 +196,11 @@ namespace TadaWy.Infrastructure.Service
         public async Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, int patientId)
         {
             var appointments = await _context.Appointments
+                .Include(a => a.Payment)
                 .Where(a => a.PatientId == patientId &&
                             a.Date.Month == month &&
                             a.Date.Year == year &&
+                            a.Payment.Status!=PaymentStatus.Failed &&
                             a.Status != AppointmentStatus.Cancelled)
                 .Select(a => a.Date.Date)
                 .Distinct()
@@ -225,6 +227,7 @@ namespace TadaWy.Infrastructure.Service
                     IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
                 })
                 .ToListAsync();
+            
         }
 
         public async Task<bool> CancelAppointmentAsync(int appointmentId, int patientId)
@@ -275,7 +278,7 @@ namespace TadaWy.Infrastructure.Service
                 .Include(a => a.Doctor)
                     .ThenInclude(d => d.Specialization)
                 .Include(a => a.Payment)
-                .FirstOrDefaultAsync(a => a.Id == appointmentId);
+                .FirstOrDefaultAsync(a => a.Id == appointmentId)??throw new Exception("Appoiment not Found") ;
 
             var user = await _context.Users.FindAsync(appointment.Patient.UserID);
             if (appointment == null)
@@ -292,7 +295,7 @@ namespace TadaWy.Infrastructure.Service
                 Specialty = appointment.Doctor.Specialization.Name,
 
                 DoctorLocation = appointment.Doctor.Address,
-                DoctorLocationDetails = appointment.Doctor.AddressDescription,
+                DoctorLocationDetails = appointment.Doctor.AddressDescription??"",
                 PhoneNumber = appointment.Doctor.PhoneNumber,
 
                 Date = appointment.Date,

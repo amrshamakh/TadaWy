@@ -1,3 +1,4 @@
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,19 +25,19 @@ namespace TadaWy.Infrastructure.Service
             _patientService = patientService;
             _paymentService = paymentService;
         }
-        public async Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request)
+
+        private async Task CheckAvilapleSlot(CreateAppointmentRequest request)
         {
             var doctor = await _tadaWyDbContext.Doctors
-                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
-                .FirstOrDefaultAsync(d => d.Id == request.DoctorId);
+               .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
+               .FirstOrDefaultAsync(d => d.Id == request.DoctorId) ?? throw new Exception("Doctor not found");
 
-            if (doctor == null)
-                throw new Exception("Doctor not found");
-
+           
             int duration = doctor.AppointmentDurationMinutes ?? 20;
 
             var slotStart = request.Date;
             var slotEnd = slotStart.AddMinutes(duration);
+
 
             var date = slotStart.Date;
             var schedule = doctor.Schedules
@@ -45,7 +46,7 @@ namespace TadaWy.Infrastructure.Service
             if (schedule == null || !schedule.TimeSlots.Any())
                 throw new Exception("Doctor is not working on this day.");
 
-         
+
             bool withinWorkingHours = schedule.TimeSlots.Any(ts =>
             {
                 var tsStart = date + ts.StartTime;
@@ -56,7 +57,6 @@ namespace TadaWy.Infrastructure.Service
             if (!withinWorkingHours)
                 throw new Exception("Selected time is outside doctor's working hours.");
 
-          
             bool isTaken = await _tadaWyDbContext.Appointments.AnyAsync(a =>
                 a.DoctorId == request.DoctorId &&
                 a.Date >= slotStart &&
@@ -65,13 +65,17 @@ namespace TadaWy.Infrastructure.Service
 
             if (isTaken)
                 throw new Exception("This slot is already booked.");
+        }
+        public async Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request)
+        {
 
+            await CheckAvilapleSlot(request);
          
             var appointment = new Appointment
             {
                 DoctorId = request.DoctorId,
                 PatientId = request.PatientId,
-                Date = slotStart,
+                Date = request.Date,
                 Status = AppointmentStatus.Pending
             };
 
@@ -97,51 +101,13 @@ namespace TadaWy.Infrastructure.Service
         public async Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request)
         {
 
-            var doctor = await _tadaWyDbContext.Doctors
-                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
-                .FirstOrDefaultAsync(d => d.Id == request.DoctorId);
-
-            if (doctor == null)
-                throw new Exception("Doctor not found");
-            int duration = doctor.AppointmentDurationMinutes ?? 20;
-
-            var slotStart = request.Date;
-            var slotEnd = slotStart.AddMinutes(duration);
-
-
-            var date = slotStart.Date;
-            var schedule = doctor.Schedules
-                .FirstOrDefault(s => s.DayOfWeek == date.DayOfWeek && s.IsWorkingDay);
-
-            if (schedule == null || !schedule.TimeSlots.Any())
-                throw new Exception("Doctor is not working on this day.");
-
-
-            bool withinWorkingHours = schedule.TimeSlots.Any(ts =>
-            {
-                var tsStart = date + ts.StartTime;
-                var tsEnd = date + ts.EndTime;
-                return slotStart >= tsStart && slotEnd <= tsEnd;
-            });
-
-            if (!withinWorkingHours)
-                throw new Exception("Selected time is outside doctor's working hours.");
-
-            bool isTaken = await _tadaWyDbContext.Appointments.AnyAsync(a =>
-                a.DoctorId == request.DoctorId &&
-                a.Date >= slotStart &&
-                a.Date < slotEnd
-            );
-
-            if (isTaken)
-                throw new Exception("This slot is already booked.");
-
+            await CheckAvilapleSlot(request);
 
             var appointment = new Appointment
             {
                 DoctorId = request.DoctorId,
                 PatientId = request.PatientId,
-                Date = slotStart,
+                Date = request.Date,
                 Status = AppointmentStatus.Pending
             };
 

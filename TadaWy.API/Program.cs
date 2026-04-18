@@ -10,7 +10,6 @@ using TadaWy.API.Middleware;
 using TadaWy.Applicaation.Extensions;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
-using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Extensions;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
@@ -25,7 +24,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .AllowAnyOrigin()     // أو لو عايز تضيقها بعدين، نعمل AllowAnyHeader/Method بس
+                .AllowAnyOrigin()     
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });

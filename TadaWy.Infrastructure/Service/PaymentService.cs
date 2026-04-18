@@ -12,8 +12,6 @@ using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Enums;
 using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Presistence;
-using System.Security.Cryptography;
-using System.Text;
 using TadaWy.Domain.PaymobResponse;
 
 namespace TadaWy.Infrastructure.Service
@@ -134,14 +132,14 @@ namespace TadaWy.Infrastructure.Service
                 body
             );
 
-            var result = await response.Content.ReadFromJsonAsync<AuthResponse>();
+            var result = await response.Content.ReadFromJsonAsync<AuthResponse>() ?? throw new Exception("UnAuthorize"); 
 
             return result.token;
         }
 
         public async Task<string> CreateOrder(int paymentId)  // to add order on paymob and return orderid and use it
         {
-            var payment = await _context.Payments.FindAsync(paymentId);
+            var payment = await _context.Payments.FindAsync(paymentId) ?? throw new Exception("The Process Failed");
 
             var token = await GetAuthToken();
 
@@ -162,7 +160,7 @@ namespace TadaWy.Infrastructure.Service
                 body
             );
 
-            var result = await response.Content.ReadFromJsonAsync<CreateOrderResponse>();
+            var result = await response.Content.ReadFromJsonAsync<CreateOrderResponse>() ?? throw new Exception("The Process Failed");
 
             return result.id.ToString();
         }
@@ -201,7 +199,7 @@ namespace TadaWy.Infrastructure.Service
                 body
             );
 
-            var result = await response.Content.ReadFromJsonAsync<PaymentKeyResponse>();
+            var result = await response.Content.ReadFromJsonAsync<PaymentKeyResponse>() ?? throw new Exception("The Process Failed");
 
             return result.token;
         }

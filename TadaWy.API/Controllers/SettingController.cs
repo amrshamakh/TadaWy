@@ -27,7 +27,7 @@ namespace TadaWy.API.Controllers
 
             var user = await _tadaWyDbContext.Users
                 .Include(x => x.Settings)
-                .FirstOrDefaultAsync(x => x.Id == userId);
+                .FirstOrDefaultAsync(x => x.Id == userId) ?? throw new Exception("the User not Found");
 
             return Ok(new
             {
@@ -57,7 +57,7 @@ namespace TadaWy.API.Controllers
 
         private string GetUserId()
         {
-            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new Exception("the User not Found");
             return userid;
         }
     }

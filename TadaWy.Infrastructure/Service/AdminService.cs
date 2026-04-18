@@ -80,11 +80,10 @@ namespace TadaWy.Infrastructure.Service
         }
         public async Task<DoctorDetailsToAdminDto> GetDoctorById(int DoctorId)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
-            var user = await _userManager.FindByIdAsync(result.UserID);
+            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId)?? throw new Exception("Doctor not found");
 
-            if (result is null)
-                return new DoctorDetailsToAdminDto();
+            var user = await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not found");
+
 
             return new DoctorDetailsToAdminDto
             {
@@ -106,8 +105,8 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<bool> ApproveDoctorAsync(int DoctorId)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
-            var User =await _userManager.FindByIdAsync(result.UserID);
+            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId)?? throw new Exception("Doctor not found"); ;
+            var User =await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not found");
 
             if(result == null)
             {
@@ -124,8 +123,8 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<bool> RejectDoctorAsync(int DoctorId,string? rejectionReason)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
-            var User = await _userManager.FindByIdAsync(result.UserID);
+            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId) ?? throw new Exception("Doctor not found");
+            var User = await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not fouund");
 
             if (result == null)
             {
@@ -133,26 +132,22 @@ namespace TadaWy.Infrastructure.Service
             }
 
             result.Status =Domain.Enums.DoctorStatus.Rejected;
-            result.RejectionReason = rejectionReason;
+            result.RejectionReason = rejectionReason??"";
             await _TadaWyDbContext.SaveChangesAsync();
-            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please", rejectionReason));
+            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please",result.RejectionReason));
             return true;
         }
 
         public async Task<bool> BannDoctorAsync(int DoctorId, string? BannReason)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId);
-            var User = await _userManager.FindByIdAsync(result.UserID);
+            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId) ?? throw new Exception("Doctor not found");
+            var User = await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not found");
 
-            if (result == null)
-            {
-                return false;
-            }
 
             result.Status = Domain.Enums.DoctorStatus.Banned;
-            result.BannedReason = BannReason;
+            result.BannedReason = BannReason??"";
             await _TadaWyDbContext.SaveChangesAsync();
-            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please",BannReason));
+            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please",result.BannedReason));
             return true;
         }
 
