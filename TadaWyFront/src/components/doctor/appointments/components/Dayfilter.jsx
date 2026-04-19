@@ -31,7 +31,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
       list.push({
         label: d.toLocaleDateString(locale, { weekday: "short" }),
         date: d.toLocaleDateString(locale, { day: "numeric" }),
-        value: d.toISOString().split("T")[0],
+        value: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
         dayKey: d.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase(),
       });
     }
@@ -40,7 +40,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
 
   const pickDate = (day) => {
     const dateObj = new Date(year, monthIndex, day);
-    const dateKey = dateObj.toISOString().split("T")[0];
+    const dateKey = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, "0")}-${String(dateObj.getDate()).padStart(2, "0")}`;
     onDatePick(dateKey);
     setShowCalendar(false);
   };
@@ -175,7 +175,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
               const selected =
                 day &&
                 selectedDateKey &&
-                selectedDateKey === new Date(year, monthIndex, day).toISOString().split("T")[0];
+                selectedDateKey === `${year}-${String(monthIndex + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
               return day ? (
                 <button
                   key={`${day}-${idx}`}

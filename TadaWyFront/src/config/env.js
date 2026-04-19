@@ -1,7 +1,7 @@
 // config/env.ts
 export const ENV = {
   DEV_MODE: "development",
-  API_URL: "https://localhost:7262/api",
+  API_URL: "http://localhost:5000/api",
   API_TIMEOUT: 10000,
   APP_NAME: "ُTadaWy",
   APP_VERSION: "1.0.0",

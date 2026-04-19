@@ -1,8 +1,19 @@
-import { stats } from "../data/appointmentsData";
 import { useTranslation } from "react-i18next";
 
-export default function StatsRow() {
+export default function StatsRow({ appointments = [] }) {
   const { t } = useTranslation();
+
+  const allCount = appointments.length;
+  const confirmedCount = appointments.filter((a) => (a.status || a.Status)?.toLowerCase() === "confirmed").length;
+  const pendingCount = appointments.filter((a) => (a.status || a.Status)?.toLowerCase() === "pending").length;
+  const cancelledCount = appointments.filter((a) => (a.status || a.Status)?.toLowerCase() === "cancelled").length;
+
+  const stats = [
+    { label: "all", value: allCount, color: "text-gray-800 dark:text-gray-200" },
+    { label: "confirmed", value: confirmedCount, color: "text-teal-500" },
+    { label: "pending", value: pendingCount, color: "text-orange-400" },
+    { label: "cancelled", value: cancelledCount, color: "text-red-400" },
+  ];
 
   return (
     <div className="grid grid-cols-4 gap-4 mb-5">
