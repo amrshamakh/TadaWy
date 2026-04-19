@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FaStar } from "react-icons/fa";
 import { FiChevronDown, FiEdit2, FiCheck } from "react-icons/fi";
-import { MapPin, Crosshair ,UserIcon} from "lucide-react";
+import { MapPin, Crosshair, UserIcon, Camera } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   MapContainer,
@@ -11,7 +11,11 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
-
+import {
+  getDoctorProfile,
+  updateDoctorProfile,
+  uploadDoctorImage,
+} from "../../modules/doctor/api/profileDoctorApi";
 
 /* Fix Leaflet marker icon */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -27,6 +31,17 @@ const FlyTo = ({ position }) => {
   map.setView(position, 13);
   return null;
 };
+
+function LocationPicker({ position, disabled, onPick }) {
+  useMapEvents({
+    click(e) {
+      if (disabled) return;
+      const { lat, lng } = e.latlng;
+      onPick(lat, lng);
+    },
+  });
+  return <Marker position={position} />;
+}
 
 const Field = ({
   label,
@@ -86,135 +101,163 @@ const Field = ({
   );
 };
 
+const normalizeProfile = (raw) => {
+  if (!raw) return null;
+  return {
+    id: raw.id ?? raw.Id,
+    firstName: raw.firstName ?? raw.FirstName ?? "",
+    lastName: raw.lastName ?? raw.LastName ?? "",
+    email: raw.email ?? raw.Email ?? "",
+    phoneNumber: raw.phoneNumber ?? raw.PhoneNumber ?? "",
+    specialization: raw.specialization ?? raw.Specialization ?? "",
+    addressDescription: raw.addressDescription ?? raw.AddressDescription ?? "",
+    address: raw.address ?? raw.Address ?? "",
+    bio: raw.bio ?? raw.Bio ?? "",
+    price: raw.price ?? raw.Price ?? null,
+    careerStartDate: raw.careerStartDate ?? raw.CareerStartDate ?? null,
+    imageUrl: raw.imageUrl ?? raw.ImageUrl ?? null,
+    latitude: raw.latitude ?? raw.Latitude ?? null,
+    longitude: raw.longitude ?? raw.Longitude ?? null,
+    rating: raw.rating ?? raw.Rating ?? 0,
+    reviewsCount: raw.reviewsCount ?? raw.ReviewsCount ?? 0,
+    patientsCount: raw.patientsCount ?? raw.PatientsCount ?? 0,
+    yearsOfExperience: raw.yearsOfExperience ?? raw.YearsOfExperience ?? 0,
+    reviews: raw.reviews ?? raw.Reviews ?? [],
+  };
+};
+
 const DoctorProfile = () => {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === "ar";
-  const [isEditing, setIsEditing] = useState(false);
   const LOCATION_STORAGE_KEY = "doctor_location";
 
   const storedLocation = JSON.parse(
-    localStorage.getItem(LOCATION_STORAGE_KEY) || "{}"
+    localStorage.getItem(LOCATION_STORAGE_KEY) || "{}",
   );
 
+  const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [pendingImage, setPendingImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
   const [form, setForm] = useState({
-    firstName: "Ahmed",
-    lastName: "Khaled",
-    telephone: "01587823124",
-    specialty: "Cardiology",
+    firstName: "",
+    lastName: "",
+    telephone: "",
+    specialty: "",
     location: storedLocation?.location || "",
     locationDetails: "",
-    email: "ahmedkhaled@gmail.com",
+    email: "",
     about: "",
     fullLocation: storedLocation?.fullLocation || "",
-    latitude: storedLocation?.latitude || null,
-    longitude: storedLocation?.longitude || null,
+    latitude: storedLocation?.latitude ?? null,
+    longitude: storedLocation?.longitude ?? null,
+    price: "",
   });
 
   const [showMap, setShowMap] = useState(false);
   const [position, setPosition] = useState(
     storedLocation?.latitude && storedLocation?.longitude
       ? [storedLocation.latitude, storedLocation.longitude]
-      : [30.0444, 31.2357]
+      : [30.0444, 31.2357],
   );
 
-  const specialtyOptions = useMemo(
-    () => [
-      t("discover.specialties.Cardiology"),
-      t("discover.specialties.Orthopedics"),
-      t("discover.specialties.Dentistry"),
-      t("discover.specialties.Ophthalmology"),
-      t("discover.specialties.Dermatology"),
-      t("discover.specialties.General Practice"),
-      t("discover.specialties.Pediatrics"),
-      t("discover.specialties.Gynecology"),
-      t("discover.specialties.Psychiatry"),
-      t("discover.specialties.Neurology"),
-      t("discover.specialties.Pulmonology"),
-      t("discover.specialties.Gastroenterology"),
-    ],
-    [t]
-  );
+  const applyProfileToForm = useCallback((p) => {
+    const n = normalizeProfile(p);
+    if (!n) return;
+    setForm((prev) => ({
+      ...prev,
+      firstName: n.firstName,
+      lastName: n.lastName,
+      telephone: n.phoneNumber,
+      email: n.email,
+      specialty: n.specialization,
+      about: n.bio || "",
+      locationDetails: n.addressDescription || "",
+      price: n.price != null ? String(n.price) : "",
+      latitude: n.latitude ?? prev.latitude,
+      longitude: n.longitude ?? prev.longitude,
+    }));
+    if (n.latitude != null && n.longitude != null) {
+      setPosition([n.latitude, n.longitude]);
+    }
+  }, []);
 
-  const reviews = useMemo(
-    () => {
-      const localizedReviews = t("booking.reviewsSection.reviews", { returnObjects: true });
-      const defaultRatings = [4.5, 4, 3.5];
-      if (!Array.isArray(localizedReviews)) return [];
+  const loadProfile = useCallback(async () => {
+    setLoading(true);
+    try {
+      const raw = await getDoctorProfile();
+      const n = normalizeProfile(raw);
+      setProfile(n);
+      applyProfileToForm(raw);
+    } catch (e) {
+      console.error(e);
+      alert(t("doctorDashboard.profile.loadError", "Could not load profile"));
+    } finally {
+      setLoading(false);
+    }
+  }, [applyProfileToForm, t]);
 
-      return localizedReviews.slice(0, 2).map((review, idx) => ({
-        id: idx + 1,
-        rating: defaultRatings[idx] ?? 4,
-        name: review.author,
-        date: review.date,
-        text: review.text,
-      }));
-    },
-    [t]
-  );
+  useEffect(() => {
+    void loadProfile();
+  }, [loadProfile]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
 
   const disabled = !isEditing;
 
   const localizedFirstName = isRtl
-    ? t(`doctorDashboard.profile.nameMap.${form.firstName}`, { defaultValue: form.firstName })
+    ? t(`doctorDashboard.profile.nameMap.${form.firstName}`, {
+        defaultValue: form.firstName,
+      })
     : form.firstName;
   const localizedLastName = isRtl
-    ? t(`doctorDashboard.profile.nameMap.${form.lastName}`, { defaultValue: form.lastName })
+    ? t(`doctorDashboard.profile.nameMap.${form.lastName}`, {
+        defaultValue: form.lastName,
+      })
     : form.lastName;
-  const doctorNameOnly = `${localizedFirstName} ${localizedLastName}`.replace(/\s+/g, " ").trim();
-  const doctorDisplayName = `${isRtl ? "د." : "Dr."} ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
-  const doctorId = `${t("doctorDashboard.profile.id")}:123231`;
+  const doctorNameOnly = `${localizedFirstName} ${localizedLastName}`
+    .replace(/\s+/g, " ")
+    .trim();
+  const doctorDisplayName = `${isRtl ? "د." : "Dr."} ${doctorNameOnly}`
+    .replace(/\s+/g, " ")
+    .trim();
+  const doctorIdLabel = profile?.id
+    ? `${t("doctorDashboard.profile.id")}:${profile.id}`
+    : "";
   const localizedSpecialty =
-    t(`discover.specialties.${form.specialty}`, { defaultValue: form.specialty }) || form.specialty;
+    t(`discover.specialties.${form.specialty}`, {
+      defaultValue: form.specialty,
+    }) || form.specialty;
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("doctorProfile");
-      if (!raw) return;
-      const saved = JSON.parse(raw);
-      setForm((p) => ({
-        ...p,
-        firstName: saved?.firstName ?? p.firstName,
-        lastName: saved?.lastName ?? p.lastName,
-        email: saved?.email ?? p.email,
-        telephone: saved?.telephone ?? p.telephone,
-        specialty: saved?.specialty ?? p.specialty,
-        about: saved?.about ?? p.about,
-      }));
-    } catch {
-      // ignore
-    }
-  }, []);
+  const displayImageSrc =
+    imagePreview ||
+    profile?.imageUrl ||
+    null;
 
-  const updateForm = (patch) => {
-    setForm((prev) => {
-      const next = { ...prev, ...patch };
-      try {
-        localStorage.setItem(
-          "doctorProfile",
-          JSON.stringify({
-            firstName: next.firstName,
-            lastName: next.lastName,
-            telephone: next.telephone,
-            specialty: next.specialty,
-            email: next.email,
-            about: next.about,
-            displayName: `Dr. ${`${next.firstName} ${next.lastName}`.replace(/\s+/g, " ").trim()}`,
-          })
-        );
-        window.dispatchEvent(new Event("doctorProfileUpdated"));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  };
+  const reviewsList = useMemo(() => {
+    const list = profile?.reviews;
+    if (!Array.isArray(list) || list.length === 0) return [];
+    return list.map((r, idx) => ({
+      id: idx + 1,
+      rating: Number(r.rating ?? r.Rating ?? 0),
+      name: t("doctorDashboard.profile.anonymousPatient", "Patient"),
+      date: "",
+      text: r.comment ?? r.Comment ?? "",
+    }));
+  }, [profile?.reviews, t]);
 
-  /* Reverse Geocode */
   const reverseGeocode = async (lat, lng) => {
     try {
       const res = await fetch(
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-        { headers: { "User-Agent": "tadawy-app" } }
+        { headers: { "User-Agent": "tadawy-app" } },
       );
       const result = await res.json();
       const city =
@@ -245,21 +288,12 @@ const DoctorProfile = () => {
     }
   };
 
-  /* Click on map */
-  function LocationPicker() {
-    useMapEvents({
-      click(e) {
-        const { lat, lng } = e.latlng;
-        if (disabled) return;
-        setPosition([lat, lng]);
-        reverseGeocode(lat, lng);
-        setShowMap(false);
-      },
-    });
-    return <Marker position={position} />;
-  }
+  const onMapPick = async (lat, lng) => {
+    setPosition([lat, lng]);
+    await reverseGeocode(lat, lng);
+    setShowMap(false);
+  };
 
-  /* Current location */
   const getCurrentLocation = () => {
     if (disabled) return;
     navigator.geolocation.getCurrentPosition(
@@ -270,41 +304,124 @@ const DoctorProfile = () => {
         await reverseGeocode(lat, lng);
         setShowMap(false);
       },
-      () => alert(t("doctorDashboard.profile.locationPermissionDenied"))
+      () => alert(t("doctorDashboard.profile.locationPermissionDenied")),
     );
   };
 
   const handleOpenMap = () => {
+    if (disabled) return;
     if (!position) {
       navigator.geolocation.getCurrentPosition(
         (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
-        () => setPosition([30.0444, 31.2357])
+        () => setPosition([30.0444, 31.2357]),
       );
     }
     setShowMap(true);
   };
 
+  const persistProfile = async () => {
+    setSaveLoading(true);
+    try {
+      const priceVal =
+        form.price === "" || form.price == null
+          ? null
+          : Number(form.price);
+      await updateDoctorProfile({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        phoneNumber: form.telephone,
+        addressDescription: form.locationDetails,
+        bio: form.about,
+        price: Number.isFinite(priceVal) ? priceVal : null,
+        latitude: form.latitude,
+        longitude: form.longitude,
+      });
+      if (pendingImage) {
+        const res = await uploadDoctorImage(pendingImage);
+        const url = res?.imageUrl ?? res?.ImageUrl;
+        if (url) setProfile((p) => (p ? { ...p, imageUrl: url } : p));
+        setPendingImage(null);
+        if (imagePreview) URL.revokeObjectURL(imagePreview);
+        setImagePreview(null);
+      }
+      await loadProfile();
+      setIsEditing(false);
+    } catch (e) {
+      const msg =
+        e?.response?.data?.message ||
+        e?.response?.data ||
+        e?.message ||
+        "Save failed";
+      alert(typeof msg === "string" ? msg : JSON.stringify(msg));
+    } finally {
+      setSaveLoading(false);
+    }
+  };
+
+  const handleEditToggle = async () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+    await persistProfile();
+  };
+
+  const onImageChange = (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setPendingImage(file);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-[50vh] flex items-center justify-center text-slate-500">
+        {t("common.loading", "Loading…")}
+      </div>
+    );
+  }
+
   return (
     <div className="w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] -mx-4 sm:-mx-6 -my-4 sm:-my-6 bg-[#F8FAFC] dark:bg-[#0F172A] min-h-[calc(100vh-64px)] py-6 sm:py-8">
       <div className="max-w-[980px] mx-auto px-4 sm:px-0">
         <div className="rounded-3xl border border-slate-200 bg-white dark:bg-[#1E293B] dark:border-[#334155] shadow-sm overflow-hidden">
-          {/* Header */}
           <div className="relative bg-teal-500 h-[124px] sm:h-[140px]">
-            {/* Avatar overlapping boundary */}
-            <div className={`absolute top-full -translate-y-1/2 ${isRtl ? "right-6 sm:right-10" : "left-6 sm:left-10"}`}>
-            <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
-                <UserIcon
-                  
-                  alt="Doctor"
-                  className="w-[110px] h-[110px] sm:w-[124px] sm:h-[124px] stroke-1 drop-shadow-sm text-[#00BBA7]"
-                />
+            <div
+              className={`absolute top-full -translate-y-1/2 ${isRtl ? "right-6 sm:right-10" : "left-6 sm:left-10"}`}
+            >
+              <div className="relative w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
+                {displayImageSrc ? (
+                  <img
+                    src={displayImageSrc}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <UserIcon className="w-[110px] h-[110px] sm:w-[124px] sm:h-[124px] stroke-1 drop-shadow-sm text-[#00BBA7]" />
+                )}
+                {isEditing && (
+                  <label className="absolute bottom-1 right-1 cursor-pointer rounded-full bg-white/90 p-2 shadow dark:bg-slate-800">
+                    <Camera className="w-4 h-4 text-teal-600" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onImageChange}
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
-            {/* Name + badge (right of avatar) */}
             <div className="h-full px-6 sm:px-10">
               <div className="h-full flex items-end pb-4">
-                <div className={isRtl ? "pr-[158px] sm:pr-[180px]" : "pl-[158px] sm:pl-[180px]"}>
+                <div
+                  className={
+                    isRtl ? "pr-[158px] sm:pr-[180px]" : "pl-[158px] sm:pl-[180px]"
+                  }
+                >
                   <div className="flex items-center gap-3">
                     <h2 className="text-lg sm:text-xl font-semibold text-white leading-snug">
                       {doctorDisplayName}
@@ -318,34 +435,41 @@ const DoctorProfile = () => {
             </div>
           </div>
 
-          {/* Body */}
           <div className="px-6 sm:px-10 pb-10 pt-3 sm:pt-4">
             <div className="flex items-start justify-between gap-4 -translate-y-1 sm:-translate-y-2">
-              <div className={`${isRtl ? "pr-[158px] sm:pr-[180px] text-right" : "pl-[158px] sm:pl-[180px] text-left"}`}>
+              <div
+                className={`${isRtl ? "pr-[158px] sm:pr-[180px] text-right" : "pl-[158px] sm:pl-[180px] text-left"}`}
+              >
                 <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 space-y-0.5 mt-0">
                   <div>{localizedSpecialty}</div>
-                  <div>{doctorId}</div>
+                  <div>{doctorIdLabel}</div>
                 </div>
               </div>
 
               <button
-                onClick={() => setIsEditing((p) => !p)}
+                type="button"
+                disabled={saveLoading}
+                onClick={() => void handleEditToggle()}
                 className={`
                   self-center sm:self-start
                   px-5 py-2.5 rounded-xl text-sm font-medium
                   transition-all duration-200 shadow-sm flex items-center gap-2 cursor-pointer
-                  ${isEditing 
-                    ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500" 
+                  disabled:opacity-60
+                  ${isEditing
+                    ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500"
                     : "border border-[#00BBA7] text-[#00BBA7] bg-white hover:bg-teal-50 dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30"
                   }
                 `}
               >
                 {isEditing ? <FiCheck size={18} /> : <FiEdit2 size={16} />}
-                {isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
+                {saveLoading
+                  ? t("common.saving", "Saving…")
+                  : isEditing
+                    ? t("doctorDashboard.profile.save")
+                    : t("doctorDashboard.profile.edit")}
               </button>
             </div>
 
-            {/* Stats */}
             <div className="mt-10 sm:mt-14">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 dark:bg-[#0F172A] dark:border-[#1E293B] shadow-sm">
                 <div className="flex items-stretch justify-between px-6 sm:px-10 py-4">
@@ -353,11 +477,12 @@ const DoctorProfile = () => {
                     <div className="flex items-center justify-center gap-2">
                       <FaStar className="text-amber-400" size={20} />
                       <span className="font-semibold text-amber-400 text-[1.05rem] sm:text-lg">
-                        4.8
+                        {(profile?.rating ?? 0).toFixed(1)}
                       </span>
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      {isRtl ? "97 تقييم" : `97 ${t("doctorDashboard.profile.reviews")}`}
+                      {profile?.reviewsCount ?? 0}{" "}
+                      {t("doctorDashboard.profile.reviews")}
                     </div>
                   </div>
 
@@ -365,7 +490,7 @@ const DoctorProfile = () => {
 
                   <div className="flex-1 text-center">
                     <div className="font-semibold text-slate-800 dark:text-white text-[1.05rem] sm:text-lg">
-                      157
+                      {profile?.patientsCount ?? 0}
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       {t("doctorDashboard.profile.patients")}
@@ -379,42 +504,53 @@ const DoctorProfile = () => {
                       {t("doctorDashboard.profile.experience")}
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
+                      {t("doctorDashboard.profile.experienceSubtitle", {
+                        count: profile?.yearsOfExperience ?? 0,
+                      })}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Form */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
               <Field
                 label={t("doctorDashboard.profile.firstName")}
                 value={form.firstName}
                 disabled={disabled}
-                onChange={(v) => updateForm({ firstName: v })}
+                onChange={(v) => setForm((p) => ({ ...p, firstName: v }))}
               />
               <Field
                 label={t("doctorDashboard.profile.lastName")}
                 value={form.lastName}
                 disabled={disabled}
-                onChange={(v) => updateForm({ lastName: v })}
+                onChange={(v) => setForm((p) => ({ ...p, lastName: v }))}
               />
               <Field
                 label={t("doctorDashboard.profile.telephone")}
                 value={form.telephone}
                 disabled={disabled}
-                onChange={(v) => updateForm({ telephone: v })}
+                onChange={(v) => setForm((p) => ({ ...p, telephone: v }))}
               />
+              <div className="space-y-2">
+                <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                  {t("doctorDashboard.profile.specialty")}
+                </label>
+                <input
+                  type="text"
+                  value={localizedSpecialty}
+                  disabled
+                  className="w-full rounded-[22px] border px-4 py-3 text-sm bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                />
+              </div>
               <Field
-                label={t("doctorDashboard.profile.specialty")}
-                value={form.specialty}
+                label={t("doctorDashboard.profile.consultationFee", "Consultation fee (EGP)")}
+                value={form.price}
                 disabled={disabled}
-                onChange={(v) => updateForm({ specialty: v })}
-                as="select"
-                options={specialtyOptions}
+                onChange={(v) => setForm((p) => ({ ...p, price: v }))}
+                type="number"
+                placeholder="150"
               />
-              {/* Location Input overriding generic Field to add Map modal support */}
               <div className="space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
                   {t("doctorDashboard.profile.location")}
@@ -438,8 +574,7 @@ const DoctorProfile = () => {
                     ].join(" ")}
                   />
                   <div
-                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 dark:text-slate-500" : "text-teal-500 dark:text-[#00BBA7]"
-                      }`}
+                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 dark:text-slate-500" : "text-teal-500 dark:text-[#00BBA7]"}`}
                   >
                     <MapPin className="w-5 h-5" />
                   </div>
@@ -454,8 +589,8 @@ const DoctorProfile = () => {
               <Field
                 label={t("doctorDashboard.profile.email")}
                 value={form.email}
-                disabled={disabled}
-                onChange={(v) => updateForm({ email: v })}
+                disabled
+                onChange={() => {}}
                 type="email"
               />
 
@@ -465,7 +600,9 @@ const DoctorProfile = () => {
                 </label>
                 <textarea
                   value={form.about}
-                  onChange={(e) => updateForm({ about: e.target.value })}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, about: e.target.value }))
+                  }
                   disabled={disabled}
                   rows={5}
                   className={[
@@ -478,49 +615,56 @@ const DoctorProfile = () => {
               </div>
             </div>
 
-            {/* Reviews */}
             <div className="mt-10">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
                 {t("doctorDashboard.profile.reviews")}
               </h3>
 
               <div className="mt-5 space-y-4">
-                {reviews.map((r) => (
-                  <div
-                    key={r.id}
-                    className="
-                      rounded-2xl border border-slate-200 bg-slate-100
-                      dark:bg-[#0F172A] dark:border-[#1E293B]
-                      shadow-sm p-5
-                    "
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-[1.02rem] font-bold text-slate-800 dark:text-white">
-                          {r.name}
+                {reviewsList.length === 0 ? (
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {t(
+                      "doctorDashboard.profile.noReviewsYet",
+                      "No reviews yet. Reviews from patients will appear here.",
+                    )}
+                  </p>
+                ) : (
+                  reviewsList.map((r) => (
+                    <div
+                      key={r.id}
+                      className="rounded-2xl border border-slate-200 bg-slate-100 dark:bg-[#0F172A] dark:border-[#1E293B] shadow-sm p-5"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-[1.02rem] font-bold text-slate-800 dark:text-white">
+                            {r.name}
+                          </div>
+                          {r.date ? (
+                            <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                              {r.date}
+                            </div>
+                          ) : null}
                         </div>
-                        <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          {r.date}
+                        <div className="inline-flex items-center gap-2 rounded-2xl bg-teal-100 text-teal-700 px-3 py-1 text-sm font-semibold dark:bg-teal-950/30 dark:text-teal-200">
+                          <FaStar className="text-amber-400" />
+                          {r.rating.toFixed(1)}
                         </div>
                       </div>
-                      <div className="inline-flex items-center gap-2 rounded-2xl bg-teal-100 text-teal-700 px-3 py-1 text-sm font-semibold dark:bg-teal-950/30 dark:text-teal-200">
-                        <FaStar className="text-amber-400" />
-                        {r.rating.toFixed(1)}
-                      </div>
-                    </div>
 
-                    <p className="mt-3 text-[0.95rem] text-slate-500 dark:text-slate-300 leading-relaxed font-medium">
-                      {r.text}
-                    </p>
-                  </div>
-                ))}
+                      {r.text ? (
+                        <p className="mt-3 text-[0.95rem] text-slate-500 dark:text-slate-300 leading-relaxed font-medium">
+                          {r.text}
+                        </p>
+                      ) : null}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* MAP MODAL */}
       {showMap && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-xl w-full max-w-3xl p-4 space-y-3">
@@ -528,7 +672,6 @@ const DoctorProfile = () => {
               {t("doctorDashboard.profile.locationPlaceholder")}
             </h3>
 
-            {/* Current Location Button */}
             {!disabled && (
               <button
                 type="button"
@@ -540,7 +683,6 @@ const DoctorProfile = () => {
               </button>
             )}
 
-            {/* Map */}
             {position && (
               <MapContainer
                 center={position}
@@ -549,11 +691,14 @@ const DoctorProfile = () => {
               >
                 <FlyTo position={position} />
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <LocationPicker />
+                <LocationPicker
+                  position={position}
+                  disabled={disabled}
+                  onPick={onMapPick}
+                />
               </MapContainer>
             )}
 
-            {/* Close Button */}
             <button
               type="button"
               onClick={() => setShowMap(false)}

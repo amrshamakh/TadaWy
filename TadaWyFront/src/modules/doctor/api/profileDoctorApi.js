@@ -12,5 +12,8 @@ export function updateDoctorProfile(data) {
 export function uploadDoctorImage(image) {
   const formData = new FormData();
   formData.append("image", image);
-  return ApiClient.post("/Doctor/profile/image", formData);
+  return ApiClient.post("/Doctor/profile/image", formData, {
+    headers: { "Content-Type": undefined },
+    timeout: 120000,
+  });
 }

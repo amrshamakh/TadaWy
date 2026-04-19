@@ -28,8 +28,17 @@ const Login = () => {
       const res = await loginPatient(formData);
       if (res && res.token) {
         await login(res.token);
-        if (Array.isArray(res.role) && res.role.includes("Doctor")) {
-          navigate("/doctor/schedule");
+        const rolesRaw = res.role ?? res.Role;
+        const roleList = Array.isArray(rolesRaw)
+          ? rolesRaw
+          : rolesRaw
+            ? [rolesRaw]
+            : [];
+        const isDoctor = roleList.some(
+          (r) => String(r).toLowerCase() === "doctor",
+        );
+        if (isDoctor) {
+          navigate("/doctor");
         } else {
           navigate("/discover");
         }

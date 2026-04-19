@@ -18,21 +18,31 @@ export default function DoctorCard({ doctor }) {
         </div>
         <div className="booking-doctor-main">
           <h2 className="booking-doctor-name">
-            {doctor.id ? t(`discover.clinicsData.${doctor.id}.doctor`) : doctor.doctor}
+            {doctor.source === "api"
+              ? doctor.doctor
+              : doctor.id
+                ? t(`discover.clinicsData.${doctor.id}.doctor`)
+                : doctor.doctor}
           </h2>
 
           <div className="booking-doctor-tags">
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.specialization")}:</span>
               <span className="booking-doctor-tag-value">
-                {doctor.id ? t(`discover.clinicsData.${doctor.id}.specialty`) : doctor.specialty}
+                {doctor.source === "api"
+                  ? doctor.specialty
+                  : doctor.id
+                    ? t(`discover.clinicsData.${doctor.id}.specialty`)
+                    : doctor.specialty}
               </span>
             </div>
 
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.experience")}:</span>
               <span className="booking-doctor-tag-value">
-                {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
+                {t("doctorDashboard.profile.experienceSubtitle", {
+                  count: doctor.yearsExperience ?? 0,
+                })}
               </span>
             </div>
 

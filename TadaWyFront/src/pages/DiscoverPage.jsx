@@ -1,15 +1,37 @@
-import { useState, useMemo } from "react";
-import { Star, MapPin, Phone, Grid, List, Search, ArrowLeft, ArrowRight } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import {
+  Star,
+  MapPin,
+  Grid,
+  List,
+  Search,
+  ChevronDown,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ChevronDown } from "lucide-react";
-
-
 import { clinicsData, specialties, ratings, locations } from "../assets/assets";
+import userPlaceholder from "../assets/User.svg";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import { getPublicDoctors } from "../modules/doctor/api/discoverDoctorsApi";
 
+function mapApiDoctorToCard(it) {
+  const city = it.city ?? it.City ?? "";
+  const street = it.street ?? it.Street ?? "";
+  const addr = [city, street].filter(Boolean).join(", ");
+  return {
+    id: it.id ?? it.Id,
+    doctor: it.doctorName ?? it.DoctorName ?? "",
+    name: it.doctorName ?? it.DoctorName ?? "",
+    specialty: it.specialization ?? it.Specialization ?? "",
+    rating: it.rate ?? it.Rate ?? 0,
+    address: addr,
+    image: it.imageUrl ?? it.ImageUrl ?? userPlaceholder,
+    phone: it.phoneNumber ?? it.PhoneNumber ?? "",
+    price: null,
+    source: "api",
+  };
+}
 
-// Main Component
 export default function DiscoverPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -22,9 +44,56 @@ export default function DiscoverPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  // Helpers: pull translated label for a clinic field, fall back to raw value
+  const [apiDoctors, setApiDoctors] = useState([]);
+  const [apiLoading, setApiLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setApiLoading(true);
+      try {
+        const res = await getPublicDoctors({ pageNumber: 1, pageSize: 200 });
+        const items = res?.items ?? res?.Items ?? [];
+        if (!cancelled) setApiDoctors(items.map(mapApiDoctorToCard));
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) setApiDoctors([]);
+      } finally {
+        if (!cancelled) setApiLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const baseClinics = useMemo(() => {
+    if (apiDoctors.length > 0) return apiDoctors;
+    return clinicsData.map((c) => ({ ...c, source: "static" }));
+  }, [apiDoctors]);
+
+  const dynamicSpecialties = useMemo(() => {
+    const set = new Set(specialties);
+    baseClinics.forEach((c) => {
+      if (c.specialty) set.add(c.specialty);
+    });
+    return Array.from(set);
+  }, [baseClinics]);
+
+  const dynamicLocations = useMemo(() => {
+    const set = new Set(locations);
+    baseClinics.forEach((c) => {
+      const addr = c.address || "";
+      const first = addr.split(",")[0]?.trim();
+      if (first) set.add(first);
+    });
+    return Array.from(set);
+  }, [baseClinics]);
+
   const getClinicField = (clinic, field) =>
-    t(`discover.clinicsData.${clinic.id}.${field}`, { defaultValue: clinic[field] });
+    t(`discover.clinicsData.${clinic.id}.${field}`, {
+      defaultValue: clinic[field],
+    });
 
   const getSpecialtyLabel = (value) =>
     t(`discover.specialties.${value}`, { defaultValue: value });
@@ -35,21 +104,37 @@ export default function DiscoverPage() {
   const getLocationLabel = (value) =>
     t(`discover.locations.${value}`, { defaultValue: value });
 
-  // Filter still uses raw English values from assets so logic stays consistent
   const filteredClinics = useMemo(() => {
-    return clinicsData.filter((clinic) => {
-      const translatedName = t(`discover.clinicsData.${clinic.id}.name`, { defaultValue: clinic.name });
-      const translatedDoctor = t(`discover.clinicsData.${clinic.id}.doctor`, { defaultValue: clinic.doctor });
-      const translatedSpecialty = t(`discover.clinicsData.${clinic.id}.specialty`, { defaultValue: clinic.specialty });
+    return baseClinics.filter((clinic) => {
+      const translatedName = t(
+        `discover.clinicsData.${clinic.id}.name`,
+        { defaultValue: clinic.name },
+      );
+      const translatedDoctor = t(
+        `discover.clinicsData.${clinic.id}.doctor`,
+        { defaultValue: clinic.doctor },
+      );
+      const translatedSpecialty = t(
+        `discover.clinicsData.${clinic.id}.specialty`,
+        { defaultValue: clinic.specialty },
+      );
 
       const matchesSearch =
         searchQuery === "" ||
         translatedName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         translatedDoctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        translatedSpecialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        clinic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        clinic.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        clinic.specialty.toLowerCase().includes(searchQuery.toLowerCase());
+        translatedSpecialty
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (clinic.name || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (clinic.doctor || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        (clinic.specialty || "")
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
 
       const matchesSpecialty =
         selectedSpecialty === "All Specialties" ||
@@ -58,23 +143,30 @@ export default function DiscoverPage() {
       let matchesRating = true;
       if (selectedRating !== "All Ratings") {
         const minRating = parseFloat(selectedRating.replace("+", ""));
-        matchesRating = clinic.rating >= minRating;
+        matchesRating = (clinic.rating ?? 0) >= minRating;
       }
 
       const matchesLocation =
         selectedLocation === "All Locations" ||
-        clinic.address.includes(selectedLocation);
+        (clinic.address || "").includes(selectedLocation);
 
       return matchesSearch && matchesSpecialty && matchesRating && matchesLocation;
     });
-  }, [searchQuery, selectedSpecialty, selectedRating, selectedLocation, t]);
+  }, [
+    baseClinics,
+    searchQuery,
+    selectedSpecialty,
+    selectedRating,
+    selectedLocation,
+    t,
+  ]);
 
   const totalPages = Math.ceil(filteredClinics.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const currentClinics = filteredClinics.slice(startIndex, endIndex);
 
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedSpecialty, selectedRating, selectedLocation]);
 
@@ -90,7 +182,6 @@ export default function DiscoverPage() {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold dark:text-white text-gray-800 mb-2">
             {t("discover.title")}
@@ -100,9 +191,7 @@ export default function DiscoverPage() {
           </p>
         </div>
 
-        {/* Filters */}
         <div className="mb-6">
-          {/* Search */}
           <div className="mb-4 relative border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -114,16 +203,14 @@ export default function DiscoverPage() {
             />
           </div>
 
-          {/* Filter Row */}
           <div className="flex flex-wrap gap-4 items-center">
-            {/* Specialty Filter */}
             <div className="relative flex-1 min-w-50">
               <select
                 value={selectedSpecialty}
                 onChange={(e) => setSelectedSpecialty(e.target.value)}
                 className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:ring-2 focus:ring-teal-500"
               >
-                {specialties.map((s) => (
+                {dynamicSpecialties.map((s) => (
                   <option key={s} value={s}>
                     {getSpecialtyLabel(s)}
                   </option>
@@ -132,7 +219,6 @@ export default function DiscoverPage() {
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* Rating Filter */}
             <div className="relative flex-1 min-w-37.5">
               <select
                 value={selectedRating}
@@ -148,14 +234,13 @@ export default function DiscoverPage() {
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* Location Filter */}
             <div className="relative flex-1 min-w-50">
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
                 className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
               >
-                {locations.map((l) => (
+                {dynamicLocations.map((l) => (
                   <option key={l} value={l}>
                     {getLocationLabel(l)}
                   </option>
@@ -164,9 +249,9 @@ export default function DiscoverPage() {
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* View Mode Toggle */}
             <div className="flex gap-2 p-1">
               <button
+                type="button"
                 onClick={() => setViewMode("grid")}
                 className={`p-2 w-9 h-9 rounded-xl transition-colors flex justify-center items-center ${viewMode === "grid"
                   ? "bg-teal-500 text-white border"
@@ -176,6 +261,7 @@ export default function DiscoverPage() {
                 <Grid className="w-4 h-4 dark:text-white" />
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode("list")}
                 className={`p-2 w-9 h-9 rounded-xl transition-colors ${viewMode === "list"
                   ? "bg-teal-500 text-white"
@@ -187,18 +273,17 @@ export default function DiscoverPage() {
             </div>
           </div>
 
-          {/* Results count */}
           <div className="flex items-center gap-2 mt-4 text-sm text-gray-600 dark:text-gray-400">
             <MapPin className="w-4 h-4" />
             <span>
               {t("discover.showing")} {startIndex + 1}–
               {Math.min(endIndex, filteredClinics.length)} {t("discover.of")}{" "}
               {filteredClinics.length} {t("discover.clinics")}
+              {apiLoading ? ` (${t("common.loading", "Loading…")})` : ""}
             </span>
           </div>
         </div>
 
-        {/* Clinic Grid / List */}
         {filteredClinics.length === 0 ? (
           <div className="text-center py-12 dark:bg-gray-800 bg-white rounded-lg">
             <p className="text-gray-500 text-lg">{t("discover.noResults")}</p>
@@ -215,7 +300,7 @@ export default function DiscoverPage() {
             >
               {currentClinics.map((clinic) => (
                 <div
-                  key={clinic.id}
+                  key={`${clinic.source || "x"}-${clinic.id}`}
                   className="dark:bg-gray-800 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
                 >
                   <div className="relative h-48">
@@ -227,26 +312,36 @@ export default function DiscoverPage() {
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold dark:text-white text-gray-800 mb-2">
-                      {getClinicField(clinic, "doctor")}
+                      {clinic.source === "api"
+                        ? clinic.doctor
+                        : getClinicField(clinic, "doctor")}
                     </h3>
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm font-medium dark:text-white">
-                          {clinic.rating}
+                          {typeof clinic.rating === "number"
+                            ? clinic.rating.toFixed(1)
+                            : clinic.rating}
                         </span>
                       </div>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                        • {getClinicField(clinic, "specialty")}
+                        •{" "}
+                        {clinic.source === "api"
+                          ? clinic.specialty
+                          : getClinicField(clinic, "specialty")}
                       </span>
                     </div>
                     <div className="flex items-start gap-2 mb-4">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {getClinicField(clinic, "address")}
+                        {clinic.source === "api"
+                          ? clinic.address
+                          : getClinicField(clinic, "address")}
                       </p>
                     </div>
                     <button
+                      type="button"
                       onClick={() => handleBookAppointment(clinic)}
                       className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2.5 rounded-lg transition-colors"
                     >
