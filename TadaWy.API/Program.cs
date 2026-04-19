@@ -20,14 +20,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy
-                .AllowAnyOrigin()     
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowReactApp",
+       policy =>
+       {
+           policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // Common React ports
+                 .AllowAnyHeader()
+                 .AllowAnyMethod()
+                 .AllowCredentials();
+
+       });
 });
 
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -169,7 +170,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/Dashboard");
