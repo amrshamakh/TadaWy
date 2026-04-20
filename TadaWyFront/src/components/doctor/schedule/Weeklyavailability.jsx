@@ -12,7 +12,7 @@ const DAYS = [
   { key: "thu" },
 ];
 
-export default function WeeklyAvailability({ schedule, onToggle, onUpdateSlot, onAddSlot, onRemoveSlot }) {
+export default function WeeklyAvailability({ schedule, scheduleErrors, onToggle, onUpdateSlot, onAddSlot, onRemoveSlot }) {
   const { t } = useTranslation();
 
   return (
@@ -35,6 +35,7 @@ export default function WeeklyAvailability({ schedule, onToggle, onUpdateSlot, o
             key={key}
             name={t(`doctorDashboard.schedule.days.${key}`)}
             dayData={schedule[key]}
+            dayErrors={scheduleErrors ? scheduleErrors[key] : []}
             onToggle={(val) => onToggle(key, val)}
             onUpdateSlot={(idx, field, val) => onUpdateSlot(key, idx, field, val)}
             onAddSlot={() => onAddSlot(key)}
