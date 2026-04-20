@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import DurationCard from "./DurationCard"; 
 import FeeCard from "./FeeCard";
@@ -105,12 +105,63 @@ export default function DoctorSchedule() {
       });
   }, []);
 
+  // Validation
+  const scheduleErrors = useMemo(() => {
+    const errs = {};
+    Object.keys(schedule).forEach(dayKey => {
+      const day = schedule[dayKey];
+      errs[dayKey] = [];
+      if (day.enabled) {
+        day.slots.forEach((slot, idx) => {
+          let err = null;
+          if (slot.from === slot.to) {
+            err = t("doctorDashboard.schedule.identicalError", "Time start and end is identical");
+          } else {
+            const getSpan = (s) => {
+              const fromTimeSpan = parseAMPMToTimeSpan(s.from);
+              const toTimeSpan = parseAMPMToTimeSpan(s.to);
+              const [fH, fM] = fromTimeSpan.split(':').map(Number);
+              const [tH, tM] = toTimeSpan.split(':').map(Number);
+              const fMins = (fH * 60) + fM;
+              let tMins = (tH * 60) + tM;
+              if (tMins <= fMins && tMins === 0) tMins += 1440;
+              else if (tMins < fMins) tMins += 1440;
+              return [fMins, tMins];
+            };
+            const [aStart, aEnd] = getSpan(slot);
+            for (let j = 0; j < day.slots.length; j++) {
+              if (j === idx) continue;
+              const [bStart, bEnd] = getSpan(day.slots[j]);
+              if (Math.max(aStart, bStart) < Math.min(aEnd, bEnd)) {
+                err = t("doctorDashboard.schedule.overlapError", "Time is duplicated");
+                break;
+              }
+            }
+          }
+          errs[dayKey][idx] = err;
+        });
+      }
+    });
+    return errs;
+  }, [schedule, t]);
+
+  const hasAnyErrors = useMemo(() => {
+    return Object.values(scheduleErrors).some(dayErrs => dayErrs.some(err => err !== null));
+  }, [scheduleErrors]);
+
   // 2. Auto-save on Changes
   useEffect(() => {
     if (loading) return; // Don't save while initially loading data
     if (isFirstLoad.current) {
       isFirstLoad.current = false;
       return; // Skip the first render after data load
+    }
+
+    if (hasAnyErrors) {
+      if (!error) setError(t("doctorDashboard.schedule.validationError", "Please fix time slots errors before saving."));
+      return;
+    } else {
+      setError("");
     }
 
     if (saveTimeoutRef.current) {
@@ -144,7 +195,7 @@ export default function DoctorSchedule() {
     }, 1500);
 
     return () => clearTimeout(saveTimeoutRef.current);
-  }, [duration, fee, schedule, loading]);
+  }, [duration, fee, schedule, loading, hasAnyErrors]);
 
   /* ── schedule helpers ── */
   const toggleDay = (key, val) =>
@@ -157,22 +208,9 @@ export default function DoctorSchedule() {
       },
     }));
 
-  const hasIdenticalSlot = (slots) => {
-    return slots.some((slot, i) =>
-      slots.findIndex(s2 => s2.from === slot.from && s2.to === slot.to) !== i
-    );
-  };
-
   const updateSlot = (key, idx, field, val) => {
     setSchedule((s) => {
       const updatedSlots = s[key].slots.map((slot, i) => (i === idx ? { ...slot, [field]: val } : slot));
-      
-      if (hasIdenticalSlot(updatedSlots)) {
-        setError(t("doctorDashboard.schedule.duplicateError", "Time range is repeated. You cannot set identical times on the same day."));
-        return s;
-      }
-      
-      setError("");
       return {
         ...s,
         [key]: {
@@ -187,13 +225,6 @@ export default function DoctorSchedule() {
     setSchedule((s) => {
       const newSlot = { from: "09:00 AM", to: "05:00 PM" };
       const updatedSlots = [...s[key].slots, newSlot];
-      
-      if (hasIdenticalSlot(updatedSlots)) {
-        setError(t("doctorDashboard.schedule.duplicateError", "Adding a new default slot causes a duplicate. Change existing slots first."));
-        return s;
-      }
-
-      setError("");
       return {
         ...s,
         [key]: { ...s[key], slots: updatedSlots },
@@ -202,7 +233,6 @@ export default function DoctorSchedule() {
   };
 
   const removeSlot = (key, idx) => {
-    setError(""); // clear out error when someone successfully removes a slot mapping
     setSchedule((s) => ({
       ...s,
       [key]: { ...s[key], slots: s[key].slots.filter((_, i) => i !== idx) },
@@ -285,6 +315,7 @@ export default function DoctorSchedule() {
         )}
         <WeeklyAvailability
           schedule={schedule}
+          scheduleErrors={scheduleErrors}
           onToggle={toggleDay}
           onUpdateSlot={updateSlot}
           onAddSlot={addSlot}
