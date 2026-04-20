@@ -18,10 +18,13 @@ function mapApiDoctorToCard(it) {
   const city = it.city ?? it.City ?? "";
   const street = it.street ?? it.Street ?? "";
   const addr = [city, street].filter(Boolean).join(", ");
+  const apiDoctorName = it.doctorName ?? it.DoctorName ?? "";
+  const doctorTitle = apiDoctorName.includes("Dr. ") || apiDoctorName.includes("د.") || apiDoctorName.includes("Doctor") ? apiDoctorName : `Dr. ${apiDoctorName}`;
+
   return {
     id: it.id ?? it.Id,
-    doctor: it.doctorName ?? it.DoctorName ?? "",
-    name: it.doctorName ?? it.DoctorName ?? "",
+    doctor: doctorTitle,
+    name: doctorTitle,
     specialty: it.specialization ?? it.Specialization ?? "",
     rating: it.rate ?? it.Rate ?? 0,
     address: addr,
@@ -68,8 +71,8 @@ export default function DiscoverPage() {
   }, []);
 
   const baseClinics = useMemo(() => {
-    if (apiDoctors.length > 0) return apiDoctors;
-    return clinicsData.map((c) => ({ ...c, source: "static" }));
+    const staticClinics = clinicsData.map((c) => ({ ...c, source: "static" }));
+    return [...apiDoctors, ...staticClinics];
   }, [apiDoctors]);
 
   const dynamicSpecialties = useMemo(() => {

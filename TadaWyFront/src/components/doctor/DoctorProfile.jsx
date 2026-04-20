@@ -47,6 +47,7 @@ const Field = ({
   label,
   value,
   disabled,
+  readOnly,
   onChange,
   type = "text",
   placeholder,
@@ -88,6 +89,7 @@ const Field = ({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
+          readOnly={readOnly}
           placeholder={placeholder}
           className={[
             "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors",
@@ -532,25 +534,14 @@ const DoctorProfile = () => {
                 disabled={disabled}
                 onChange={(v) => setForm((p) => ({ ...p, telephone: v }))}
               />
-              <div className="space-y-2">
-                <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  {t("doctorDashboard.profile.specialty")}
-                </label>
-                <input
-                  type="text"
-                  value={localizedSpecialty}
-                  disabled
-                  className="w-full rounded-[22px] border px-4 py-3 text-sm bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
-                />
-              </div>
               <Field
-                label={t("doctorDashboard.profile.consultationFee", "Consultation fee (EGP)")}
-                value={form.price}
+                label={t("doctorDashboard.profile.specialty")}
+                value={localizedSpecialty}
                 disabled={disabled}
-                onChange={(v) => setForm((p) => ({ ...p, price: v }))}
-                type="number"
-                placeholder="150"
+                readOnly
+                onChange={() => {}}
               />
+
               <div className="space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
                   {t("doctorDashboard.profile.location")}
@@ -589,7 +580,8 @@ const DoctorProfile = () => {
               <Field
                 label={t("doctorDashboard.profile.email")}
                 value={form.email}
-                disabled
+                disabled={disabled}
+                readOnly
                 onChange={() => {}}
                 type="email"
               />

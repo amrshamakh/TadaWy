@@ -22,6 +22,7 @@ export function getVisibleDays(startDate, dateOffset, lang = "en-US", count = 5)
     daysArr.push({
       day: d.toLocaleDateString(l, { weekday: "short" }),
       date: `${d.getDate()} ${d.toLocaleDateString(l, { month: "short" })}`,
+      fullDate: d
     });
   }
   return daysArr;

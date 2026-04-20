@@ -28,7 +28,8 @@ export default function ReviewsSection({ doctor }) {
       }))
     : [];
 
-  const reviews = reviewsFromApi ?? reviewsFallback;
+  const isApi = doctor?.source === "api" || doctor?.id;
+  const reviews = reviewsFromApi ?? (isApi ? [] : reviewsFallback);
   const reviewCount =
     (Array.isArray(apiList) && apiList.length) ||
     (doctor.reviewsCount ?? 0) ||
@@ -44,21 +45,27 @@ export default function ReviewsSection({ doctor }) {
       </div>
 
       <div className="booking-reviews-list">
-        {reviews.map((review) => (
-          <div key={review.id} className="booking-review-item">
-            <div className="booking-review-item-header">
-              <div>
-                <p className="booking-review-author">{review.author}</p>
-                <p className="booking-review-date">{review.date}</p>
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <div key={review.id} className="booking-review-item">
+              <div className="booking-review-item-header">
+                <div>
+                  <p className="booking-review-author">{review.author}</p>
+                  <p className="booking-review-date">{review.date}</p>
+                </div>
+                <div className="booking-review-badge">
+                  <Star size={14} fill="#FACC15" color="#FACC15" />
+                  <span>{review.rating}</span>
+                </div>
               </div>
-              <div className="booking-review-badge">
-                <Star size={14} fill="#FACC15" color="#FACC15" />
-                <span>{review.rating}</span>
-              </div>
+              <p className="booking-review-text">{review.text}</p>
             </div>
-            <p className="booking-review-text">{review.text}</p>
+          ))
+        ) : (
+          <div className="py-6 text-center text-gray-500 dark:text-gray-400 border-2 border-dashed border-gray-100 dark:border-[#334155] rounded-xl text-sm">
+            {t("booking.reviewsSection.noReviewsYet", "No reviews available yet. Book an appointment to be the first to leave a review!")}
           </div>
-        ))}
+        )}
       </div>
     </section>
   );

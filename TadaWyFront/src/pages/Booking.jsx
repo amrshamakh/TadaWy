@@ -32,6 +32,7 @@ function mergeDoctorForBooking(passed, detail) {
       detail.AddressDescription ??
       passed.location_description,
     apiReviews: reviews,
+    availableSlots: detail.availableDaysSlots ?? detail.AvailableDaysSlots ?? passed.availableSlots ?? [],
   };
 }
 

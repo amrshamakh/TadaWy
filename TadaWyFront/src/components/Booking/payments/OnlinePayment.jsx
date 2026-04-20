@@ -4,6 +4,7 @@ import BookingReceiptModal from "./BookingReceiptModal";
 import BookingSuccessModal from "./BookingSuccessModal";
 import html2canvas from "html2canvas";
 import { useTranslation } from "react-i18next";
+import { createOfflineAppointment } from "../../../modules/patient/api/appointmentApi";
 
 export default function OnlinePayment() {
   const { t } = useTranslation();
@@ -26,6 +27,8 @@ export default function OnlinePayment() {
     patientEmail: "patient@email.com",
     appointmentDateValue: "Date",
     appointmentCost: 150,
+    isoDate: null,
+    patientId: 0
   };
 
   const receiptNumber = `RX-${Date.now().toString().slice(-10)}`;
@@ -46,9 +49,25 @@ export default function OnlinePayment() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleConfirm = (e) => {
+  const handleConfirm = async (e) => {
     e.preventDefault();
-    setStep(2); // Step 2 is now Success Modal
+    try {
+      if (isoDate) {
+        // We use createOfflineAppointment here because the real CreateOnline generates a Paymob iframe
+        // and we want to preserve this manual mock payment UI flow while still saving to DB.
+        await createOfflineAppointment({
+          DoctorId: doctor.id || doctor.Id,
+          PatientId: patientId,
+          Date: isoDate,
+          Amount: appointmentCost,
+        });
+      }
+      setStep(2); // Step 2 is now Success Modal
+    } catch (err) {
+      console.error(err);
+      const errMsg = err?.response?.data?.message || err?.response?.data || err?.message || "Failed to book appointment.";
+      alert(t("common.error", errMsg));
+    }
   };
 
   const handlePrintReceipt = async () => {

@@ -33,11 +33,12 @@ const DEFAULT_SCHEDULE = {
 export default function DoctorSchedule() {
   const { t } = useTranslation();
   const [duration, setDuration] = useState(20);
-  const [fee, setFee] = useState(150);
+  const [fee, setFee] = useState("");
   const [schedule, setSchedule] = useState(DEFAULT_SCHEDULE);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [summary, setSummary] = useState(null);
+  const [saveMessage, setSaveMessage] = useState({ text: "", type: "" });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -123,19 +124,32 @@ export default function DoctorSchedule() {
     computedWeeklyAppts;
 
   const handleSave = async () => {
+    // Validate
+    if (!fee || fee <= 0) {
+      setSaveMessage({ text: t("doctorDashboard.schedule.missingFee", "Please enter a valid appointment fee."), type: "error" });
+      return;
+    }
+    if (!duration || duration <= 0) {
+      setSaveMessage({ text: t("doctorDashboard.schedule.missingDuration", "Please enter appointment duration."), type: "error" });
+      return;
+    }
+    const hasEmptySlotDay = Object.values(schedule).some(d => d.enabled && d.slots.length === 0);
+    if (hasEmptySlotDay) {
+      setSaveMessage({ text: t("doctorDashboard.schedule.missingSlots", "Please add at least one time slot for the selected days."), type: "error" });
+      return;
+    }
+
+    setSaveMessage({ text: "", type: "" });
     setSaving(true);
     try {
       const payload = scheduleStateToApiPayload(schedule, duration, fee);
       await updateDoctorSchedule(payload);
       await load();
-      alert(t("doctorDashboard.schedule.saveSuccess", "Schedule saved"));
+      setSaveMessage({ text: t("doctorDashboard.schedule.saveSuccess", "Schedule saved successfully!"), type: "success" });
+      setTimeout(() => setSaveMessage({ text: "", type: "" }), 3000);
     } catch (e) {
-      const msg =
-        e?.response?.data?.message ||
-        e?.response?.data ||
-        e?.message ||
-        "Save failed";
-      alert(typeof msg === "string" ? msg : JSON.stringify(msg));
+      const msg = e?.response?.data?.message || e?.response?.data || e?.message || "Save failed";
+      setSaveMessage({ text: typeof msg === "string" ? msg : JSON.stringify(msg), type: "error" });
     } finally {
       setSaving(false);
     }
@@ -160,21 +174,38 @@ export default function DoctorSchedule() {
             {t("doctorDashboard.schedule.availability")}
           </p>
         </div>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={() => void handleSave()}
-          className="rounded-xl bg-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-teal-600 disabled:opacity-60"
-        >
-          {saving
-            ? t("common.saving", "Saving…")
-            : t("doctorDashboard.schedule.save", "Save schedule")}
-        </button>
+        <div className="flex items-center gap-3">
+          {saveMessage.text && (
+            <span className={`text-sm font-semibold ${saveMessage.type === 'error' ? 'text-red-500' : 'text-teal-500'}`}>
+              {saveMessage.text}
+            </span>
+          )}
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void handleSave()}
+            className="rounded-xl bg-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-teal-600 disabled:opacity-60"
+          >
+            {saving
+              ? t("common.saving", "Saving…")
+              : t("doctorDashboard.schedule.save", "Save schedule")}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-4 mb-5">
-        <DurationCard duration={duration} onChange={setDuration} />
-        <FeeCard fee={fee} onChange={setFee} />
+        <div className="flex-1 flex flex-col gap-2">
+          <DurationCard duration={duration} onChange={setDuration} />
+          {(!duration || duration <= 0) && (
+             <span className="text-sm text-red-500 font-medium px-2">{t("doctorDashboard.schedule.reqDuration", "Please enter Appointment Duration")}</span>
+          )}
+        </div>
+        <div className="flex-1 flex flex-col gap-2">
+          <FeeCard fee={fee} onChange={setFee} />
+          {(!fee || fee <= 0) && (
+             <span className="text-sm text-red-500 font-medium px-2">{t("doctorDashboard.schedule.reqFee", "Please enter Appointment Fee")}</span>
+          )}
+        </div>
       </div>
 
       <div className="mb-5">

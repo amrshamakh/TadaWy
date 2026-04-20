@@ -6,23 +6,31 @@ export default function DoctorCard({ doctor }) {
   const { t } = useTranslation();
   if (!doctor) return null;
 
+  const docNameRaw = doctor.source === "api"
+    ? doctor.doctor
+    : doctor.id
+      ? t(`discover.clinicsData.${doctor.id}.doctor`)
+      : doctor.doctor;
+
+  const docName = docNameRaw?.includes("Dr.") || docNameRaw?.includes("د.") || docNameRaw?.includes("Doctor")
+    ? docNameRaw
+    : `Dr. ${docNameRaw}`;
+
+  const docImage = doctor.image || doctor.imageUrl || UserIcon;
+
   return (
     <section className="booking-card booking-doctor-card">
       <div className="booking-doctor-header">
         <div className="booking-doctor-avatar">
           <img
-            src={UserIcon}
+            src={docImage}
             alt="Doctor"
-            className="booking-doctor-avatar-img placeholder-user-svg"
+            className={`booking-doctor-avatar-img ${docImage === UserIcon ? 'placeholder-user-svg' : 'object-cover w-full h-full rounded-full'}`}
           />
         </div>
         <div className="booking-doctor-main">
           <h2 className="booking-doctor-name">
-            {doctor.source === "api"
-              ? doctor.doctor
-              : doctor.id
-                ? t(`discover.clinicsData.${doctor.id}.doctor`)
-                : doctor.doctor}
+            {docName}
           </h2>
 
           <div className="booking-doctor-tags">
