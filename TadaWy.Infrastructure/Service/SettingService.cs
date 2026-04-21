@@ -49,30 +49,7 @@ namespace TadaWy.Infrastructure.Service
             await _context.SaveChangesAsync();
         }
 
-        public async Task ChangePassword(string userId, ChangePasswordDto dto)
-        {
-
-            if (dto.NewPassword != dto.ConfirmPassword)
-                throw new Exception("password not match");
-
-            var user = await _context.Users.FindAsync(userId);
-
-            if (user == null)
-                throw new Exception("User not found");
-
-            var result = _passwordHasher.VerifyHashedPassword(
-                user,
-                user.PasswordHash,
-                dto.CurrentPassword
-            );
-
-            if (result == PasswordVerificationResult.Failed)
-                throw new Exception("Wrong password");
-
-            user.PasswordHash = _passwordHasher.HashPassword(user, dto.NewPassword);
-
-            await _context.SaveChangesAsync();
-        }
+     
 
         public async Task DeleteAccount(string userId)
         {

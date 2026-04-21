@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AuthDTO;
+using TadaWy.Applicaation.DTO.ChangePasswordDTO;
 using TadaWy.Applicaation.DTO.ResetPasswordDTOs;
 using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Domain.Entities.Identity;
@@ -24,6 +25,8 @@ namespace TadaWy.Applicaation.IServices
         Task ForgetPasswordAsync(string Email);
 
         Task<bool> ResetPasswordAsync(ResetPasswordDTO dto);
+
+        Task<AuthModel> ChangePasswordAsync(string userId, ChangePasswordDto dto);
 
     }
 }

@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TadaWy.Applicaation.DTO.ChangePasswordDTO;
+using TadaWy.Applicaation.IService;
+using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
+using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
@@ -12,12 +16,14 @@ namespace TadaWy.API.Controllers
     [ApiController]
     public class SettingController : ControllerBase
     {
-        private readonly SettingService _settingService;
+        private readonly ISettingService _settingService;
         private readonly TadaWyDbContext _tadaWyDbContext;
-        public SettingController(SettingService settingService,TadaWyDbContext tadaWyDbContext)
+        private readonly IAuthService _authService;
+        public SettingController(ISettingService settingService,TadaWyDbContext tadaWyDbContext,IAuthService authService)
         {
             _settingService = settingService;
             _tadaWyDbContext = tadaWyDbContext;
+            _authService = authService;
 
         }
         [HttpGet]
@@ -44,8 +50,14 @@ namespace TadaWy.API.Controllers
         [HttpPut("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
         {
-            await _settingService.ChangePassword(GetUserId(), dto);
-            return Ok();
+            var result = await _authService.ChangePasswordAsync(GetUserId(), dto);
+
+            if (!result.IsAuthenticated)
+            {
+               
+                return BadRequest(new { message = result.Messege });
+            }
+            return Ok(result);
         }
 
         [HttpDelete("DeleteAccount")]

@@ -20,6 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AddressDto;
 using TadaWy.Applicaation.DTO.AuthDTO;
+using TadaWy.Applicaation.DTO.ChangePasswordDTO;
 using TadaWy.Applicaation.DTO.ResetPasswordDTOs;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
@@ -427,8 +428,60 @@ namespace TadaWy.Infrastructure.service
             };
         }
 
-        
 
+        public async Task<AuthModel> ChangePasswordAsync(string userId, ChangePasswordDto dto)
+        {
+            var authModel = new AuthModel();
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+            {
+                authModel.Messege = "Passwords do not match";
+                authModel.IsAuthenticated = false;
+                return authModel;
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                authModel.Messege = "User not found";
+                authModel.IsAuthenticated = false;
+                return authModel;
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                authModel.Messege = string.Join(";", result.Errors.Select(e => e.Description));
+                authModel.IsAuthenticated = false;
+                return authModel;
+            }
+
+            // revoke old refresh tokens + add new one, then save once
+            foreach (var rt in user.RefreshTokens.Where(t => t.IsActive))
+            {
+                rt.RevokedOn = DateTime.UtcNow;
+            }
+
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshTokens.Add(newRefreshToken);
+
+            await _userManager.UpdateAsync(user);
+
+            var jwtToken = await CreateJwtToken(user);
+            var stringToken = new JwtSecurityTokenHandler().WriteToken(jwtToken);
+
+            authModel.IsAuthenticated = true;
+            authModel.Token = stringToken;
+            authModel.RefreshToken = newRefreshToken.Token;
+            authModel.RefreshTokenExpireOn = newRefreshToken.ExpireOn;
+            authModel.Email = user.Email;
+            authModel.Username = user.UserName;
+            authModel.Role = (await _userManager.GetRolesAsync(user)).ToList();
+            authModel.ExpireOn = jwtToken.ValidTo;
+            authModel.Messege = "Password changed successfully.";
+
+            return authModel;
+        }
 
     }
 }
