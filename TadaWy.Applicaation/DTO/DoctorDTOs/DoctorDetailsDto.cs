@@ -12,6 +12,7 @@ namespace TadaWy.Applicaation.DTO.DoctorDTOs
         public double Rating { get; set; }
         public string PhoneNumber { get; set; } = default!;
         public decimal? Price { get; set; }
+        public string? About { get; set; }
         public int YearsOfExperience { get; set; }
         public int ReviewsCount { get; set; }
         public List<AvailableDaySlotsDto> AvailableDaysSlots { get; set; } = new();

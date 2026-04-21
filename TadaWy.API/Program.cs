@@ -20,6 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddCors(options =>
 {
+<<<<<<< Updated upstream
     options.AddPolicy("AllowReactApp",
        policy =>
        {
@@ -29,6 +30,17 @@ builder.Services.AddCors(options =>
                  .AllowCredentials();
 
        });
+=======
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy
+                .SetIsOriginAllowed(origin => true)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+>>>>>>> Stashed changes
 });
 
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
