@@ -1,8 +1,12 @@
 import axiosInstance from "../../services/AxiosConfig";
 
-export const getAlzheimerHistory = async (pageNumber = 1, pageSize = 10) => {
+export const getAlzheimerHistory = async (date = null, pageSize = 10) => {
+  const params = { pageSize };
+  if (date) {
+    params.lastCreatedAt = date;
+  }
   const { data } = await axiosInstance.get("/AiBrainScan/history", {
-    params: { pageNumber, pageSize },
+    params,
   });
   return data;
 };

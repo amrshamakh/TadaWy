@@ -36,6 +36,7 @@ namespace TadaWy.Infrastructure.Presistence
         public DbSet<DoctorTimeSlot> DoctorTimeSlots => Set<DoctorTimeSlot>();
         public DbSet<DoctorReview> DoctorReviews => Set<DoctorReview>();
         public DbSet<AiBrainScan> AiBrainScans => Set<AiBrainScan>();
+        public DbSet<Message> Messages => Set<Message>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

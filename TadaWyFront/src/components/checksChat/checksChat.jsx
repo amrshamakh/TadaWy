@@ -10,7 +10,7 @@ export default function MedicalChecksChat() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [page, setPage] = useState(1);
+  const [cursorDate, setCursorDate] = useState(null);
   const [hasMoreHistory, setHasMoreHistory] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,28 +18,26 @@ export default function MedicalChecksChat() {
   const fileInputRef = useRef(null);
   const messagesEndRef = useRef(null);
 
+  const containerRef = useRef(null);
+
   const buildSessionDivider = (dateParam, uniqueId) => {
     const d = dateParam ? new Date(dateParam) : new Date();
     return {
       id: uniqueId ? uniqueId + "_div" : d.getTime() + "_div_" + Math.random(),
       type: "divider",
-      text: d.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
+      date: d.toISOString(),
     };
   };
 
-  const loadHistory = async (pageNum) => {
+  const loadHistory = async (currentCursor) => {
     try {
       setIsLoadingHistory(true);
-      const data = await getAlzheimerHistory(pageNum, 10);
+      const prevScrollHeight = containerRef.current?.scrollHeight;
+      const data = await getAlzheimerHistory(currentCursor, 10);
       const newMessages = [];
-      
-      const sortedItems = [...data.items].sort((a,b) => new Date(a.createdAt) - new Date(b.createdAt));
-      
+
+      const sortedItems = [...data.items].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
       sortedItems.forEach((item) => {
         newMessages.push({
           id: item.createdAt + "_img",
@@ -47,24 +45,24 @@ export default function MedicalChecksChat() {
           image: item.imageUrl,
         });
 
-        const enDesc = item.descriptionEn || "Analysis pending or unavailable";
-        const arDesc = item.descriptionAr || "جاري التحليل أو غير متوفر";
-        const localizedDesc = i18n.language === "ar" ? arDesc : enDesc;
+        const enDesc = item.descriptionEn;
+        const arDesc = item.descriptionAr;
 
         newMessages.push({
           id: item.createdAt + "_bot",
           type: "bot",
-          text: i18n.language === "ar" ? `النتيجة: ${localizedDesc}` : `Diagnosis: ${localizedDesc}`,
+          descriptionEn: enDesc,
+          descriptionAr: arDesc,
         });
-        
+
         newMessages.push(buildSessionDivider(item.createdAt, item.createdAt));
       });
 
-      if (pageNum === 1) {
+      if (!currentCursor) {
         newMessages.push({
           id: "welcome_message",
           type: "bot",
-          text: t("checksChat.welcome"),
+          isWelcome: true, // Used to translate dynamically
         });
       }
 
@@ -75,6 +73,23 @@ export default function MedicalChecksChat() {
         return [...filteredNew, ...prev];
       });
       setHasMoreHistory(data.hasMore);
+
+      if (data.items && data.items.length > 0) {
+        setCursorDate(data.items[0].createdAt);
+      }
+
+      // Restore scroll position after prepending items
+      setTimeout(() => {
+        if (!currentCursor) {
+          messagesEndRef.current?.scrollIntoView({ behavior: "auto" });
+        } else if (containerRef.current && prevScrollHeight) {
+          const newScrollHeight = containerRef.current.scrollHeight;
+          const diff = newScrollHeight - prevScrollHeight;
+          if (diff > 0) {
+            containerRef.current.scrollTop += diff;
+          }
+        }
+      }, 50);
     } catch (e) {
       console.error(e);
     } finally {
@@ -84,23 +99,30 @@ export default function MedicalChecksChat() {
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      loadHistory(1);
+      loadHistory(null);
     }
   }, [isOpen]);
 
   const handleScrollTop = () => {
-    if (hasMoreHistory && !isLoadingHistory) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      loadHistory(nextPage);
+    if (hasMoreHistory && !isLoadingHistory && cursorDate) {
+      loadHistory(cursorDate);
     }
   };
 
-  // Only auto-scroll down if the user manually uploads an image (isLoading is true) or chat opens initially
+  // Auto-scroll down when chat opens initially or un-hides
   useEffect(() => {
-    if (messages.length > 0 && !isLoadingHistory) {
-       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (isOpen && messages.length > 0) {
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "auto" }), 50);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  // Scroll smoothly when user adds new scans or loading finishes
+  useEffect(() => {
+    if (isOpen && messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
 
@@ -123,20 +145,12 @@ export default function MedicalChecksChat() {
       try {
         const data = await predictAlzheimer(file);
         console.log("API Response:", data);
-        const localizedDescription =
-          i18n.language === "ar"
-            ? data.descriptionAr
-            : data.descriptionEn;
-        const resultText =
-          i18n.language === "ar"
-            ? `${t("checksChat.diagnosis")}: ${localizedDescription}`
-            : `Diagnosis: ${localizedDescription}`;
-
         setMessages((prev) => [
           ...prev,
-          { id: Date.now() + 1, type: "bot", text: resultText },
+          { id: Date.now() + 1, type: "bot", descriptionEn: data.descriptionEn, descriptionAr: data.descriptionAr },
           buildSessionDivider(),
         ]);
+        setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
         setShowUpload(true);
       } catch (err) {
         setIsLoading(false);
@@ -173,6 +187,7 @@ export default function MedicalChecksChat() {
             isLoadingHistory={isLoadingHistory}
             messagesEndRef={messagesEndRef}
             onScrollTop={handleScrollTop}
+            containerRef={containerRef}
           />
           {/* Footer */}
           {showUpload && (

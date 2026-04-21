@@ -130,7 +130,8 @@ namespace TadaWy.Infrastructure.Service
                 Rating = Math.Round(rating, 1),
                 YearsOfExperience = yearsOfExperience,
                 ReviewsCount = doctor.Reviews.Count,
-                Price = doctor.Price,
+                Price = doctor.Price
+                ,About=doctor.Bio,
                 AvailableDaysSlots = GenerateNextSevenDaysSlots(doctor),
                 Reviews = doctor.Reviews
                     .Select(r => new DoctorReviewDto

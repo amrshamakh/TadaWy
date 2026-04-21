@@ -478,6 +478,9 @@
     "schedule": {
       "title": "Weekly Schedule",
       "availability": "Weekly Availability",
+      "identicalError": "Time start and end is identical",
+      "overlapError": "Time is duplicated or overlapping",
+      "validationError": "Please fix time slots errors before saving.",
       "duration": "Appointment Duration",
       "durationSubtitle": "Each appointment will set this duration",
       "fee": "Appointment Fee",
