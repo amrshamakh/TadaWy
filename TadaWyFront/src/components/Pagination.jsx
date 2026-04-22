@@ -9,20 +9,10 @@ const isRTL = i18n.dir() === "rtl";
 
   const getPageNumbers = () => {
     const pages = [];
-    const maxVisible = 7;
+    const maxVisible = Math.max(4, totalPages);
 
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (currentPage > 3) pages.push("...");
-
-      const start = Math.max(2, currentPage - 1);
-      const end = Math.min(totalPages - 1, currentPage + 1);
-      for (let i = start; i <= end; i++) pages.push(i);
-
-      if (currentPage < totalPages - 2) pages.push("...");
-      pages.push(totalPages);
+    for (let i = 1; i <= maxVisible; i++) {
+      pages.push(i);
     }
 
     return pages;
@@ -31,12 +21,12 @@ const isRTL = i18n.dir() === "rtl";
   return (
     <div className="flex items-center justify-center py-5 gap-2 mt-8">
       <button
-        onClick={() => onPageChange(currentPage - 1)}
+        onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
           currentPage === 1
             ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-700 dark:text-white"
+            : "text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
       >
         {isRTL ? <ArrowRight className="w-4 h-4" /> : <ArrowLeft className="w-4 h-4" />}
@@ -44,38 +34,40 @@ const isRTL = i18n.dir() === "rtl";
       </button>
 
       <div className="flex items-center gap-1">
-        {getPageNumbers().map((page, index) =>
-          page === "..." ? (
-            <span key={`ellipsis-${index}`} className="px-3 py-2 text-gray-400">
-              ...
-            </span>
-          ) : (
+        {getPageNumbers().map((page) => {
+          const isDisabled = page > totalPages;
+          const isActive = currentPage === page;
+
+          return (
             <button
               key={page}
-              onClick={() => onPageChange(page)}
+              disabled={isDisabled}
+              onClick={() => !isDisabled && onPageChange(page)}
               className={`min-w-[40px] h-10 px-3 rounded-lg transition-colors ${
-                currentPage === page
+                isActive
                   ? "bg-teal-500 text-white border border-teal-500"
-                  : "text-gray-700 hover:bg-gray-50 hover:border-teal-500"
+                  : isDisabled
+                  ? "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                  : "text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-teal-500"
               }`}
             >
               {page}
             </button>
-          )
-        )}
+          );
+        })}
       </div>
 
       <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+        disabled={currentPage >= totalPages}
         className={`flex items-center gap-1 px-4 py-2 rounded-lg transition-colors ${
-          currentPage === totalPages
+          currentPage >= totalPages
             ? "text-gray-400 cursor-not-allowed"
-            : "text-gray-700 dark:text-white hover:border-teal-500"
+            : "text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
         }`}
       >
         <span className="hidden sm:inline"> {t("discover.clinicsData.Pagination.next")}</span>
-       {isRTL ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+        {isRTL ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
       </button>
     </div>
   );

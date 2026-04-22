@@ -35,7 +35,7 @@ export default function DiscoverPage() {
 
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9;
+  const itemsPerPage = 10;
 
   // Fetch specializations
   useEffect(() => {
@@ -108,7 +108,7 @@ export default function DiscoverPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pb-12">
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold dark:text-white text-gray-800 mb-2">
@@ -237,17 +237,17 @@ export default function DiscoverPage() {
         </div>
 
         {/* Clinic Grid / List */}
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-          </div>
-        ) : doctors.length === 0 ? (
-          <div className="text-center py-12 dark:bg-gray-800 bg-white rounded-lg">
-            <p className="text-gray-500 text-lg">{t("discover.noResults")}</p>
-            <p className="text-gray-400 text-sm mt-2">{t("discover.adjustFilters")}</p>
-          </div>
-        ) : (
-          <>
+        <div className="min-h-[500px]">
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+            </div>
+          ) : doctors.length === 0 ? (
+            <div className="text-center py-12 dark:bg-gray-800 bg-white rounded-lg">
+              <p className="text-gray-500 text-lg">{t("discover.noResults")}</p>
+              <p className="text-gray-400 text-sm mt-2">{t("discover.adjustFilters")}</p>
+            </div>
+          ) : (
             <div
               className={
                 viewMode === "grid"
@@ -298,16 +298,14 @@ export default function DiscoverPage() {
                 </div>
               ))}
             </div>
+          )}
+        </div>
 
-            {totalPages > 1 && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            )}
-          </>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </div>
       <div className="mt-12">
         <Footer />
