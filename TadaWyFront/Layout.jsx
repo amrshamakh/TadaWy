@@ -10,6 +10,8 @@ const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
+  const isDiscoverPage = location.pathname === "/discover";
+  const noPadding = isLandingPage || isDiscoverPage;
   const userMenu = [
     { to: "/discover", icon: assets.homeIcon, label: t("nav.home"), end: true },
     { to: "/calendar", icon: assets.calenderIcon, label: t("nav.calendar"), end: false },
@@ -36,7 +38,7 @@ const Layout = () => {
           className={`
     flex-1 overflow-y-auto transition-all duration-300
     dark:bg-[#0F172A]
-    ${isLandingPage ? "" : "p-6"} min-h-full
+    ${noPadding ? "" : "p-6"} min-h-full
     flex justify-center
   `}
         >
