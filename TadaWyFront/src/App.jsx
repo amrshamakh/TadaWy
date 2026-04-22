@@ -37,7 +37,7 @@ const App = () => {
   }, [i18n.language]);
 
   return (
-    <div className="max-h-[70vh]">
+    <div>
       <Routes>
         <Route path="/doctorApplication" element={<DoctorApplication />} />
         <Route path="/application-pending" element={<ApplicationPending />} />

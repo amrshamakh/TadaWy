@@ -105,7 +105,9 @@
       "signUp": "تسجيل",
       "haveAccount": "لديك حساب بالفعل؟",
       "signIn": "تسجيل الدخول",
-      "selectLocationTitle": "اختر موقعك"
+      "selectLocationTitle": "اختر موقعك",
+      "state": "المحافظة",
+      "city": "المدينة"
     },
     "doctor": {
       "title": "طلب انضمام طبيب",

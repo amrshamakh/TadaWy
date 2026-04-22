@@ -4,9 +4,15 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 
 
-import { clinicsData, specialties, ratings, locations } from "../assets/assets";
+import { clinicsData, ratings, locations } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
+import { getDoctors } from "../modules/patient/api/doctorDiscoveryApi";
+import { getAllSpecializations } from "../modules/doctor/api/lookupApi";
+import { useEffect } from "react";
+import Footer from "../components/Landing/Footer";
+
+const CLINIC_PLACEHOLDER = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500&h=300&fit=crop";
 
 
 // Main Component
@@ -15,76 +21,89 @@ export default function DiscoverPage() {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSpecialty, setSelectedSpecialty] = useState("All Specialties");
-  const [selectedRating, setSelectedRating] = useState("All Ratings");
-  const [selectedLocation, setSelectedLocation] = useState("All Locations");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("");
+  const [selectedRating, setSelectedRating] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  
+  const [specializations, setSpecializations] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  // Helpers: pull translated label for a clinic field, fall back to raw value
-  const getClinicField = (clinic, field) =>
-    t(`discover.clinicsData.${clinic.id}.${field}`, { defaultValue: clinic[field] });
+  // Fetch specializations
+  useEffect(() => {
+    const fetchSpecializations = async () => {
+      try {
+        const data = await getAllSpecializations();
+        setSpecializations(data);
+      } catch (err) {
+        console.error("Failed to fetch specializations:", err);
+      }
+    };
+    fetchSpecializations();
+  }, []);
 
-  const getSpecialtyLabel = (value) =>
-    t(`discover.specialties.${value}`, { defaultValue: value });
+  // Fetch doctors
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      setLoading(true);
+      try {
+        const params = {
+          Search: searchQuery,
+          SpecializationId: selectedSpecialty || undefined,
+          MinRating: selectedRating ? parseFloat(selectedRating.replace("+", "")) : undefined,
+          State: selectedState || undefined,
+          City: selectedCity || undefined,
+          PageNumber: currentPage,
+          PageSize: itemsPerPage
+        };
+        const response = await getDoctors(params);
+        setDoctors(response.items);
+        setTotalCount(response.totalCount);
+        setTotalPages(response.totalPages);
+        setError(null);
+      } catch (err) {
+        console.error("Failed to fetch doctors:", err);
+        setError(t("common.error") || "Failed to load doctors");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      fetchDoctors();
+    }, 300); // Debounce search
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedSpecialty, selectedRating, selectedState, selectedCity, currentPage, t]);
+
+  // Helper to format location and hide "UnKnown"
+  const formatLocation = (city, street) => {
+    const c = city === "UnKnown" ? "" : city;
+    const s = street === "UnKnown" ? "" : street;
+    const parts = [c, s].filter(p => p && p.trim() !== "");
+    return parts.join(", ");
+  };
+
+  const getSpecialtyLabel = (s) => s.name;
 
   const getRatingLabel = (value) =>
-    t(`discover.ratings.${value}`, { defaultValue: value });
-
-  const getLocationLabel = (value) =>
-    t(`discover.locations.${value}`, { defaultValue: value });
-
-  // Filter still uses raw English values from assets so logic stays consistent
-  const filteredClinics = useMemo(() => {
-    return clinicsData.filter((clinic) => {
-      const translatedName = t(`discover.clinicsData.${clinic.id}.name`, { defaultValue: clinic.name });
-      const translatedDoctor = t(`discover.clinicsData.${clinic.id}.doctor`, { defaultValue: clinic.doctor });
-      const translatedSpecialty = t(`discover.clinicsData.${clinic.id}.specialty`, { defaultValue: clinic.specialty });
-
-      const matchesSearch =
-        searchQuery === "" ||
-        translatedName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        translatedDoctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        translatedSpecialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        clinic.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        clinic.doctor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        clinic.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesSpecialty =
-        selectedSpecialty === "All Specialties" ||
-        clinic.specialty === selectedSpecialty;
-
-      let matchesRating = true;
-      if (selectedRating !== "All Ratings") {
-        const minRating = parseFloat(selectedRating.replace("+", ""));
-        matchesRating = clinic.rating >= minRating;
-      }
-
-      const matchesLocation =
-        selectedLocation === "All Locations" ||
-        clinic.address.includes(selectedLocation);
-
-      return matchesSearch && matchesSpecialty && matchesRating && matchesLocation;
-    });
-  }, [searchQuery, selectedSpecialty, selectedRating, selectedLocation, t]);
-
-  const totalPages = Math.ceil(filteredClinics.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentClinics = filteredClinics.slice(startIndex, endIndex);
-
-  useMemo(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedSpecialty, selectedRating, selectedLocation]);
+    value === "" ? t("discover.ratings.All Ratings") : t(`discover.ratings.${value}`, { defaultValue: value });
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleBookAppointment = (clinic) => {
-    navigate("/booking", { state: { doctor: clinic } });
+  const handleBookAppointment = (doctor) => {
+    navigate("/booking", { state: { doctor } });
   };
 
   return (
@@ -120,11 +139,15 @@ export default function DiscoverPage() {
             <div className="relative flex-1 min-w-50">
               <select
                 value={selectedSpecialty}
-                onChange={(e) => setSelectedSpecialty(e.target.value)}
+                onChange={(e) => {
+                  setSelectedSpecialty(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:ring-2 focus:ring-teal-500"
               >
-                {specialties.map((s) => (
-                  <option key={s} value={s}>
+                <option value="">{t("discover.specialties.All Specialties")}</option>
+                {specializations.map((s) => (
+                  <option key={s.id} value={s.id}>
                     {getSpecialtyLabel(s)}
                   </option>
                 ))}
@@ -136,11 +159,14 @@ export default function DiscoverPage() {
             <div className="relative flex-1 min-w-37.5">
               <select
                 value={selectedRating}
-                onChange={(e) => setSelectedRating(e.target.value)}
+                onChange={(e) => {
+                  setSelectedRating(e.target.value);
+                  setCurrentPage(1);
+                }}
                 className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:ring-2 focus:ring-teal-500"
               >
                 {ratings.map((r) => (
-                  <option key={r} value={r}>
+                  <option key={r} value={r === "All Ratings" ? "" : r}>
                     {getRatingLabel(r)}
                   </option>
                 ))}
@@ -148,20 +174,32 @@ export default function DiscoverPage() {
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* Location Filter */}
+            {/* State Filter */}
             <div className="relative flex-1 min-w-50">
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              >
-                {locations.map((l) => (
-                  <option key={l} value={l}>
-                    {getLocationLabel(l)}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder={t("auth.signup.state") || "State"}
+                value={selectedState}
+                onChange={(e) => {
+                  setSelectedState(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-4 py-2 border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+
+            {/* City Filter */}
+            <div className="relative flex-1 min-w-50">
+              <input
+                type="text"
+                placeholder={t("auth.signup.city") || "City"}
+                value={selectedCity}
+                onChange={(e) => {
+                  setSelectedCity(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-4 py-2 border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
 
             {/* View Mode Toggle */}
@@ -191,15 +229,19 @@ export default function DiscoverPage() {
           <div className="flex items-center gap-2 mt-4 text-sm text-gray-600 dark:text-gray-400">
             <MapPin className="w-4 h-4" />
             <span>
-              {t("discover.showing")} {startIndex + 1}–
-              {Math.min(endIndex, filteredClinics.length)} {t("discover.of")}{" "}
-              {filteredClinics.length} {t("discover.clinics")}
+              {t("discover.showing")} {doctors.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}–
+              {Math.min(currentPage * itemsPerPage, totalCount)} {t("discover.of")}{" "}
+              {totalCount} {t("discover.clinics")}
             </span>
           </div>
         </div>
 
         {/* Clinic Grid / List */}
-        {filteredClinics.length === 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+          </div>
+        ) : doctors.length === 0 ? (
           <div className="text-center py-12 dark:bg-gray-800 bg-white rounded-lg">
             <p className="text-gray-500 text-lg">{t("discover.noResults")}</p>
             <p className="text-gray-400 text-sm mt-2">{t("discover.adjustFilters")}</p>
@@ -213,41 +255,41 @@ export default function DiscoverPage() {
                   : "flex flex-col gap-4"
               }
             >
-              {currentClinics.map((clinic) => (
+              {doctors.map((doctor) => (
                 <div
-                  key={clinic.id}
-                  className="dark:bg-gray-800 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+                  key={doctor.id}
+                  className="dark:bg-gray-800 bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full"
                 >
-                  <div className="relative h-48">
+                  <div className="relative h-48 w-full overflow-hidden">
                     <img
-                      src={clinic.image}
-                      alt={getClinicField(clinic, "name")}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      src={CLINIC_PLACEHOLDER}
+                      alt={doctor.doctorName}
+                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold dark:text-white text-gray-800 mb-2">
-                      {getClinicField(clinic, "doctor")}
+                      {doctor.doctorName}
                     </h3>
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm font-medium dark:text-white">
-                          {clinic.rating}
+                          {doctor.rate || 0}
                         </span>
                       </div>
                       <span className="text-sm text-gray-500 dark:text-gray-400">
-                        • {getClinicField(clinic, "specialty")}
+                        • {doctor.specialization}
                       </span>
                     </div>
-                    <div className="flex items-start gap-2 mb-4">
+                    <div className="flex items-start gap-2 mb-4 min-h-[40px]">
                       <MapPin className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {getClinicField(clinic, "address")}
+                        {formatLocation(doctor.city, doctor.street)}
                       </p>
                     </div>
                     <button
-                      onClick={() => handleBookAppointment(clinic)}
+                      onClick={() => handleBookAppointment(doctor)}
                       className="w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-2.5 rounded-lg transition-colors"
                     >
                       {t("discover.bookAppointment")}
@@ -266,6 +308,9 @@ export default function DiscoverPage() {
             )}
           </>
         )}
+      </div>
+      <div className="mt-12">
+        <Footer />
       </div>
     </div>
   );

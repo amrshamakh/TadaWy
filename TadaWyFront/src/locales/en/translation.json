@@ -105,7 +105,9 @@
       "signUp": "Sign Up",
       "haveAccount": "Already have an account?",
       "signIn": "Sign in",
-      "selectLocationTitle": "Select Your Location"
+      "selectLocationTitle": "Select Your Location",
+      "state": "State",
+      "city": "City"
     },
     "doctor": {
       "title": "Doctor Application",
