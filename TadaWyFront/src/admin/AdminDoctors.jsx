@@ -76,7 +76,7 @@ const AdminDoctors = () => {
         {loading ? (
           <div className="col-span-full flex flex-col items-center justify-center py-24 gap-4">
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-500/20 border-t-teal-500"></div>
-            <p className="text-gray-500 dark:text-gray-400 animate-pulse">{t("common.loading") || "Loading doctors..."}</p>
+            <p className="text-gray-500 dark:text-gray-400 animate-pulse">{t("admin.doctors.loading", "Loading...")}</p>
           </div>
         ) : paginated.length > 0 ? (
           paginated.map((doctor) => (
@@ -101,8 +101,8 @@ const AdminDoctors = () => {
         doctor={selectedDoctor}
         onClose={() => setSelectedDoctor(null)}
         onApprove={(d) => updateStatus(d, "Approved")}
-        onReject={(d) => updateStatus(d, "Rejected")}
-        onBan={banDoctor}
+        onReject={(d, reason) => updateStatus(d, "Rejected", reason)}
+        onBan={(d, reason) => banDoctor(d, reason)}
         onUnban={unbanDoctor}
       />
       

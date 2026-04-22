@@ -26,6 +26,12 @@
   gap: 24px;
 }
 
+.booking-sidebar-wrapper {
+  position: sticky;
+  top: 72px;
+  align-self: start;
+}
+
 .booking-card {
   background: #ffffff;
   border-radius: 16px;
@@ -247,6 +253,14 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+[dir="rtl"] .booking-main-column {
+  order: 2;
+}
+
+[dir="rtl"] .booking-sidebar-wrapper {
+  order: 1;
 }
 
 .booking-sidebar-header-bar {
@@ -752,6 +766,11 @@
     text-align: center;
   }
 
+  .booking-sidebar-wrapper {
+    position: static;
+    top: auto;
+  }
+
   .booking-doctor-main {
     align-items: center;
   }
@@ -1025,4 +1044,4 @@
 
 .dark .success-content p {
   color: #94A3B8;
-}
+}

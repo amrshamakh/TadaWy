@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiCheck, FiEdit2 } from "react-icons/fi";
 import PersonalInfo from "../components/PersonalInfo";
 import MedicalInfo from "../components/MedicalInfo";
 import { useTranslation } from "react-i18next";
@@ -287,11 +288,14 @@ const Profile = () => {
           disabled={saving}
           className="bg-teal-500 text-white rounded-lg w-25 md:w-30 rtl:w-auto h-10 px-3 text-sm md:text-base lg:text-lg hover:bg-teal-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          <span className="inline-flex items-center gap-2">
+            {isEditing ? <FiCheck size={16} /> : <FiEdit2 size={16} />}
           {saving
             ? t("common.saving") || "Saving..."
             : isEditing
-            ? t("common.save")
-            : t("common.edit")}
+            ? t("profile.save", "Save")
+            : t("profile.edit", "Edit")}
+          </span>
         </button>
       </div>
 

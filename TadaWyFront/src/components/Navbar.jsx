@@ -18,6 +18,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
   const { user, logout } = useAuth();
   const isLoggedIn = !!user;
+  const userRole = user?.role?.toLowerCase();
 
   useEffect(() => {
     const handler = (e) => {
@@ -36,6 +37,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
   const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim():"";
   const displayEmail = user ? user.email :"";
   const profilePath = isDoctor ? "/doctor" : "/profile";
+  const roleHomePath = userRole === "admin" ? "/admin" : userRole === "doctor" ? "/doctor" : userRole === "patient" ? "/discover" : "/";
 
   const toggleLanguage = () => {
     const nextLang = i18n.language === "ar" ? "en" : "ar";
@@ -61,7 +63,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
             )}
 
             {/* Logo */}
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => goTo("/")}>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => goTo(roleHomePath)}>
               <img src={assets.logo} alt="logo" className="w-8 h-8" />
               <span className="text-xl font-semibold dark:text-white">TadaWY</span>
             </div>
@@ -112,15 +114,17 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                       <FiUser size={16} />
                       {t("nav.profile")}
                     </button>
-                    <button
-                      onClick={() => goTo("/doctor")}
-                      className="flex gap-3 items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#334155] dark:text-white text-teal-600 dark:text-teal-400 font-medium"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                      {t("nav.doctorDashboard")}
-                    </button>
+                    {userRole === "doctor" && (
+                      <button
+                        onClick={() => goTo("/doctor")}
+                        className="flex gap-3 items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#334155] dark:text-white text-teal-600 dark:text-teal-400 font-medium"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        {t("nav.doctorDashboard")}
+                      </button>
+                    )}
                     <button
                       onClick={() => goTo("/settings")}
                       className="flex gap-3 items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#334155] dark:text-white"

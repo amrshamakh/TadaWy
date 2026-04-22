@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 const Layout = () => {
   const { t } = useTranslation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
   const userMenu = [

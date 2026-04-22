@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useCallback } from "react";
-import i18n from "../i18n";
 import AdminApi from "../modules/admin/api/adminApi";
 
 const DoctorsContext = createContext(null);
@@ -110,13 +109,11 @@ export function DoctorsProvider({ children }) {
     }
   };
 
-  const updateStatus = async (doctor, newStatus) => {
+  const updateStatus = async (doctor, newStatus, reason = "") => {
     try {
       if (newStatus === "Approved") {
         await AdminApi.approveDoctor(doctor.id);
       } else if (newStatus === "Rejected") {
-        const reason = prompt("Enter rejection reason:");
-        if (!reason) return;
         await AdminApi.rejectDoctor(doctor.id, reason);
       }
       // Refresh current list after action
@@ -126,13 +123,10 @@ export function DoctorsProvider({ children }) {
     }
   };
 
-  const banDoctor = async (doctor) => {
+  const banDoctor = async (doctor, reason = "") => {
     try {
-      const reason = prompt(i18n.t("admin.doctorContext.banPrompt") || "Enter banning reason:");
-      if (!reason) return;
       await AdminApi.banDoctor(doctor.id, reason);
       await fetchDoctors();
-      alert(i18n.t("admin.doctorContext.banAlert", { name: doctor.name }));
     } catch (err) {
       console.error("Failed to ban doctor", err);
     }

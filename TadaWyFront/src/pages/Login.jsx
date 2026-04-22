@@ -28,11 +28,11 @@ const Login = () => {
       const res = await loginPatient(formData);
       if (res && res.token) {
         await login(res.token);
-        if (Array.isArray(res.role) && res.role.includes("Doctor")) {
-          navigate("/doctor/schedule");
-        } else {
-          navigate("/discover");
-        }
+        const userRole = Array.isArray(res.role) ? res.role[0] : res.role;
+        const normalizedRole = String(userRole || "").toLowerCase();
+        if (normalizedRole === "doctor") navigate("/doctor");
+        else if (normalizedRole === "admin") navigate("/admin");
+        else navigate("/discover");
       }
     } catch (error) {
       console.error("Login failed", error);

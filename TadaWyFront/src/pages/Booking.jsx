@@ -24,7 +24,9 @@ export default function Booking() {
             <ReviewsSection doctor={doctor} />
           </div>
 
-          <BookingSidebar doctor={doctor} />
+          <div className="booking-sidebar-wrapper">
+            <BookingSidebar doctor={doctor} />
+          </div>
         </div>
       </div>
     </div>

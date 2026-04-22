@@ -7,7 +7,7 @@ import { assets } from "../../assets/assets";
 
 const DoctorLayout = () => {
   const { t, i18n } = useTranslation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [doctorHeader, setDoctorHeader] = useState(() => {
     try {
       const raw = localStorage.getItem("doctorProfile");
@@ -23,6 +23,8 @@ const DoctorLayout = () => {
       { to: "", icon: assets.profileIcon, label: t("doctorDashboard.profile.title"), end: true },
       { to: "appointments", icon: assets.homeIcon, label: t("doctorDashboard.appointments.title"), end: false },
       { to: "schedule", icon: assets.calenderIcon, label: t("doctorDashboard.schedule.title"), end: false },
+      { to: "reject-ban", icon: assets.settingIcon, label: "Reject & Ban", end: false },
+      { to: "settings", icon: assets.settingIcon, label: t("nav.settings"), end: false },
     ],
     [t]
   );

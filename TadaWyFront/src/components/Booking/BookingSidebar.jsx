@@ -9,6 +9,7 @@ import PaymentMethodModal from "./payments/PaymentMethodModal";
 import BookingReceiptModal from "./payments/BookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
 import { getVisibleDays, toReadableDateTime } from "./utils/bookingDate";
+import AuthRequiredModal from "../AuthRequiredModal";
 import "./Booking.css";
 
 const getTimeOptions = (t) => [
@@ -37,6 +38,7 @@ export default function BookingSidebar({ doctor }) {
   );
   const [selectedTime, setSelectedTime] = useState(null);
   const [activeModal, setActiveModal] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const receiptRef = useRef(null);
 
@@ -51,6 +53,10 @@ export default function BookingSidebar({ doctor }) {
 
   const handleBook = () => {
     if (!doctor || !selectedDateStr || !selectedTime) return;
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     setActiveModal("payment");
   };
 
@@ -202,6 +208,16 @@ export default function BookingSidebar({ doctor }) {
       {activeModal && (
         <div
           className="fixed inset-0 z-[98] bg-white/78 dark:bg-[#0f172a]/80 backdrop-blur-[5px]"
+        />
+      )}
+
+      {showAuthModal && (
+        <AuthRequiredModal
+          onLogin={() => {
+            setShowAuthModal(false);
+            navigate("/login");
+          }}
+          onCancel={() => setShowAuthModal(false)}
         />
       )}
 

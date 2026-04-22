@@ -1,8 +1,11 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../context/AuthContext";
+import AuthRequiredModal from "./AuthRequiredModal";
 
-const Item = ({ to, icon, label, end, currentPath }) => {
+const Item = ({ to, icon, label, end, currentPath, onClick }) => {
   // If this item is 'Home' (/discover) and we are on '/booking', keep it active
   const isBookingAndHome = to === "/discover" && currentPath?.startsWith("/booking");
 
@@ -10,6 +13,7 @@ const Item = ({ to, icon, label, end, currentPath }) => {
     <NavLink
       to={to}
       end={end}
+      onClick={onClick}
       className={({ isActive }) =>
         `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
         ${isActive || isBookingAndHome
@@ -26,8 +30,28 @@ const Item = ({ to, icon, label, end, currentPath }) => {
 
 export default function Sidebar({ isOpen, onClose, menuItems }) {
   const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const guestBlockedPaths = new Set(["/profile", "/settings"]);
+  const handleBlockedClick = (event, to) => {
+    if (user || !guestBlockedPaths.has(to)) return;
+    event.preventDefault();
+    setShowAuthModal(true);
+  };
+
   return (
     <>
+      {showAuthModal && (
+        <AuthRequiredModal
+          onLogin={() => {
+            setShowAuthModal(false);
+            navigate("/login");
+          }}
+          onCancel={() => setShowAuthModal(false)}
+        />
+      )}
       {isOpen && (
         <div
           onClick={onClose}
@@ -61,6 +85,7 @@ export default function Sidebar({ isOpen, onClose, menuItems }) {
               icon={item.icon}
               label={item.label}
               currentPath={window.location.pathname}
+              onClick={(event) => handleBlockedClick(event, item.to)}
             />
           ))}
         </div>

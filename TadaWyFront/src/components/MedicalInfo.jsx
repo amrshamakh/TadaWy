@@ -13,7 +13,8 @@ const TagSelection = ({
   lookupItems, 
   onAdd, 
   onRemove, 
-  tagColor = "teal" 
+  tagColor = "teal",
+  placeholder
 }) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
@@ -83,7 +84,7 @@ const TagSelection = ({
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder={t('auth.doctor.searchSpecialization', 'Search to select...')}
+          placeholder={placeholder || t('auth.doctor.searchSpecialization', 'Search to select...')}
           className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-[#3341554D] border border-gray-100 dark:border-[#334155] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all dark:text-white"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -166,7 +167,11 @@ const MedicalInfo = ({
             <select
               value={data.bloodType}
               onChange={(e) => onBloodChange(e.target.value)}
-              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#3341554D] border border-gray-100 dark:border-[#334155] rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all dark:text-white"
+              className={`w-full px-4 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all dark:text-white ${
+                isEditing
+                  ? "bg-teal-50/40 dark:bg-teal-900/10 border border-gray-100 dark:border-[#334155]"
+                  : "bg-gray-50 dark:bg-[#3341554D] border border-gray-100 dark:border-[#334155]"
+              }`}
             >
               {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map((bt) => (
                 <option key={bt} value={bt}>{bt}</option>
@@ -192,6 +197,7 @@ const MedicalInfo = ({
               onAdd={toggleAllergy}
               onRemove={toggleAllergy}
               tagColor="red"
+              placeholder={t("profile.medicalInfo.searchAllergies", "Search Allergies")}
             />
           ) : (
             <div className="flex flex-wrap gap-2">
@@ -225,6 +231,7 @@ const MedicalInfo = ({
               onAdd={toggleDisease}
               onRemove={toggleDisease}
               tagColor="teal"
+              placeholder={t("profile.medicalInfo.searchDiseases", "Search Diseases")}
             />
           ) : (
             <div className="flex flex-wrap gap-2">
