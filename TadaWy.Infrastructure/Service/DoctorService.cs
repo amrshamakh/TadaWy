@@ -55,6 +55,7 @@ namespace TadaWy.Infrastructure.Service
                 d.Id,
                 d.FirstName,
                 d.LastName,
+                d.ImageUrl,
                 SpecializationName = d.Specialization.Name,
                 d.Address.City,
                 d.Address.Street,
@@ -83,7 +84,8 @@ namespace TadaWy.Infrastructure.Service
                     City = d.City,
                     Street = d.Street == "Unknown"
                         ? d.AddressDescription
-                        : d.Street
+                        : d.Street,
+                    ImageUrl = d.ImageUrl
                 })
                 .ToListAsync();
 
@@ -132,6 +134,7 @@ namespace TadaWy.Infrastructure.Service
                 ReviewsCount = doctor.Reviews.Count,
                 Price = doctor.Price
                 ,About=doctor.Bio,
+                ImageUrl=doctor.ImageUrl,
                 AvailableDaysSlots = GenerateNextSevenDaysSlots(doctor),
                 Reviews = doctor.Reviews
                     .Select(r => new DoctorReviewDto
