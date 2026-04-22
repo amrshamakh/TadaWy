@@ -5,10 +5,16 @@ import Header from "./Header";
 import Messages from "./Messages";
 import { predictAlzheimer, getAlzheimerHistory } from "./api";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import AuthRequiredModal from "../AuthRequiredModal";
 
 export default function MedicalChecksChat() {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [messages, setMessages] = useState([]);
   const [cursorDate, setCursorDate] = useState(null);
   const [hasMoreHistory, setHasMoreHistory] = useState(false);
@@ -219,8 +225,23 @@ export default function MedicalChecksChat() {
       )}
 
       {/* Toggle Button */}
+      {showAuthModal && (
+        <AuthRequiredModal
+          onLogin={() => {
+            setShowAuthModal(false);
+            navigate("/login");
+          }}
+          onCancel={() => setShowAuthModal(false)}
+        />
+      )}
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => {
+          if (!user) {
+            setShowAuthModal(true);
+            return;
+          }
+          setIsOpen((prev) => !prev);
+        }}
         className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
         aria-label={isOpen ? t("checksChat.closeAria") : t("checksChat.openAria")}
       >

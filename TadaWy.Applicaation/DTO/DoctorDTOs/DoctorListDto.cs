@@ -10,5 +10,6 @@ namespace TadaWy.Applicaation.DTO.DoctorDTOs
         public string Specialization { get; set; } = default!;
         public string? City { get; set; }
         public string? Street{ get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

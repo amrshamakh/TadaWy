@@ -16,7 +16,7 @@ const AdminLayout = () => {
   { to: "", icon: assets.homeIcon, label: t("admin.adminLayout.doctors"), end: true },
   { to: "settings", icon: assets.settingIcon,label: t("admin.adminLayout.settings"), end: false },
 ];
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const havingFooter = location.pathname === "/admin";
   const isLandingPageUser = location.pathname === "/";

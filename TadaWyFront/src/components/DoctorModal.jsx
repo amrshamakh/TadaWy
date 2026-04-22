@@ -18,6 +18,9 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
   const { getDoctorDetails } = useDoctors();
   const [doctor, setDoctor] = useState(summaryDoctor);
   const [loading, setLoading] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  const [reasonText, setReasonText] = useState("");
+  const [reasonError, setReasonError] = useState("");
 
   useEffect(() => {
     if (summaryDoctor?.id) {
@@ -38,6 +41,30 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
   const isRejected = doctor?.status === "Rejected";
   const isPending = doctor?.status === "Pending";
   const isBanned = doctor?.status === "Banned";
+  const isReasonAction = pendingAction === "ban" || pendingAction === "reject";
+
+  const resetReasonState = () => {
+    setPendingAction(null);
+    setReasonText("");
+    setReasonError("");
+  };
+
+  const runReasonAction = async () => {
+    const trimmedReason = reasonText.trim();
+    if (!trimmedReason) {
+      setReasonError(t("admin.doctorModal.reasonRequired", "Reason is required."));
+      return;
+    }
+
+    if (pendingAction === "ban") {
+      await onBan(doctor, trimmedReason);
+    } else if (pendingAction === "reject") {
+      await onReject(doctor, trimmedReason);
+    }
+
+    resetReasonState();
+    onClose();
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm">
@@ -158,11 +185,37 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
           {((isRejected && doctor?.rejectionReason) || (isBanned && doctor?.bannedReason)) && (
             <div className="col-span-2">
               <label className="block text-sm font-medium text-red-600 dark:text-red-400 mb-1">
-                {isRejected ? "Rejection Reason" : "Banned Reason"}
+                {isRejected ? t("admin.doctorModal.rejectReason") : t("admin.doctorModal.banReason")}
               </label>
               <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-lg px-3 py-2 text-sm text-red-700 dark:text-red-300">
                 {isRejected ? doctor.rejectionReason : doctor.bannedReason}
               </div>
+            </div>
+          )}
+
+          {isReasonAction && (
+            <div className="col-span-2 mt-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                {pendingAction === "ban"
+                  ? t("admin.doctorModal.banReasonPrompt")
+                  : t("admin.doctorModal.rejectReasonPrompt")}
+              </label>
+              <textarea
+                value={reasonText}
+                onChange={(event) => {
+                  setReasonText(event.target.value);
+                  if (reasonError) setReasonError("");
+                }}
+                placeholder={
+                  pendingAction === "ban"
+                    ? t("admin.doctorModal.banReasonPlaceholder")
+                    : t("admin.doctorModal.rejectReasonPlaceholder")
+                }
+                className="w-full min-h-28 resize-none bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              {reasonError && (
+                <p className="text-sm text-red-500 mt-2">{reasonError}</p>
+              )}
             </div>
           )}
         </div>
@@ -174,19 +227,19 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.actions.unban")}
             </button>
           )}
-          {isApproved && (
+          {isApproved && !isReasonAction && (
             <>
-              <button onClick={() => { onBan(doctor); onClose(); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => setPendingAction("ban")} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.ban")}
               </button>
-              <button onClick={() => { onReject(doctor); onClose(); }} className="border border-red-400 text-red-500 hover:bg-red-50 text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => setPendingAction("reject")} className="border border-red-400 text-red-500 hover:bg-red-50 text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.reject")}
               </button>
             </>
           )}
-          {isRejected && (
+          {isRejected && !isReasonAction && (
             <>
-              <button onClick={() => { onBan(doctor); onClose(); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => setPendingAction("ban")} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.ban")}
               </button>
               <button onClick={() => { onApprove(doctor); onClose(); }} className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
@@ -194,16 +247,34 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               </button>
             </>
           )}
-          {isPending && (
+          {isPending && !isReasonAction && (
             <>
-              <button onClick={() => { onBan(doctor); onClose(); }} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => setPendingAction("ban")} className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.ban")}
               </button>
-              <button onClick={() => { onReject(doctor); onClose(); }} className="border border-red-400 text-red-500 hover:bg-red-50 text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+              <button onClick={() => setPendingAction("reject")} className="border border-red-400 text-red-500 hover:bg-red-50 text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.reject")}
               </button>
               <button onClick={() => { onApprove(doctor); onClose(); }} className="bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                 {t("admin.doctorModal.actions.approve")}
+              </button>
+            </>
+          )}
+          {isReasonAction && (
+            <>
+              <button
+                onClick={resetReasonState}
+                className="border border-gray-300 dark:border-[#475569] text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-[#1E293B] text-sm font-medium px-5 py-2 rounded-lg transition-colors"
+              >
+                {t("admin.doctorModal.actions.cancel")}
+              </button>
+              <button
+                onClick={runReasonAction}
+                className="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
+              >
+                {pendingAction === "ban"
+                  ? t("admin.doctorModal.actions.confirmBan")
+                  : t("admin.doctorModal.actions.confirmReject")}
               </button>
             </>
           )}

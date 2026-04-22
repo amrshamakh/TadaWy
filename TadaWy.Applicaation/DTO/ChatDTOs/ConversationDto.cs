@@ -17,7 +17,7 @@ namespace TadaWy.Applicaation.DTO.ChatDTOs
 
         public string? LastMessage { get; set; }
 
-        public DateTime LastMessageDate { get; set; }
+        public DateTime? LastMessageDate { get; set; }
 
         public bool IsSeen { get; set; }
     }

@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../context/AuthContext";
 
 const CTA = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <section className="pb-25">
@@ -16,12 +18,12 @@ const CTA = () => {
         </p>
         <button
           onClick={() => {
-            navigate("/signup");
+            navigate(user ? "/discover" : "/signup");
             scrollTo(0, 0);
           }}
           className="bg-teal-500 hover:bg-teal-600 text-white px-10 py-1.5 rounded-lg font-medium text-lg transition-colors shadow-lg hover:shadow-xl"
         >
-          {t("cta.createAccount")}
+          {user ? t("cta.browseDoctors", "Browse Doctors") : t("cta.createAccount")}
         </button>
       </div>
     </section>

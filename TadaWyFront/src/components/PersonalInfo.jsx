@@ -155,7 +155,11 @@ const [position, setPosition] = useState(
               disabled={!isEditing}
               value={data[key] || ""}
               onChange={(e) => onChange(key, e.target.value)}
-              className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] outline-teal-500 text-gray-500 bg-[#F8FAFC] dark:bg-[#04070a4d] tracking-tight"
+              className={`w-full font-normal text-sm px-3 py-2 border outline-teal-500 text-gray-500 dark:text-gray-200 tracking-tight ${
+                isEditing
+                  ? "border-white dark:border-[#334155] bg-teal-50/40 dark:bg-teal-900/10"
+                  : "border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d]"
+              }`}
             />
           </div>
         ))}
@@ -174,7 +178,11 @@ const [position, setPosition] = useState(
               readOnly
               value={data.location || ""}
               placeholder="City, Town, Address"
-              className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] outline-teal-500 text-gray-500 bg-[#F8FAFC] dark:bg-[#04070a4d] tracking-tight"
+              className={`w-full font-normal text-sm px-3 py-2 border outline-teal-500 text-gray-500 dark:text-gray-200 tracking-tight ${
+                isEditing
+                  ? "border-white dark:border-[#334155] bg-teal-50/40 dark:bg-teal-900/10"
+                  : "border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d]"
+              }`}
             />
             <MapPin
               className={`absolute top-1/2 -translate-y-1/2 text-gray-400 ${

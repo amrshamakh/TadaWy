@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json;
+using TadaWy.API.Hubs;
 using TadaWy.API.Middleware;
 using TadaWy.Applicaation.Extensions;
 using TadaWy.Domain.Entities.Identity;
@@ -41,6 +43,8 @@ builder.Services.Configure<PaymobSettings>(builder.Configuration.GetSection("Pay
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<TadaWyDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<IUserIdProvider, NameIdentifierUserIdProvider>();
 
 // Customize the model validation error response for Simple messages Responses for Errors
 
@@ -177,5 +181,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/Dashboard");
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

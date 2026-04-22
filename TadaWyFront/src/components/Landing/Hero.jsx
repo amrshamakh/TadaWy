@@ -2,10 +2,12 @@ import { RiPulseFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { assets } from "../../assets/assets";
+import { useAuth } from "../../context/AuthContext";
 
 const Hero = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <section className="relative">
@@ -45,15 +47,17 @@ const Hero = () => {
           >
             {t("hero.getStarted")}
           </button>
-          <button
-            onClick={() => {
-              navigate("/login");
-              scrollTo(0, 0);
-            }}
-            className="bg-white dark:text-white dark:bg-[#3341554D] hover:bg-gray-50 dark:hover:bg-[#334155] text-gray-800 px-8 py-2 rounded-lg font-medium border border-gray-300 dark:border-[#334155] transition-colors shadow-xl"
-          >
-            {t("hero.signIn")}
-          </button>
+          {!user && (
+            <button
+              onClick={() => {
+                navigate("/login");
+                scrollTo(0, 0);
+              }}
+              className="bg-white dark:text-white dark:bg-[#3341554D] hover:bg-gray-50 dark:hover:bg-[#334155] text-gray-800 px-8 py-2 rounded-lg font-medium border border-gray-300 dark:border-[#334155] transition-colors shadow-xl"
+            >
+              {t("hero.signIn")}
+            </button>
+          )}
         </div>
 
         {/* Stats Cards */}

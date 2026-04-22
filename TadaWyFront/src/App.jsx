@@ -24,6 +24,8 @@ import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
 import DoctorAppointments from "./components/doctor/appointments/DoctorAppointments";
 import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
+import DoctorRejectBanPlaceholder from "./components/doctor/DoctorRejectBanPlaceholder";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const { i18n } = useTranslation();
@@ -35,7 +37,7 @@ const App = () => {
   }, [i18n.language]);
 
   return (
-    <div className="max-h-[70vh]">
+    <div>
       <Routes>
         <Route path="/doctorApplication" element={<DoctorApplication />} />
         <Route path="/application-pending" element={<ApplicationPending />} />
@@ -49,11 +51,10 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
           <Route path="discover" element={<DiscoverPage />} />
-
-          <Route path="calendar" element={<Calender />} />
+          <Route path="calendar" element={<ProtectedRoute renderBlockedContent><Calender /></ProtectedRoute>} />
           <Route path="booking" element={<Booking />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Route>
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
@@ -65,6 +66,8 @@ const App = () => {
           <Route index element={<DoctorProfile />} />
           <Route path="appointments" element={<DoctorAppointments />} />
           <Route path="schedule" element={<DoctorSchedule />} />
+          <Route path="reject-ban" element={<DoctorRejectBanPlaceholder />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
       <MedicalChecksChat />
