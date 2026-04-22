@@ -15,9 +15,8 @@
 
 .booking-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.3fr);
-  gap: 24px;
-  align-items: flex-start;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1.3fr);
+  gap: 32px;
 }
 
 .booking-main-column {
@@ -27,9 +26,7 @@
 }
 
 .booking-sidebar-wrapper {
-  position: sticky;
-  top: 72px;
-  align-self: start;
+  height: 100%;
 }
 
 .booking-card {
@@ -255,13 +252,6 @@
   overflow: hidden;
 }
 
-[dir="rtl"] .booking-main-column {
-  order: 2;
-}
-
-[dir="rtl"] .booking-sidebar-wrapper {
-  order: 1;
-}
 
 .booking-sidebar-header-bar {
   background-color: #00BBA7;

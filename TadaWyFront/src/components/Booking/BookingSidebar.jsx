@@ -41,6 +41,8 @@ export default function BookingSidebar({ doctor }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const receiptRef = useRef(null);
+  const sidebarRef = useRef(null);
+  const wrapperRef = useRef(null);
 
   const appointmentCost = doctor?.price || 150;
 
@@ -127,8 +129,48 @@ export default function BookingSidebar({ doctor }) {
     return () => clearTimeout(timer);
   }, [activeModal]);
 
+  useEffect(() => {
+    const updatePosition = () => {
+      if (!wrapperRef.current || !sidebarRef.current) return;
+      const wrapperRect = wrapperRef.current.getBoundingClientRect();
+      const sidebar = sidebarRef.current;
+      
+      if (wrapperRect.top <= 96) {
+        sidebar.style.position = 'fixed';
+        sidebar.style.top = '96px';
+        sidebar.style.width = `${wrapperRect.width}px`;
+        sidebar.style.left = `${wrapperRect.left}px`;
+        sidebar.style.right = 'auto'; // ensure RTL doesn't break
+      } else {
+        sidebar.style.position = 'static';
+        sidebar.style.top = 'auto';
+        sidebar.style.width = '100%';
+        sidebar.style.left = 'auto';
+      }
+    };
+
+    window.addEventListener('scroll', updatePosition, true);
+    
+    // Setup ResizeObserver to react when Layout Sidebar toggles
+    const resizeObserver = new ResizeObserver(() => {
+      updatePosition();
+    });
+    
+    if (wrapperRef.current) {
+      resizeObserver.observe(wrapperRef.current);
+    }
+    
+    updatePosition(); // Initial position setup
+
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      resizeObserver.disconnect();
+    };
+  }, []);
+
   return (
-    <aside className="booking-card booking-sidebar">
+    <div ref={wrapperRef} className="booking-sidebar-wrapper">
+      <aside ref={sidebarRef} className="booking-card booking-sidebar">
       <div className="booking-sidebar-header-bar">
         <Calendar size={20} className="booking-sidebar-header-icon" />
         <h3 className="booking-sidebar-header-title">{t("booking.sidebar.title")}</h3>
@@ -241,7 +283,8 @@ export default function BookingSidebar({ doctor }) {
       )}
 
       {activeModal === "success" && <BookingSuccessModal />}
-    </aside>
+      </aside>
+    </div>
   );
 }
 

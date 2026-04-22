@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import AdminApi from "../modules/admin/api/adminApi";
+import { toast } from 'react-toastify';
 
 const DoctorsContext = createContext(null);
 
@@ -115,6 +116,7 @@ export function DoctorsProvider({ children }) {
         await AdminApi.approveDoctor(doctor.id);
       } else if (newStatus === "Rejected") {
         await AdminApi.rejectDoctor(doctor.id, reason);
+        toast.error(`تم رفض الدكتور ${doctor.name}`);
       }
       // Refresh current list after action
       await fetchDoctors();
@@ -127,6 +129,7 @@ export function DoctorsProvider({ children }) {
     try {
       await AdminApi.banDoctor(doctor.id, reason);
       await fetchDoctors();
+      toast.error(`تم حظر الدكتور ${doctor.name}`);
     } catch (err) {
       console.error("Failed to ban doctor", err);
     }
