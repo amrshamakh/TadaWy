@@ -209,7 +209,7 @@
   "discover": {
     "title": "Discover Healthcare Providers",
     "subtitle": "Find and book appointments with top-rated doctors and clinics",
-    "searchPlaceholder": "Search clinics, doctors, specialties...",
+    "searchPlaceholder": "Search doctors...",
     "showing": "Showing",
     "of": "of",
     "clinics": "clinics",
@@ -326,88 +326,86 @@
         "specialty": "Gastroenterology",
         "address": "963 Wellness Plaza, City Center"
       },
-      "Pagination":{
+      "Pagination": {
         "previous": "Previous",
         "next": "Next"
-
       }
     }
   },
   "admin": {
-  "adminLayout": {
-    "doctors": "Doctors",
-    "settings": "Settings",
-    "bannedDoctors": "Banned Doctors"
-  },
-  "doctors": {
-    "title": "Manage Doctors",
-    "searchPlaceholder": "Search for a doctor...",
-    "filterLabel": "Filter:",
-    "allFilter": "All",
-    "approvedFilter": "Approved",
-    "rejectedFilter": "Rejected",
-    "pendingFilter": "Pending",
-    "bannedFilter": "Banned",
-    "filterSuffix": "Doctors",
-    "noResults": "No doctors found."
-  },
-  "bannedDoctors": {
-    "title": "Banned Doctors",
-    "searchPlaceholder": "Search for a banned doctor...",
-    "empty": "No banned doctors found."
-  },
-  "doctorCard": {
-    
-    "id": "ID",
-    "createdAt": "Created At",
-    "specialization": "Specialization",
-    "details": "Details",
-    "status": {
-      "Approved": "Approved",
-      "Rejected": "Rejected",
-      "Pending": "Pending",
-      "Banned": "Banned"
-    }
-  },
-  "doctorModal": {
-    "doctorName": "Doctor's Name",
-    "clinicLocation": "Clinic's Location",
-    "doctorId": "Doctor's ID",
-    "clinicDetails": "Clinic's Location Details",
-    "phoneNumber": "Phone Number",
-    "cvUploaded": "CV Uploaded",
-    "emailAddress": "Email Address",
-    "specialization": "Specialization",
-    "banReason": "Ban Reason",
-    "noBanReason": "No reason provided",
-    "banReasonPrompt": "Write the reason for banning this doctor",
-    "banReasonPlaceholder": "Type the ban reason...",
-    "rejectReason": "Rejection Reason",
-    "noRejectReason": "No reason provided",
-    "rejectReasonPrompt": "Write the reason for rejecting this doctor",
-    "rejectReasonPlaceholder": "Type the rejection reason...",
-    "reasonRequired": "Reason is required.",
-    "actions": {
-      "approve": "Approve",
-      "reject": "Reject",
-      "ban": "BAN",
-      "unban": "Unban",
-      "cancel": "Cancel",
-      "confirmBan": "Confirm Ban",
-      "confirmReject": "Confirm Reject"
+    "adminLayout": {
+      "doctors": "Doctors",
+      "settings": "Settings",
+      "bannedDoctors": "Banned Doctors"
     },
-    "status": {
-      "Approved": "Approved",
-      "Rejected": "Rejected",
-      "Pending": "Pending",
-      "Banned": "Banned"
+    "doctors": {
+      "title": "Manage Doctors",
+      "searchPlaceholder": "Search for a doctor...",
+      "filterLabel": "Filter:",
+      "allFilter": "All",
+      "approvedFilter": "Approved",
+      "rejectedFilter": "Rejected",
+      "pendingFilter": "Pending",
+      "bannedFilter": "Banned",
+      "filterSuffix": "Doctors",
+      "noResults": "No doctors found."
+    },
+    "bannedDoctors": {
+      "title": "Banned Doctors",
+      "searchPlaceholder": "Search for a banned doctor...",
+      "empty": "No banned doctors found."
+    },
+    "doctorCard": {
+      "id": "ID",
+      "createdAt": "Created At",
+      "specialization": "Specialization",
+      "details": "Details",
+      "status": {
+        "Approved": "Approved",
+        "Rejected": "Rejected",
+        "Pending": "Pending",
+        "Banned": "Banned"
+      }
+    },
+    "doctorModal": {
+      "doctorName": "Doctor's Name",
+      "clinicLocation": "Clinic's Location",
+      "doctorId": "Doctor's ID",
+      "clinicDetails": "Clinic's Location Details",
+      "phoneNumber": "Phone Number",
+      "cvUploaded": "CV Uploaded",
+      "emailAddress": "Email Address",
+      "specialization": "Specialization",
+      "banReason": "Ban Reason",
+      "noBanReason": "No reason provided",
+      "banReasonPrompt": "Write the reason for banning this doctor",
+      "banReasonPlaceholder": "Type the ban reason...",
+      "rejectReason": "Rejection Reason",
+      "noRejectReason": "No reason provided",
+      "rejectReasonPrompt": "Write the reason for rejecting this doctor",
+      "rejectReasonPlaceholder": "Type the rejection reason...",
+      "reasonRequired": "Reason is required.",
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "ban": "BAN",
+        "unban": "Unban",
+        "cancel": "Cancel",
+        "confirmBan": "Confirm Ban",
+        "confirmReject": "Confirm Reject"
+      },
+      "status": {
+        "Approved": "Approved",
+        "Rejected": "Rejected",
+        "Pending": "Pending",
+        "Banned": "Banned"
+      }
+    },
+    "doctorContext": {
+      "banAlert": "Dr. {{name}} has been banned successfully.",
+      "rejectAlert": "Dr. {{name}} has been rejected successfully."
     }
   },
-  "doctorContext": {
-    "banAlert": "Dr. {{name}} has been banned successfully.",
-    "rejectAlert": "Dr. {{name}} has been rejected successfully."
-  }
-},
   "calendar": {
     "title": "My Calendar",
     "subtitle": "View and manage your medical appointments",
