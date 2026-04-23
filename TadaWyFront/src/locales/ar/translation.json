@@ -545,7 +545,11 @@
     "reviewsSection": {
       "title": "التقييمات",
       "overallRating": "التقييم العام",
+<<<<<<< HEAD
       "noReviews": "لا توجد تقييمات متاحة حتى الآن.",
+=======
+      "noReviews": "لا توجد تقييمات متاحة حالياً",
+>>>>>>> a6e067a (doctor details)
       "reviews": [
         {
           "author": "جون سميث",

@@ -52,7 +52,7 @@ const App = () => {
           <Route index element={<LandingPage />} />
           <Route path="discover" element={<DiscoverPage />} />
           <Route path="calendar" element={<ProtectedRoute renderBlockedContent><Calender /></ProtectedRoute>} />
-          <Route path="booking" element={<Booking />} />
+          <Route path="booking/:id?" element={<Booking />} />
           <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Route>

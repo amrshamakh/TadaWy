@@ -33,10 +33,21 @@ export default function BookingSidebar({ doctor }) {
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   }, []);
   const [dateOffset, setDateOffset] = useState(0);
-  const [selectedDateStr, setSelectedDateStr] = useState(
-    `${baseDate.getDate()} ${baseDate.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`
-  );
+  
+  const availability = useMemo(() => {
+    if (!doctor?.availableDaysSlots) return [];
+    return doctor.availableDaysSlots;
+  }, [doctor]);
+
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
+  
+  const selectedDateStr = useMemo(() => {
+    if (!availability[selectedDayIndex]) return null;
+    const date = new Date(availability[selectedDayIndex].date);
+    return `${date.getDate()} ${date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`;
+  }, [availability, selectedDayIndex, i18n.language]);
+
   const [activeModal, setActiveModal] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -48,10 +59,24 @@ export default function BookingSidebar({ doctor }) {
 
   const currentDays = useMemo(() => getVisibleDays(baseDate, dateOffset, i18n.language), [baseDate, dateOffset, i18n.language]);
 
-  const TIME_OPTIONS = useMemo(() => getTimeOptions(t), [t]);
+  const TIME_OPTIONS = useMemo(() => {
+    if (!availability[selectedDayIndex]) return [];
+    return availability[selectedDayIndex].slots.map(slot => {
+      const start = new Date(slot.startTime);
+      return start.toLocaleTimeString(i18n.language === "ar" ? "ar-EG" : "en-US", { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      });
+    });
+  }, [availability, selectedDayIndex, i18n.language]);
 
-  const handlePrev = () => setDateOffset(prev => prev - 1);
-  const handleNext = () => setDateOffset(prev => prev + 1);
+  const handlePrev = () => {
+    if (selectedDayIndex > 0) setSelectedDayIndex(prev => prev - 1);
+  };
+  const handleNext = () => {
+    if (selectedDayIndex < availability.length - 1) setSelectedDayIndex(prev => prev + 1);
+  };
 
   const handleBook = () => {
     if (!doctor || !selectedDateStr || !selectedTime) return;
@@ -188,21 +213,29 @@ export default function BookingSidebar({ doctor }) {
             </button>
 
             <div className="booking-date-grid">
-              {currentDays.map((item) => (
-                <button
-                  key={item.date}
-                  type="button"
-                  className={`booking-date-pill ${selectedDateStr === item.date ? "booking-date-pill-selected" : ""
-                    }`}
-                  onClick={() => setSelectedDateStr(item.date)}
-                >
-                  <span className="booking-date-pill-day">{item.day}</span>
-                  <span className="booking-date-pill-date">{item.date}</span>
-                </button>
-              ))}
+              {availability.map((item, index) => {
+                const date = new Date(item.date);
+                const dayName = date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { weekday: 'short' });
+                const datePill = `${date.getDate()} ${date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`;
+                
+                return (
+                  <button
+                    key={item.date}
+                    type="button"
+                    className={`booking-date-pill ${selectedDayIndex === index ? "booking-date-pill-selected" : ""}`}
+                    onClick={() => {
+                      setSelectedDayIndex(index);
+                      setSelectedTime(null);
+                    }}
+                  >
+                    <span className="booking-date-pill-day">{dayName}</span>
+                    <span className="booking-date-pill-date">{datePill}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            <button type="button" className="booking-carousel-nav" onClick={handleNext} aria-label="Next options">
+            <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex >= availability.length - 1} aria-label="Next options">
               <ArrowRight size={20} />
             </button>
           </div>
@@ -211,17 +244,20 @@ export default function BookingSidebar({ doctor }) {
         <div className="booking-sidebar-section">
           <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
           <div className="booking-time-grid">
-            {TIME_OPTIONS.map((time) => (
-              <button
-                key={time}
-                type="button"
-                className={`booking-time-pill ${selectedTime === time ? "booking-time-pill-selected" : ""
-                  }`}
-                onClick={() => setSelectedTime(time)}
-              >
-                {time}
-              </button>
-            ))}
+            {TIME_OPTIONS.length > 0 ? (
+              TIME_OPTIONS.map((time) => (
+                <button
+                  key={time}
+                  type="button"
+                  className={`booking-time-pill ${selectedTime === time ? "booking-time-pill-selected" : ""}`}
+                  onClick={() => setSelectedTime(time)}
+                >
+                  {time}
+                </button>
+              ))
+            ) : (
+              <p className="text-gray-400 text-sm py-2">{t("booking.sidebar.noTimes") || "No times available"}</p>
+            )}
           </div>
         </div>
 

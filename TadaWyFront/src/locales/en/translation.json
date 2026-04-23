@@ -536,7 +536,11 @@
     "reviewsSection": {
       "title": "Reviews",
       "overallRating": "Overall Rating",
+<<<<<<< HEAD
       "noReviews": "No reviews available yet.",
+=======
+      "noReviews": "No reviews available now",
+>>>>>>> a6e067a (doctor details)
       "reviews": [
         {
           "author": "John Smith",
