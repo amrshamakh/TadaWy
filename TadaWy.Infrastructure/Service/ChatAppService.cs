@@ -178,7 +178,7 @@ namespace TadaWy.Infrastructure.Service
             {
                 var patients = await _context.Appointments
                     .Where(a => a.Doctor.UserID == userId)
-                    .Select(a => a.Patient)
+                    .Select(a => a.Patient) 
                     .Distinct()
                     .ToListAsync();
 

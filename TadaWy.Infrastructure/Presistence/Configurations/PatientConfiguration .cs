@@ -41,10 +41,7 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                 l.Property(p => p.Longitude);
             });
 
-            builder.HasMany(p => p.Appointments)
-                   .WithOne(a => a.Patient)
-                   .HasForeignKey(a => a.PatientId)
-                   .OnDelete(DeleteBehavior.Restrict);
+           
 
 
         }
