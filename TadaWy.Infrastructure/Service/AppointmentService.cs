@@ -28,9 +28,10 @@ namespace TadaWy.Infrastructure.Service
 
         private async Task CheckAvilapleSlot(CreateAppointmentRequest request)
         {
+
             var doctor = await _tadaWyDbContext.Doctors
                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
-               .FirstOrDefaultAsync(d => d.Id == request.DoctorId) ?? throw new Exception("Doctor not found");
+               .FirstOrDefaultAsync(d => d.UserID == request.DoctorId) ?? throw new Exception("Doctor not found");
 
            
             int duration = doctor.AppointmentDurationMinutes ?? 20;
@@ -56,9 +57,10 @@ namespace TadaWy.Infrastructure.Service
 
             if (!withinWorkingHours)
                 throw new Exception("Selected time is outside doctor's working hours.");
+           
 
             bool isTaken = await _tadaWyDbContext.Appointments.AnyAsync(a =>
-                a.DoctorId == request.DoctorId &&
+                a.DoctorId == doctor.Id &&
                 a.Date >= slotStart &&
                 a.Date < slotEnd
             );
@@ -66,15 +68,16 @@ namespace TadaWy.Infrastructure.Service
             if (isTaken)
                 throw new Exception("This slot is already booked.");
         }
-        public async Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request)
+        public async Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request,string patientid)
         {
+            var doctor = await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(i => i.UserID == request.DoctorId) ?? throw new Exception("doctor not found");
 
             await CheckAvilapleSlot(request);
          
             var appointment = new Appointment
             {
-                DoctorId = request.DoctorId,
-                PatientId = request.PatientId,
+                DoctorId = doctor.Id,
+                PatientId = patientid,
                 Date = request.Date,
                 Status = AppointmentStatus.Pending
             };
@@ -98,15 +101,16 @@ namespace TadaWy.Infrastructure.Service
             return await _patientService.GetReceipt(appointment.Id);
         }
 
-        public async Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request)
+        public async Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request,string patientid)
         {
+            var doctor = await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(i => i.UserID == request.DoctorId) ?? throw new Exception("doctor not found");
 
             await CheckAvilapleSlot(request);
 
             var appointment = new Appointment
             {
-                DoctorId = request.DoctorId,
-                PatientId = request.PatientId,
+                DoctorId = doctor.Id,
+                PatientId = patientid,
                 Date = request.Date,
                 Status = AppointmentStatus.Pending
             };

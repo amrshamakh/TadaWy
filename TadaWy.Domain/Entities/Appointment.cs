@@ -1,4 +1,5 @@
-﻿using TadaWy.Domain.Enums;
+﻿using TadaWy.Domain.Entities.Identity;
+using TadaWy.Domain.Enums;
 
 namespace TadaWy.Domain.Entities
 {
@@ -6,8 +7,8 @@ namespace TadaWy.Domain.Entities
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }
-        public int PatientId { get; set; }
-        public Patient Patient { get; set; }
+        public string PatientId { get; set; }
+        public ApplicationUser Patient { get; set; }
         public int DoctorId { get; set; }
         public Doctor Doctor { get; set; }
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;

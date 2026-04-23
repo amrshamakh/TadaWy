@@ -206,7 +206,7 @@ namespace TadaWy.Infrastructure.Service
             }
         }
 
-        public async Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, int patientId)
+        public async Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, string patientId)
         {
             var appointments = await _context.Appointments
                 .Include(a => a.Payment)
@@ -226,7 +226,7 @@ namespace TadaWy.Infrastructure.Service
             }).ToList();
         }
 
-        public async Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, int patientId)
+        public async Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, string patientId)
         {
             return await _context.Appointments
                 .Where(a => a.PatientId == patientId &&
@@ -243,7 +243,7 @@ namespace TadaWy.Infrastructure.Service
             
         }
 
-        public async Task<bool> CancelAppointmentAsync(int appointmentId, int patientId)
+        public async Task<bool> CancelAppointmentAsync(int appointmentId, string patientId)
         {
             var appointment = await _context.Appointments
                 .FirstOrDefaultAsync(a => a.Id == appointmentId && a.PatientId == patientId);
@@ -264,7 +264,7 @@ namespace TadaWy.Infrastructure.Service
 
             return true;
         }
-        public async Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId, AppointmentStatus status)
+        public async Task<List<AppointmentDto>> GetPatientAppointmentsAsync(string patientId, AppointmentStatus status)
         {
             var query = _context.Appointments
                 .Where(a => a.PatientId == patientId);
@@ -293,7 +293,8 @@ namespace TadaWy.Infrastructure.Service
                 .Include(a => a.Payment)
                 .FirstOrDefaultAsync(a => a.Id == appointmentId)??throw new Exception("Appoiment not Found") ;
 
-            var user = await _context.Users.FindAsync(appointment.Patient.UserID);
+            var user = await _context.Users.FindAsync(appointment.PatientId);
+            var patient = await _context.Patients.FirstOrDefaultAsync(i => i.UserID == appointment.PatientId);
             if (appointment == null)
                 throw new Exception("Not Found");
 
@@ -301,7 +302,7 @@ namespace TadaWy.Infrastructure.Service
             {
                 ReceiptDate = DateTime.UtcNow,
 
-                PatientName = appointment.Patient.FirstName + " " + appointment.Patient.LastName,
+                PatientName = patient.FirstName + " " + patient.LastName,
                 PatientEmail =user.Email,
 
                 DoctorName = appointment.Doctor.FirstName + " " + appointment.Doctor.LastName,

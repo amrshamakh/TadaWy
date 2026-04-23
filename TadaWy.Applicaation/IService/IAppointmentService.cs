@@ -11,9 +11,9 @@ namespace TadaWy.Applicaation.IService
     public interface IAppointmentService
     {
 
-        Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request);
+        Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request, string patientid);
 
-        Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request);
+        Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request,string patientid);
 
 
     }

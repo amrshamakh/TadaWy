@@ -91,14 +91,15 @@ namespace TadaWy.Infrastructure.Service
         }
         private async Task AddToWallet(Payment payment)
         {
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(i => i.UserID == payment.DoctorId) ?? throw new Exception("doctor not found");
             var wallet = await _context.DoctorWallets
-                .FirstOrDefaultAsync(x => x.DoctorId == payment.DoctorId);
+                .FirstOrDefaultAsync(x => x.DoctorId == doctor.Id);
 
             if (wallet == null)
             {
                 wallet = new DoctorWallet
                 {
-                    DoctorId = payment.DoctorId,
+                    DoctorId = doctor.Id,
                     Balance = 0
                 };
                 _context.DoctorWallets.Add(wallet);
@@ -108,7 +109,7 @@ namespace TadaWy.Infrastructure.Service
 
             var transaction = new WalletTransaction
             {
-                DoctorId = payment.DoctorId,
+                DoctorId = doctor.Id,
                 Amount = payment.DoctorAmount,
                 Type = TransactionType.Credit,
                 PaymentId = payment.Id,

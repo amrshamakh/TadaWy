@@ -12,7 +12,7 @@ namespace TadaWy.Domain.Entities
 
         public PaymentMethod Method { get; set; }
 
-        public int DoctorId { get; set; }
+        public string DoctorId { get; set; }
 
         public DateTime? PaymentDate { get; set; }  //online  and when doctor change status to paid
         public string? ExternalTransactionId { get; set; } //online

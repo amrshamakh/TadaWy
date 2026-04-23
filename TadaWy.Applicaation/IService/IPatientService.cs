@@ -13,13 +13,13 @@ namespace TadaWy.Applicaation.IService
     public interface IPatientService
     {
 
-        Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, int patientId);
+        Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, string patientId);
 
-        Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, int patientId);
+        Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, string patientId);
 
-        Task<List<AppointmentDto>> GetPatientAppointmentsAsync(int patientId, AppointmentStatus status);
+        Task<List<AppointmentDto>> GetPatientAppointmentsAsync(string patientId, AppointmentStatus status);
 
-        Task<bool> CancelAppointmentAsync(int appointmentId, int patientId);
+        Task<bool> CancelAppointmentAsync(int appointmentId, string patientId);
 
         Task<ReceiptDTo> GetReceipt(int appointmentId);
         Task<PatientProfileDto> GetPatientProfileAsync(string userId);

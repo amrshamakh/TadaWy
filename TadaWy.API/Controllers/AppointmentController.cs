@@ -25,7 +25,12 @@ namespace TadaWy.API.Controllers
         [HttpPost("offline")]
         public async Task<ActionResult> CreateOffline([FromBody] CreateAppointmentRequest model)
         {
-            var result = await _service.CreateOfflineAppointmentAndReturnReciptAsync(model);
+            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userid == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var result = await _service.CreateOfflineAppointmentAndReturnReciptAsync(model,userid);
 
             return Ok(result);
         }
@@ -33,7 +38,12 @@ namespace TadaWy.API.Controllers
         [HttpPost("online")]
         public async Task<IActionResult> CreateOnline([FromBody] CreateAppointmentRequest model)
         {
-           var result= await _service.CreateOnlineAppointmentAsync(model);
+            var userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (userid == null)
+            {
+                return Unauthorized("User not Found");
+            }
+            var result= await _service.CreateOnlineAppointmentAsync(model,userid);
             return Ok(result);
         }
     }

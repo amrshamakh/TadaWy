@@ -118,8 +118,8 @@ namespace TadaWy.API.Controllers
             {
                 return Unauthorized("User not Found");
             }
-            var patientId = _patientService.GetPatientId(userid);
-            var result = await _patientService.GetCalendarAsync(month, year, patientId);
+           
+            var result = await _patientService.GetCalendarAsync(month, year, userid);
             return Ok(result);
         }
 
@@ -131,12 +131,9 @@ namespace TadaWy.API.Controllers
             {
                 return Unauthorized("User not Found");
             }
-            var patientId = _patientService.GetPatientId(userId);
+            
 
-            if (patientId == null)
-                return Unauthorized();
-
-            var result = await _patientService.CancelAppointmentAsync(appointmentId, patientId);
+            var result = await _patientService.CancelAppointmentAsync(appointmentId, userId);
 
             if (!result)
                 return BadRequest("Cannot cancel this appointment");
@@ -159,8 +156,8 @@ namespace TadaWy.API.Controllers
             {
                 return Unauthorized("User not Found");
             }
-            var patientId = _patientService.GetPatientId(userid);
-            var result = await _patientService.GetAppointmentsByDateAsync(date, patientId);
+        
+            var result = await _patientService.GetAppointmentsByDateAsync(date, userid);
             return Ok(result);
         }
 
@@ -172,8 +169,8 @@ namespace TadaWy.API.Controllers
             {
                 return Unauthorized("User not Found");
             }
-            var patientId = _patientService.GetPatientId(userid);
-            var result = await _patientService.GetPatientAppointmentsAsync(patientId, status);
+           
+            var result = await _patientService.GetPatientAppointmentsAsync(userid, status);
             return Ok(result);
         }
     }
