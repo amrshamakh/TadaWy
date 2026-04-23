@@ -42,8 +42,7 @@ namespace TadaWy.Infrastructure.Service
             if (!string.IsNullOrWhiteSpace(request.State))
             {
                 query = query.Where(d =>
-                    d.Address.State == request.State);
-            }
+                    d.Address.State == request.State);         }
             if (!string.IsNullOrWhiteSpace(request.City))
             {
                 query = query.Where(d =>
@@ -128,9 +127,10 @@ namespace TadaWy.Infrastructure.Service
                 Rating = Math.Round(doctor.Rating, 1),
                 YearsOfExperience = yearsOfExperience,
                 ReviewsCount = doctor.Reviews.Count,
-                Price = doctor.Price
-                ,About=doctor.Bio,
-                ImageUrl=doctor.ImageUrl,
+                Price = doctor.Price,
+                About=doctor.Bio,
+                ImageUrl = doctor.ImageUrl,
+
                 AvailableDaysSlots = GenerateNextSevenDaysSlots(doctor),
                 Reviews = doctor.Reviews
                     .Select(r => new DoctorReviewDto
