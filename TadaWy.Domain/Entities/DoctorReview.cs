@@ -6,6 +6,7 @@
         public int DoctorId { get; set; }
         public Doctor Doctor { get; set; }=default!;
         public int PatientId { get; set; }
+        public Patient Patient { get; set; } = default!;
 
         public int Rating { get; set; }
         public string? Comment { get; set; }

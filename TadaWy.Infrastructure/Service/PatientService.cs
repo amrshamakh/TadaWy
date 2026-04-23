@@ -191,6 +191,19 @@ namespace TadaWy.Infrastructure.Service
 
             _context.DoctorReviews.Add(review);
             await _context.SaveChangesAsync();
+
+            // Recalculate doctor average rating
+            var doctor = await _context.Doctors
+                .Include(d => d.Reviews)
+                .FirstOrDefaultAsync(d => d.Id == reviewDto.DoctorId);
+
+            if (doctor != null)
+            {
+                doctor.Rating = doctor.Reviews.Any() 
+                    ? Math.Round(doctor.Reviews.Average(r => r.Rating), 1) 
+                    : 0;
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, int patientId)

@@ -99,7 +99,7 @@ namespace TadaWy.API.Controllers
             return Ok(new { message = "Allergy removed successfully" });
         }
 
-        [Authorize(Roles = "Patient")]
+        [Authorize(Roles = "Patient,patient")]
         [HttpPost("review")]
         public async Task<IActionResult> SubmitReview(AddReviewDto dto)
         {

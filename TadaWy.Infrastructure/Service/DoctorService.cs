@@ -103,16 +103,12 @@ namespace TadaWy.Infrastructure.Service
             var doctor = await _context.Doctors
                 .Include(d => d.Specialization)
                 .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
-                .Include(d => d.Reviews)
+                .Include(d => d.Reviews).ThenInclude(r => r.Patient)
                 .Include(d => d.Appointments.Where(a => a.Date >= DateTime.Today && a.Date < DateTime.Today.AddDays(7)))
                 .FirstOrDefaultAsync(d => d.Id == id && d.Status == DoctorStatus.Approved);
 
             if (doctor == null)
                 throw new NotFoundException("Doctor not found");
-
-            var rating = doctor.Reviews.Any()
-                ? doctor.Reviews.Average(r => r.Rating)
-                : 0;
 
             var yearsOfExperience = 0;
             if (doctor.CareerStartDate.HasValue)
@@ -129,7 +125,7 @@ namespace TadaWy.Infrastructure.Service
                 Address = doctor.Address,
                 AddressDescription = doctor.AddressDescription ?? "",
                 PhoneNumber = doctor.PhoneNumber,
-                Rating = Math.Round(rating, 1),
+                Rating = Math.Round(doctor.Rating, 1),
                 YearsOfExperience = yearsOfExperience,
                 ReviewsCount = doctor.Reviews.Count,
                 Price = doctor.Price
@@ -139,6 +135,8 @@ namespace TadaWy.Infrastructure.Service
                 Reviews = doctor.Reviews
                     .Select(r => new DoctorReviewDto
                     {
+                        Id = r.Id,
+                        PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
                         Rating = r.Rating,
                         Comment = r.Comment
                     }).ToList()
@@ -212,6 +210,9 @@ namespace TadaWy.Infrastructure.Service
         {
             var doctor = await _context.Doctors
                 .Include(d => d.Specialization)
+                .Include(d => d.Reviews)
+                    .ThenInclude(r => r.Patient)
+                .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(d => d.UserID == userId);
 
             if (doctor == null)
@@ -221,6 +222,14 @@ namespace TadaWy.Infrastructure.Service
             if (user == null)
                 throw new NotFoundException("User not found");
 
+            var yearsOfExperience = 0;
+            if (doctor.CareerStartDate.HasValue)
+            {
+                yearsOfExperience = DateTime.Now.Year - doctor.CareerStartDate.Value.Year;
+                if (DateTime.Now < doctor.CareerStartDate.Value.AddYears(yearsOfExperience))
+                    yearsOfExperience--;
+            }
+
             return new DoctorProfileDto
             {
                 Id = doctor.Id,
@@ -228,13 +237,23 @@ namespace TadaWy.Infrastructure.Service
                 LastName = doctor.LastName,
                 Email = user.Email ?? "",
                 Specialization = doctor.Specialization.Name,
-                Address = doctor.Address.ToString(),
+                Address = doctor.Address,
                 AddressDescription = doctor.AddressDescription ?? "",
                 PhoneNumber = doctor.PhoneNumber,
                 Bio = doctor.Bio,
                 Price = doctor.Price,
-                CareerStartDate = doctor.CareerStartDate,
-                ImageUrl = doctor.ImageUrl
+                ImageUrl = doctor.ImageUrl,
+                Rating = Math.Round(doctor.Rating, 1),
+                ReviewsCount = doctor.Reviews.Count,
+                PatientsCount = doctor.Appointments.Select(a => a.PatientId).Distinct().Count(),
+                YearsOfExperience = yearsOfExperience,
+                Reviews = doctor.Reviews.Select(r => new DoctorReviewDto
+                {
+                    Id = r.Id,
+                    PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                    Rating = r.Rating,
+                    Comment = r.Comment
+                }).ToList()
             };
         }
 
@@ -413,3 +432,4 @@ namespace TadaWy.Infrastructure.Service
         }
     }
 }
+
