@@ -31,7 +31,7 @@ namespace TadaWy.Infrastructure.Service
 
             var doctor = await _tadaWyDbContext.Doctors
                .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
-               .FirstOrDefaultAsync(d => d.UserID == request.DoctorId) ?? throw new Exception("Doctor not found");
+               .FirstOrDefaultAsync(d => d.Id == request.DoctorId) ?? throw new Exception("Doctor not found");
 
            
             int duration = doctor.AppointmentDurationMinutes ?? 20;
@@ -70,7 +70,7 @@ namespace TadaWy.Infrastructure.Service
         }
         public async Task<ReceiptDTo> CreateOfflineAppointmentAndReturnReciptAsync(CreateAppointmentRequest request,string patientid)
         {
-            var doctor = await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(i => i.UserID == request.DoctorId) ?? throw new Exception("doctor not found");
+            var doctor = await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(i => i.Id == request.DoctorId) ?? throw new Exception("doctor not found");
 
             await CheckAvilapleSlot(request);
          
@@ -88,7 +88,7 @@ namespace TadaWy.Infrastructure.Service
             var payment = new Payment
             {
                 AppointmentId = appointment.Id,
-                DoctorId = request.DoctorId,
+                DoctorId = doctor.UserID,
                 Amount = request.Amount,
                 Method = PaymentMethod.Offline,
                 Status = PaymentStatus.Pending,
@@ -103,7 +103,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request,string patientid)
         {
-            var doctor = await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(i => i.UserID == request.DoctorId) ?? throw new Exception("doctor not found");
+            var doctor = await _tadaWyDbContext.Doctors.FirstOrDefaultAsync(i => i.Id == request.DoctorId) ?? throw new Exception("doctor not found");
 
             await CheckAvilapleSlot(request);
 
@@ -122,7 +122,7 @@ namespace TadaWy.Infrastructure.Service
             var payment = new Payment
             {
                 AppointmentId = appointment.Id,
-                DoctorId = request.DoctorId,
+                DoctorId = doctor.UserID,
                 Amount = request.Amount,
                 Method = PaymentMethod.Online,
                 Status = PaymentStatus.Pending,
