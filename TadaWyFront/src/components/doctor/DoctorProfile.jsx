@@ -1,32 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
-import { FiChevronDown, FiEdit2, FiCheck } from "react-icons/fi";
-import { MapPin, Crosshair ,UserIcon} from "lucide-react";
+import { FiEdit2, FiCheck } from "react-icons/fi";
+import { UserIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMapEvents,
-  useMap,
-} from "react-leaflet";
-import L from "leaflet";
-
-
-/* Fix Leaflet marker icon */
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-});
-
-const FlyTo = ({ position }) => {
-  const map = useMap();
-  map.setView(position, 13);
-  return null;
-};
+  getDoctorProfile,
+  updateDoctorProfile,
+  uploadDoctorImage,
+} from "../../modules/doctor/api/profileDoctorApi";
+import { useAuth } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Field = ({
   label,
@@ -35,124 +18,62 @@ const Field = ({
   onChange,
   type = "text",
   placeholder,
-  as = "input",
-  options = [],
 }) => {
   return (
     <div className="space-y-2">
       <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
         {label}
       </label>
-      {as === "select" ? (
-        <div className="relative">
-          <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            disabled={disabled}
-            className={[
-              "w-full appearance-none rounded-[22px] border px-4 py-3 pr-11 text-sm outline-none transition-colors",
-              disabled
-                ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
-                : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
-            ].join(" ")}
-          >
-            {options.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-          <FiChevronDown
-            size={18}
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-        </div>
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          disabled={disabled}
-          placeholder={placeholder}
-          className={[
-            "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors",
-            disabled
-              ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
-              : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
-          ].join(" ")}
-        />
-      )}
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={disabled}
+        placeholder={placeholder}
+        className={[
+          "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-colors",
+          disabled
+            ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+            : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
+        ].join(" ")}
+      />
     </div>
   );
 };
 
 const DoctorProfile = () => {
   const { t, i18n } = useTranslation();
+  const { user, fetchUser } = useAuth();
   const isRtl = i18n.language === "ar";
   const [isEditing, setIsEditing] = useState(false);
-  const LOCATION_STORAGE_KEY = "doctor_location";
-
-  const storedLocation = JSON.parse(
-    localStorage.getItem(LOCATION_STORAGE_KEY) || "{}"
-  );
-
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  
   const [form, setForm] = useState({
-    firstName: "Ahmed",
-    lastName: "Khaled",
-    telephone: "01587823124",
-    specialty: "Cardiology",
-    location: storedLocation?.location || "",
-    locationDetails: "",
-    email: "ahmedkhaled@gmail.com",
-    about: "",
-    fullLocation: storedLocation?.fullLocation || "",
-    latitude: storedLocation?.latitude || null,
-    longitude: storedLocation?.longitude || null,
+    id: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    specialization: "",
+    addressDescription: "",
+    bio: "",
+    price: "",
+    imageUrl: "",
+    rating: 0,
+    reviewsCount: 0,
+    patientsCount: 0,
+    yearsOfExperience: 0,
+    reviews: [],
+    location: "",
+    fullLocation: "",
+    latitude: null,
+    longitude: null,
   });
 
-  const [showMap, setShowMap] = useState(false);
-  const [position, setPosition] = useState(
-    storedLocation?.latitude && storedLocation?.longitude
-      ? [storedLocation.latitude, storedLocation.longitude]
-      : [30.0444, 31.2357]
-  );
-
-  const specialtyOptions = useMemo(
-    () => [
-      t("discover.specialties.Cardiology"),
-      t("discover.specialties.Orthopedics"),
-      t("discover.specialties.Dentistry"),
-      t("discover.specialties.Ophthalmology"),
-      t("discover.specialties.Dermatology"),
-      t("discover.specialties.General Practice"),
-      t("discover.specialties.Pediatrics"),
-      t("discover.specialties.Gynecology"),
-      t("discover.specialties.Psychiatry"),
-      t("discover.specialties.Neurology"),
-      t("discover.specialties.Pulmonology"),
-      t("discover.specialties.Gastroenterology"),
-    ],
-    [t]
-  );
-
-  const reviews = useMemo(
-    () => {
-      const localizedReviews = t("booking.reviewsSection.reviews", { returnObjects: true });
-      const defaultRatings = [4.5, 4, 3.5];
-      if (!Array.isArray(localizedReviews)) return [];
-
-      return localizedReviews.slice(0, 2).map((review, idx) => ({
-        id: idx + 1,
-        rating: defaultRatings[idx] ?? 4,
-        name: review.author,
-        date: review.date,
-        text: review.text,
-      }));
-    },
-    [t]
-  );
 
   const disabled = !isEditing;
+
 
   const localizedFirstName = isRtl
     ? t(`doctorDashboard.profile.nameMap.${form.firstName}`, { defaultValue: form.firstName })
@@ -162,127 +83,112 @@ const DoctorProfile = () => {
     : form.lastName;
   const doctorNameOnly = `${localizedFirstName} ${localizedLastName}`.replace(/\s+/g, " ").trim();
   const doctorDisplayName = `${isRtl ? "د." : "Dr."} ${doctorNameOnly}`.replace(/\s+/g, " ").trim();
-  const doctorId = `${t("doctorDashboard.profile.id")}:123231`;
+  const doctorIdText = `${t("doctorDashboard.profile.id")}:${form.id || "..."}`;
   const localizedSpecialty =
-    t(`discover.specialties.${form.specialty}`, { defaultValue: form.specialty }) || form.specialty;
+    t(`discover.specialties.${form.specialization}`, { defaultValue: form.specialization }) || form.specialization;
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      const data = await getDoctorProfile();
+        const formatAddressPart = (part) => (!part || part === "UnKnown") ? "" : part;
+        const street = formatAddressPart(data.address?.street);
+        const city = formatAddressPart(data.address?.city);
+        const state = formatAddressPart(data.address?.state);
+
+        setForm({
+          ...form,
+          id: data.id,
+          firstName: data.firstName || "",
+          lastName: data.lastName || "",
+          email: data.email || "",
+          phoneNumber: data.phoneNumber || "",
+          specialization: data.specialization || "",
+          addressDescription: data.addressDescription || "",
+          bio: data.bio || "",
+          price: data.price || "",
+          imageUrl: data.imageUrl || "",
+          rating: data.rating || 0,
+          reviewsCount: data.reviewsCount || 0,
+          patientsCount: data.patientsCount || 0,
+          yearsOfExperience: data.yearsOfExperience || 0,
+          reviews: data.reviews || [],
+          location: city,
+          fullLocation: [street, city, state].filter(Boolean).join(", "),
+        latitude: data.latitude || null,
+        longitude: data.longitude || null,
+      });
+    } catch (err) {
+      console.error("Error loading profile:", err);
+      toast.error(t("profile.loadError") || "Failed to load profile");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem("doctorProfile");
-      if (!raw) return;
-      const saved = JSON.parse(raw);
-      setForm((p) => ({
-        ...p,
-        firstName: saved?.firstName ?? p.firstName,
-        lastName: saved?.lastName ?? p.lastName,
-        email: saved?.email ?? p.email,
-        telephone: saved?.telephone ?? p.telephone,
-        specialty: saved?.specialty ?? p.specialty,
-        about: saved?.about ?? p.about,
-      }));
-    } catch {
-      // ignore
-    }
+    loadProfile();
   }, []);
 
-  const updateForm = (patch) => {
-    setForm((prev) => {
-      const next = { ...prev, ...patch };
-      try {
-        localStorage.setItem(
-          "doctorProfile",
-          JSON.stringify({
-            firstName: next.firstName,
-            lastName: next.lastName,
-            telephone: next.telephone,
-            specialty: next.specialty,
-            email: next.email,
-            about: next.about,
-            displayName: `Dr. ${`${next.firstName} ${next.lastName}`.replace(/\s+/g, " ").trim()}`,
-          })
-        );
-        window.dispatchEvent(new Event("doctorProfileUpdated"));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  };
-
-  /* Reverse Geocode */
-  const reverseGeocode = async (lat, lng) => {
+  const handleSave = async () => {
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-        { headers: { "User-Agent": "tadawy-app" } }
-      );
-      const result = await res.json();
-      const city =
-        result.address.city ||
-        result.address.town ||
-        result.address.village ||
-        "";
-
-      const locationData = {
-        location: city,
-        fullLocation: result.display_name,
-        latitude: lat,
-        longitude: lng,
+      setSaving(true);
+      const updateDto = {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        phoneNumber: form.phoneNumber,
+        addressDescription: form.addressDescription,
+        bio: form.bio,
+        price: Number(form.price) || 0,
       };
-
-      localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(locationData));
-
-      setForm((prev) => ({
-        ...prev,
-        location: city,
-        fullLocation: result.display_name,
-        latitude: lat,
-        longitude: lng,
-      }));
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      alert(t("doctorDashboard.profile.locationFetchError"));
+      await updateDoctorProfile(updateDto);
+      toast.success(t("profile.updatedSuccess") || "Profile updated successfully");
+      setIsEditing(false);
+      await fetchUser(); // Refresh global auth state
+      await loadProfile(); // Refresh local state
+    } catch (err) {
+      console.error("Error saving profile:", err);
+      toast.error(t("profile.saveError") || "Failed to save profile");
+    } finally {
+      setSaving(false);
     }
   };
 
-  /* Click on map */
-  function LocationPicker() {
-    useMapEvents({
-      click(e) {
-        const { lat, lng } = e.latlng;
-        if (disabled) return;
-        setPosition([lat, lng]);
-        reverseGeocode(lat, lng);
-        setShowMap(false);
-      },
-    });
-    return <Marker position={position} />;
-  }
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  /* Current location */
-  const getCurrentLocation = () => {
-    if (disabled) return;
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setPosition([lat, lng]);
-        await reverseGeocode(lat, lng);
-        setShowMap(false);
-      },
-      () => alert(t("doctorDashboard.profile.locationPermissionDenied"))
+    try {
+      setUploadingImage(true);
+      const res = await uploadDoctorImage(file);
+      setForm(prev => ({ ...prev, imageUrl: res.imageUrl }));
+      toast.success(t("profile.imageUpdated") || "Image updated successfully");
+      await fetchUser();
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      toast.error(t("profile.imageUploadError") || "Failed to upload image");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleEditToggle = () => {
+    if (isEditing) {
+      handleSave();
+    } else {
+      setIsEditing(true);
+    }
+  };
+
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
+      </div>
     );
-  };
-
-  const handleOpenMap = () => {
-    if (!position) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setPosition([pos.coords.latitude, pos.coords.longitude]),
-        () => setPosition([30.0444, 31.2357])
-      );
-    }
-    setShowMap(true);
-  };
+  }
 
   return (
     <div className="w-[calc(100%+2rem)] sm:w-[calc(100%+3rem)] -mx-4 sm:-mx-6 -my-4 sm:-my-6 bg-[#F8FAFC] dark:bg-[#0F172A] min-h-[calc(100vh-64px)] py-6 sm:py-8">
@@ -292,12 +198,37 @@ const DoctorProfile = () => {
           <div className="relative bg-teal-500 h-[124px] sm:h-[140px]">
             {/* Avatar overlapping boundary */}
             <div className={`absolute top-full -translate-y-1/2 ${isRtl ? "right-6 sm:right-10" : "left-6 sm:left-10"}`}>
-            <div className="w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
-                <UserIcon
-                  
-                  alt="Doctor"
-                  className="w-[110px] h-[110px] sm:w-[124px] sm:h-[124px] stroke-1 drop-shadow-sm text-[#00BBA7]"
-                />
+              <div className="group relative w-[140px] h-[140px] sm:w-[156px] sm:h-[156px] rounded-2xl bg-white dark:bg-[#1E293B] border-[3px] border-[#00BBA7] shadow-md flex items-center justify-center overflow-hidden">
+                {form.imageUrl ? (
+                  <img
+                    src={form.imageUrl}
+                    alt="Doctor"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <UserIcon className="w-[110px] h-[110px] sm:w-[124px] sm:h-[124px] stroke-1 drop-shadow-sm text-[#00BBA7]" />
+                )}
+                
+                {/* Image Upload Overlay */}
+                {!disabled && (
+                  <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    {uploadingImage ? (
+                      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-white"></div>
+                    ) : (
+                      <>
+                        <FiEdit2 className="text-white mb-1" size={24} />
+                        <span className="text-white text-xs font-medium">{t("profile.changePhoto", "Change Photo")}</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
@@ -324,12 +255,13 @@ const DoctorProfile = () => {
               <div className={`${isRtl ? "pr-[158px] sm:pr-[180px] text-right" : "pl-[158px] sm:pl-[180px] text-left"}`}>
                 <div className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 space-y-0.5 mt-0">
                   <div>{localizedSpecialty}</div>
-                  <div>{doctorId}</div>
+                  <div>{doctorIdText}</div>
                 </div>
               </div>
 
               <button
-                onClick={() => setIsEditing((p) => !p)}
+                onClick={handleEditToggle}
+                disabled={saving}
                 className={`
                   self-center sm:self-start
                   px-5 py-2.5 rounded-xl text-sm font-medium
@@ -338,10 +270,21 @@ const DoctorProfile = () => {
                     ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500" 
                     : "border border-[#00BBA7] text-[#00BBA7] bg-white hover:bg-teal-50 dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30"
                   }
+                  ${saving ? "opacity-50 cursor-not-allowed" : ""}
                 `}
               >
-                {isEditing ? <FiCheck size={18} /> : <FiEdit2 size={16} />}
-                {isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
+                {saving ? (
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-current"></div>
+                ) : isEditing ? (
+                  <FiCheck size={18} />
+                ) : (
+                  <FiEdit2 size={16} />
+                )}
+                {saving
+                  ? t("common.saving") || "Saving..."
+                  : isEditing
+                  ? t("doctorDashboard.profile.save")
+                  : t("doctorDashboard.profile.edit")}
               </button>
             </div>
 
@@ -353,11 +296,11 @@ const DoctorProfile = () => {
                     <div className="flex items-center justify-center gap-2">
                       <FaStar className="text-amber-400" size={20} />
                       <span className="font-semibold text-amber-400 text-[1.05rem] sm:text-lg">
-                        4.8
+                        {form.rating.toFixed(1)}
                       </span>
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      {isRtl ? "97 تقييم" : `97 ${t("doctorDashboard.profile.reviews")}`}
+                      {form.reviewsCount} {t("doctorDashboard.profile.reviews")}
                     </div>
                   </div>
 
@@ -365,7 +308,7 @@ const DoctorProfile = () => {
 
                   <div className="flex-1 text-center">
                     <div className="font-semibold text-slate-800 dark:text-white text-[1.05rem] sm:text-lg">
-                      157
+                      {form.patientsCount}
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       {t("doctorDashboard.profile.patients")}
@@ -376,10 +319,10 @@ const DoctorProfile = () => {
 
                   <div className="flex-1 text-center">
                     <div className="font-semibold text-slate-800 dark:text-white text-[1.02rem] sm:text-[1.05rem]">
-                      {t("doctorDashboard.profile.experience")}
+                      {form.yearsOfExperience} {t("doctorDashboard.profile.experience")}
                     </div>
                     <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                      {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
+                      {t("doctorDashboard.profile.experienceSubtitle", { count: form.yearsOfExperience })}
                     </div>
                   </div>
                 </div>
@@ -388,84 +331,48 @@ const DoctorProfile = () => {
 
             {/* Form */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+
+              {/* ── Editable fields ── */}
               <Field
                 label={t("doctorDashboard.profile.firstName")}
                 value={form.firstName}
                 disabled={disabled}
-                onChange={(v) => updateForm({ firstName: v })}
+                onChange={(v) => setForm({ ...form, firstName: v })}
               />
               <Field
                 label={t("doctorDashboard.profile.lastName")}
                 value={form.lastName}
                 disabled={disabled}
-                onChange={(v) => updateForm({ lastName: v })}
+                onChange={(v) => setForm({ ...form, lastName: v })}
               />
               <Field
                 label={t("doctorDashboard.profile.telephone")}
-                value={form.telephone}
+                value={form.phoneNumber}
                 disabled={disabled}
-                onChange={(v) => updateForm({ telephone: v })}
+                onChange={(v) => setForm({ ...form, phoneNumber: v })}
               />
               <Field
-                label={t("doctorDashboard.profile.specialty")}
-                value={form.specialty}
+                label={t("doctorDashboard.profile.price", "Consultation Price")}
+                value={form.price}
                 disabled={disabled}
-                onChange={(v) => updateForm({ specialty: v })}
-                as="select"
-                options={specialtyOptions}
-              />
-              {/* Location Input overriding generic Field to add Map modal support */}
-              <div className="space-y-2">
-                <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                  {t("doctorDashboard.profile.location")}
-                </label>
-                <div
-                  className={`relative ${!disabled ? "cursor-pointer" : ""}`}
-                  onClick={() => {
-                    if (!disabled) handleOpenMap();
-                  }}
-                >
-                  <input
-                    readOnly
-                    type="text"
-                    value={form.location || ""}
-                    placeholder={t("doctorDashboard.profile.locationPlaceholder")}
-                    className={[
-                      "w-full rounded-[22px] border px-4 py-3 pr-10 text-sm outline-none transition-colors",
-                      disabled
-                        ? "bg-slate-50 text-slate-600 border-slate-200 cursor-not-allowed dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
-                        : "bg-white border-slate-200 hover:border-teal-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30 cursor-pointer pointer-events-none",
-                    ].join(" ")}
-                  />
-                  <div
-                    className={`absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center pointer-events-none transition-colors ${disabled ? "text-slate-400 dark:text-slate-500" : "text-teal-500 dark:text-[#00BBA7]"
-                      }`}
-                  >
-                    <MapPin className="w-5 h-5" />
-                  </div>
-                </div>
-              </div>
-              <Field
-                label={t("doctorDashboard.profile.locationDetails")}
-                value={form.locationDetails}
-                disabled={disabled}
-                onChange={(v) => setForm((p) => ({ ...p, locationDetails: v }))}
+                onChange={(v) => setForm({ ...form, price: v })}
+                type="number"
               />
               <Field
-                label={t("doctorDashboard.profile.email")}
-                value={form.email}
+                label={t("doctorDashboard.profile.locationDetails", "Clinic Address")}
+                value={form.addressDescription}
                 disabled={disabled}
-                onChange={(v) => updateForm({ email: v })}
-                type="email"
+                onChange={(v) => setForm({ ...form, addressDescription: v })}
               />
 
+              {/* ── Bio (full width) ── */}
               <div className="md:col-span-2 space-y-2">
                 <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
                   {t("doctorDashboard.profile.about")}
                 </label>
                 <textarea
-                  value={form.about}
-                  onChange={(e) => updateForm({ about: e.target.value })}
+                  value={form.bio}
+                  onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   disabled={disabled}
                   rows={5}
                   className={[
@@ -476,94 +383,70 @@ const DoctorProfile = () => {
                   ].join(" ")}
                 />
               </div>
-            </div>
 
-            {/* Reviews */}
+              {/* ── Read-only fields ── */}
+              <Field
+                label={t("doctorDashboard.profile.fullAddress", "Full Address")}
+                value={form.fullLocation}
+                disabled={true}
+                onChange={() => {}}
+              />
+              <Field
+                label={t("doctorDashboard.profile.email")}
+                value={form.email}
+                disabled={true}
+                onChange={() => {}}
+                type="email"
+              />
+              <Field
+                label={t("doctorDashboard.profile.specialty")}
+                value={form.specialization}
+                disabled={true}
+                onChange={() => {}}
+              />
+            </div>
+            {/* Reviews */}
             <div className="mt-10">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-                {t("doctorDashboard.profile.reviews")}
+                {t("doctorDashboard.profile.reviews")} ({form.reviewsCount})
               </h3>
 
               <div className="mt-5 space-y-4">
-                {reviews.map((r) => (
-                  <div
-                    key={r.id}
-                    className="
-                      rounded-2xl border border-slate-200 bg-slate-100
-                      dark:bg-[#0F172A] dark:border-[#1E293B]
-                      shadow-sm p-5
-                    "
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div className="text-[1.02rem] font-bold text-slate-800 dark:text-white">
-                          {r.name}
+                {form.reviews.length > 0 ? (
+                  form.reviews.map((r, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-2xl border border-slate-200 bg-slate-100 dark:bg-[#0F172A] dark:border-[#1E293B] shadow-sm p-5"
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="text-[1.02rem] font-bold text-slate-800 dark:text-white">
+                            {r.patientName || r.PatientName || "Patient"}
+                          </div>
+                          <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                            {r.date || r.Date || ""}
+                          </div>
                         </div>
-                        <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          {r.date}
+                        <div className="inline-flex items-center gap-2 rounded-2xl bg-teal-100 text-teal-700 px-3 py-1 text-sm font-semibold dark:bg-teal-950/30 dark:text-teal-200">
+                          <FaStar className="text-amber-400" />
+                          {(r.rating ?? r.Rating ?? 0).toFixed(1)}
                         </div>
                       </div>
-                      <div className="inline-flex items-center gap-2 rounded-2xl bg-teal-100 text-teal-700 px-3 py-1 text-sm font-semibold dark:bg-teal-950/30 dark:text-teal-200">
-                        <FaStar className="text-amber-400" />
-                        {r.rating.toFixed(1)}
-                      </div>
+                      <p className="mt-3 text-[0.95rem] text-slate-500 dark:text-slate-300 leading-relaxed font-medium">
+                        {r.comment || r.Comment || ""}
+                      </p>
                     </div>
-
-                    <p className="mt-3 text-[0.95rem] text-slate-500 dark:text-slate-300 leading-relaxed font-medium">
-                      {r.text}
-                    </p>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p className="text-center text-slate-500 dark:text-slate-400 py-10 bg-slate-50 dark:bg-[#0F172A] rounded-2xl border border-dashed border-slate-300 dark:border-[#1E293B]">
+                    {t("booking.reviewsSection.noReviews") || "No reviews available yet."}
+                  </p>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      {/* MAP MODAL */}
-      {showMap && (
-        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-xl w-full max-w-3xl p-4 space-y-3">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
-              {t("doctorDashboard.profile.locationPlaceholder")}
-            </h3>
-
-            {/* Current Location Button */}
-            {!disabled && (
-              <button
-                type="button"
-                onClick={getCurrentLocation}
-                className="w-full flex items-center justify-center gap-2 border-2 border-teal-500 text-teal-600 dark:text-teal-400 hover:bg-teal-50 dark:hover:bg-teal-500/10 py-2.5 rounded-lg transition font-medium"
-              >
-                <Crosshair size={20} />
-                {t("auth.signup.useLocation")}
-              </button>
-            )}
-
-            {/* Map */}
-            {position && (
-              <MapContainer
-                center={position}
-                zoom={13}
-                className="h-[400px] w-full rounded-lg relative z-0"
-              >
-                <FlyTo position={position} />
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <LocationPicker />
-              </MapContainer>
-            )}
-
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setShowMap(false)}
-              className="w-full bg-gray-200 dark:bg-[#334155] hover:bg-gray-300 dark:hover:bg-[#475569] text-gray-800 dark:text-white py-2.5 rounded-lg font-medium transition"
-            >
-              {t("common.close")}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

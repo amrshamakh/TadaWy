@@ -48,6 +48,11 @@
     "subtitle": "Manage your personal and medical information",
     "edit": "Edit",
     "save": "Save",
+    "updatedSuccess": "Profile updated successfully",
+    "saveError": "Failed to save profile",
+    "loadError": "Failed to load profile",
+    "imageUpdated": "Image updated successfully",
+    "imageUploadError": "Failed to upload image",
     "personalInfo": {
       "title": "Personal Information",
       "subtitle": "Your basic personal details",
@@ -447,7 +452,10 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "save": "Save",
-      "edit": "Edit"
+      "edit": "Edit",
+      "careerStartDate": "Career Start Date",
+      "price": "Consultation Price",
+      "fullAddress": "Full Address"
     },
     "appointments": {
       "title": "Appointments",
@@ -528,6 +536,7 @@
     "reviewsSection": {
       "title": "Reviews",
       "overallRating": "Overall Rating",
+      "noReviews": "No reviews available yet.",
       "reviews": [
         {
           "author": "John Smith",
