@@ -8,6 +8,8 @@ using TadaWy.Domain.Enums;
 
 namespace TadaWy.API.Controllers
 {
+
+    [Authorize(Roles = "Patient")]
     [Route("api/[controller]")]
     [ApiController]
     public class PatientController : ControllerBase
@@ -18,6 +20,7 @@ namespace TadaWy.API.Controllers
         {
             _patientService = patientService;
         }
+
 
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()

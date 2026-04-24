@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TadaWy.Applicaation.DTO.PaymobDtos;
 using TadaWy.Applicaation.IService;
 
@@ -15,6 +16,8 @@ namespace TadaWy.API.Controllers
             _paymentService = paymentService;
         }
 
+
+        [Authorize(Roles = "Patient")]
         [HttpPost("{paymentId}/confirm-offline")]
         public async Task<IActionResult> ConfirmOffline(int paymentId)
         {

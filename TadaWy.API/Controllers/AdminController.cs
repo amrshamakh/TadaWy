@@ -11,6 +11,7 @@ using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase

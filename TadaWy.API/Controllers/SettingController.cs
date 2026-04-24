@@ -12,6 +12,7 @@ using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
 {
+    [au]
     [Route("api/[controller]")]
     [ApiController]
     public class SettingController : ControllerBase
