@@ -9,7 +9,7 @@ using TadaWy.Domain.Enums;
 namespace TadaWy.API.Controllers
 {
 
-    [Authorize(Roles = "Patient")]
+    [Authorize(Roles = "patient")]
     [Route("api/[controller]")]
     [ApiController]
     public class PatientController : ControllerBase
