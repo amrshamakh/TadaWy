@@ -48,6 +48,11 @@
     "subtitle": "إدارة معلوماتك الشخصية والطبية",
     "edit": "تعديل",
     "save": "حفظ",
+    "updatedSuccess": "تم تحديث الملف الشخصي بنجاح",
+    "saveError": "فشل في حفظ الملف الشخصي",
+    "loadError": "فشل في تحميل الملف الشخصي",
+    "imageUpdated": "تم تحديث الصورة بنجاح",
+    "imageUploadError": "فشل في رفع الصورة",
     "personalInfo": {
       "title": "المعلومات الشخصية",
       "subtitle": "تفاصيلك الشخصية الأساسية",
@@ -456,7 +461,10 @@
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
       "save": "حفظ",
-      "edit": "تعديل"
+      "edit": "تعديل",
+      "careerStartDate": "تاريخ بدء المسيرة المهنية",
+      "price": "سعر الكشف",
+      "fullAddress": "العنوان بالكامل"
     },
     "appointments": {
       "title": "المواعيد",
@@ -537,6 +545,7 @@
     "reviewsSection": {
       "title": "التقييمات",
       "overallRating": "التقييم العام",
+      "noReviews": "لا توجد تقييمات متاحة حتى الآن.",
       "reviews": [
         {
           "author": "جون سميث",
