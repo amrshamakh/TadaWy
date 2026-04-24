@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TadaWy.Applicaation.DTO.ChangePasswordDTO;
+using TadaWy.Applicaation.DTO.SettingDtos;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
@@ -31,21 +32,25 @@ namespace TadaWy.API.Controllers
         public async Task<IActionResult> Get()
         {
             var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
 
-            var user = await _tadaWyDbContext.Users
-                .Include(x => x.Settings)
-                .FirstOrDefaultAsync(x => x.Id == userId) ?? throw new Exception("the User not Found");
+            var result=await _settingService.GetSettings(userId);
+            return Ok(result);
+        }
 
-            return Ok(new
-            {
-                user.Email,
-                user.Id,
-                user.Settings.Theme,
-                user.Settings.Language,
-                user.Settings.EmailNotifications,
-                user.Settings.AppointmentReminders,
-                user.Settings.NewBookingAlerts
-            });
+        [HttpPut]
+        [Route("update")]
+        public async Task<IActionResult> Update([FromBody] UpdateSettingsDto dto)
+        {
+            
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+           var result = await _settingService.UpdateSettings(userId, dto);
+
+            return Ok(result); 
         }
 
         [HttpPut("change-password")]

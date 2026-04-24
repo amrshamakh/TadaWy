@@ -10,7 +10,8 @@ namespace TadaWy.Applicaation.IService
 {
     public interface ISettingService
     {
-        Task UpdateSettings(string userId, UpdateSettingsDto dto);
+        Task<SettingDto> UpdateSettings(string userId, UpdateSettingsDto dto);
+        Task<SettingDto> GetSettings(string userId);
         Task DeleteAccount(string userId);
 
     }
