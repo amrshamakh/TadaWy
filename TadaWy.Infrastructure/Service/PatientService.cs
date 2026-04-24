@@ -221,6 +221,7 @@ namespace TadaWy.Infrastructure.Service
 
             return appointments.Select(date => new CalendarDayDto
             {
+                
                 Date = date,
                 HasAppointments = true
             }).ToList();
@@ -233,6 +234,7 @@ namespace TadaWy.Infrastructure.Service
                             a.Date.Date == date.Date)
                 .Select(a => new AppointmentDto
                 {
+                    Id = a.Id,
                     DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
                     Specialty = a.Doctor.Specialization.Name,
                     Date = a.Date,
@@ -275,6 +277,7 @@ namespace TadaWy.Infrastructure.Service
                 .OrderBy(a => a.Date)
                 .Select(a => new AppointmentDto
                 {
+                    Id = a.Id,
                     DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
                     Specialty = a.Doctor.Specialization.Name,
                     Date = a.Date,

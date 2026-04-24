@@ -6,6 +6,7 @@ namespace TadaWy.Applicaation.DTO.AppointmentDTOs
 {
     public class AppointmentDto
     {
+        public int Id { get; set; }
         public string DoctorName { get; set; }
       
         public string Specialty { get; set; }
