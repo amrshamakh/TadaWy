@@ -47,11 +47,9 @@ namespace TadaWy.Infrastructure.Service
 
             // Check if appointment exists
             var hasAppointment = await _context.Appointments
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
                 .AnyAsync(a =>
-                    a.Patient.Id == senderUserId && a.Doctor.UserID == dto.ReceiverUserId ||
-                    a.Patient.Id == dto.ReceiverUserId && a.Doctor.UserID == senderUserId
+                    a.PatientId == senderUserId && a.Doctor.UserID == dto.ReceiverUserId ||
+                    a.PatientId == dto.ReceiverUserId && a.Doctor.UserID == senderUserId
                 );
 
             if (!hasAppointment)
@@ -128,9 +126,9 @@ namespace TadaWy.Infrastructure.Service
         ////////////////////////////////////
         //////CONVERSATIONS (CHAT LIST)/////
         /////////////////////////////////////
-        public async Task<List<ConversationDto>> GetConversationsAsync(string userId)
+        public async Task<List<ConversationDto>> GetConversationsAsync(string userId, string? search)
         {
-            // 1️⃣ Check if user is Patient or Doctor
+            // Check if user is Patient or Doctor
             var patient = await _context.Patients
                 .FirstOrDefaultAsync(p => p.UserID == userId);
 
@@ -140,18 +138,27 @@ namespace TadaWy.Infrastructure.Service
             var conversations = new List<ConversationDto>();
 
 
-            // PATIENT → GET DOCTORS
+            // PATIENT => GET DOCTORS
 
             if (patient != null)
             {
                 var doctors = await _context.Appointments
-                    .Where(a => a.Patient.Id == userId)
+                    .Where(a => a.PatientId == userId)
+                    .Include(a => a.Doctor)
+                    .ThenInclude(d => d.Specialization)
                     .Select(a => a.Doctor)
                     .Distinct()
                     .ToListAsync();
 
                 foreach (var doc in doctors)
                 {
+                    var fullName = $"{doc.FirstName} {doc.LastName}";
+
+                    
+                    if (!string.IsNullOrEmpty(search) &&
+                        !fullName.ToLower().Contains(search.ToLower()))
+                        continue;
+
                     var lastMessage = await _context.Messages
                         .Where(m =>
                             (m.SenderUserId == userId && m.ReceiverUserId == doc.UserID) ||
@@ -160,48 +167,76 @@ namespace TadaWy.Infrastructure.Service
                         .OrderByDescending(m => m.CreatedAt)
                         .FirstOrDefaultAsync();
 
+                    var unreadCount = await _context.Messages
+                        .CountAsync(m =>
+                            m.SenderUserId == doc.UserID &&
+                            m.ReceiverUserId == userId &&
+                            !m.IsSeen
+                        );
+
                     conversations.Add(new ConversationDto
                     {
                         UserId = doc.UserID,
-                        FullName = $"{doc.FirstName} {doc.LastName}",
+                        FullName = fullName,
                         ImageUrl = doc.ImageUrl,
+                        SpecializationName = doc.Specialization.Name,
                         LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? "Image" : null),
                         LastMessageDate = lastMessage?.CreatedAt,
-                        IsSeen = lastMessage?.IsSeen ?? true
+                        IsSeen = lastMessage?.IsSeen ?? true,
+                        UnreadCount = unreadCount
                     });
                 }
             }
 
 
-            // DOCTOR → GET PATIENTS
+            // DOCTOR => GET PATIENTS
             else if (doctor != null)
             {
-                var patients = await _context.Appointments
+                var patientUserIds = await _context.Appointments
                     .Where(a => a.Doctor.UserID == userId)
-                    .Select(a => a.Patient) 
+                    .Select(a => a.PatientId) // this is ApplicationUser.Id
                     .Distinct()
+                    .ToListAsync();
+
+                var patients = await _context.Patients
+                    .Where(p => patientUserIds.Contains(p.UserID))
                     .ToListAsync();
 
                 foreach (var pat in patients)
                 {
+                    var fullName = $"{pat.FirstName} {pat.LastName}";
+
+                    
+                    if (!string.IsNullOrEmpty(search) &&
+                        !fullName.ToLower().Contains(search.ToLower()))
+                        continue;
+
                     var lastMessage = await _context.Messages
                         .Where(m =>
-                            (m.SenderUserId == userId && m.ReceiverUserId == pat.Id) ||
-                            (m.SenderUserId == pat.Id && m.ReceiverUserId == userId)
+                            (m.SenderUserId == userId && m.ReceiverUserId == pat.UserID) ||
+                            (m.SenderUserId == pat.UserID && m.ReceiverUserId == userId)
                         )
                         .OrderByDescending(m => m.CreatedAt)
                         .FirstOrDefaultAsync();
 
-                    var patient1 =await  _context.Patients.FirstOrDefaultAsync(i => i.UserID == pat.Id);
+                    var unreadCount = await _context.Messages
+                        .CountAsync(m =>
+                        m.SenderUserId == pat.UserID &&
+                        m.ReceiverUserId == userId &&
+                        !m.IsSeen
+                        );
+
 
                     conversations.Add(new ConversationDto
                     {
-                        UserId = pat.Id,
-                        FullName = $"{patient1.FirstName} {patient1.LastName}",
-                        ImageUrl = null, 
+                        UserId = pat.UserID,
+                        FullName = fullName,
+                        ImageUrl = null,
+                        SpecializationName = null,
                         LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? "Image" : null),
                         LastMessageDate = lastMessage?.CreatedAt,
-                        IsSeen = lastMessage?.IsSeen ?? true
+                        IsSeen = lastMessage?.IsSeen ?? true,
+                        UnreadCount = unreadCount
                     });
                 }
             }
@@ -212,6 +247,27 @@ namespace TadaWy.Infrastructure.Service
                 .ToList();
 
             return conversations;
+        }
+
+        ////////////////////////////////////////
+        ///Seen Messages (Mark as Seen)/////////
+        ////////////////////////////////////////
+        public async Task MarkMessagesAsSeenAsync(string userId, string otherUserId)
+        {
+            var messages = await _context.Messages
+                .Where(m =>
+                    m.SenderUserId == otherUserId &&
+                    m.ReceiverUserId == userId &&
+                    !m.IsSeen
+                )
+                .ToListAsync();
+
+            foreach (var message in messages)
+            {
+                message.IsSeen = true;
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -20,5 +20,8 @@ namespace TadaWy.Applicaation.DTO.ChatDTOs
         public DateTime? LastMessageDate { get; set; }
 
         public bool IsSeen { get; set; }
+        public int UnreadCount { get; set; }
+
+        public string? SpecializationName { get; set; }
     }
 }
