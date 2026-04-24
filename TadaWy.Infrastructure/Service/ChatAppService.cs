@@ -50,8 +50,8 @@ namespace TadaWy.Infrastructure.Service
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .AnyAsync(a =>
-                    a.Patient.UserID == senderUserId && a.Doctor.UserID == dto.ReceiverUserId ||
-                    a.Patient.UserID == dto.ReceiverUserId && a.Doctor.UserID == senderUserId
+                    a.Patient.Id == senderUserId && a.Doctor.UserID == dto.ReceiverUserId ||
+                    a.Patient.Id == dto.ReceiverUserId && a.Doctor.UserID == senderUserId
                 );
 
             if (!hasAppointment)
@@ -145,7 +145,7 @@ namespace TadaWy.Infrastructure.Service
             if (patient != null)
             {
                 var doctors = await _context.Appointments
-                    .Where(a => a.Patient.UserID == userId)
+                    .Where(a => a.Patient.Id == userId)
                     .Select(a => a.Doctor)
                     .Distinct()
                     .ToListAsync();
@@ -186,16 +186,18 @@ namespace TadaWy.Infrastructure.Service
                 {
                     var lastMessage = await _context.Messages
                         .Where(m =>
-                            (m.SenderUserId == userId && m.ReceiverUserId == pat.UserID) ||
-                            (m.SenderUserId == pat.UserID && m.ReceiverUserId == userId)
+                            (m.SenderUserId == userId && m.ReceiverUserId == pat.Id) ||
+                            (m.SenderUserId == pat.Id && m.ReceiverUserId == userId)
                         )
                         .OrderByDescending(m => m.CreatedAt)
                         .FirstOrDefaultAsync();
 
+                    var patient1 =await  _context.Patients.FirstOrDefaultAsync(i => i.UserID == pat.Id);
+
                     conversations.Add(new ConversationDto
                     {
-                        UserId = pat.UserID,
-                        FullName = $"{pat.FirstName} {pat.LastName}",
+                        UserId = pat.Id,
+                        FullName = $"{patient1.FirstName} {patient1.LastName}",
                         ImageUrl = null, 
                         LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? "Image" : null),
                         LastMessageDate = lastMessage?.CreatedAt,
