@@ -18,6 +18,7 @@ namespace TadaWy.Applicaation.DTO.ChatDTOs
         public string? Content { get; set; }
 
         public string? ImageUrl { get; set; }
+        public string Type { get; set; } = "text";
 
         public DateTime CreatedAt { get; set; }
 

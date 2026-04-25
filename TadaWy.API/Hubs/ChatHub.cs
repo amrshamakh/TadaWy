@@ -19,13 +19,13 @@ namespace TadaWy.API.Hubs
         public async Task SendMessage(SendMessageDto dto)
         {
             var senderUserId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             if (string.IsNullOrEmpty(senderUserId))
                 throw new HubException("Unauthorized");
 
-            var message = await _chatService.SendMessageAsync(senderUserId, dto);
+            var message = await _chatService.SendMessageAsync(senderUserId, dto);   
 
-            await Clients.User(dto.ReceiverUserId).SendAsync("ReceiveMessage", message);
-            await Clients.User(senderUserId).SendAsync("ReceiveMessage", message);
+            await Clients.Users(senderUserId, dto.ReceiverUserId).SendAsync("ReceiveMessage", message);
         }
     }
 }

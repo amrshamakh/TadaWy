@@ -14,6 +14,6 @@ namespace TadaWy.Applicaation.DTO.ChatDTOs
 
         public string? Content { get; set; }
 
-        public IFormFile? Image { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TadaWy.Applicaation.DTO.ChatDTOs;
 using TadaWy.Applicaation.IService;
+using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
 {
@@ -12,18 +13,19 @@ namespace TadaWy.API.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatAppService _chatService;
+        private readonly ICloudinaryService _cloudinaryService;
 
-        public ChatController(IChatAppService chatService)
+        public ChatController(IChatAppService chatService, ICloudinaryService cloudinaryService)
         {
             _chatService = chatService;
+            _cloudinaryService = cloudinaryService;
         }
 
         ///////////////////////////////////////////////
         ///////////////SEND MESSAGE////////////////////
         ///////////////////////////////////////////////
         [HttpPost("send")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> SendMessage([FromForm] SendMessageDto dto)
+        public async Task<IActionResult> SendMessage([FromBody] SendMessageDto dto)
         {
             try
             {
@@ -45,6 +47,23 @@ namespace TadaWy.API.Controllers
                 return Unauthorized(ex.Message);
             }
         }
+        ///////////////////////////////////////////////
+        //////////////Upload Image/////////////////////
+        ///////////////////////////////////////////////
+
+        [HttpPost("upload-image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImage([FromForm] UploadChatImageDto request)
+        {
+            if (request.File == null || request.File.Length == 0)
+                return BadRequest("File is required.");
+
+            var imageUrl = await _cloudinaryService
+                .UploadFileAsync(request.File, "ChatImages");
+
+            return Ok(new { imageUrl });
+        }
+
 
         ///////////////////////////////////////////////
         //////////CHAT HISTORY/////////////////////////

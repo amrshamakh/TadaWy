@@ -17,16 +17,13 @@ namespace TadaWy.Infrastructure.Service
     {
         private readonly TadaWyDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ICloudinaryService _cloudinaryService;
 
         public ChatAppService(
             TadaWyDbContext context,
-            UserManager<ApplicationUser> userManager,
-            ICloudinaryService cloudinaryService)
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
-            _cloudinaryService = cloudinaryService;
         }
 
         ////////////////////////////////////////////
@@ -44,17 +41,13 @@ namespace TadaWy.Infrastructure.Service
             if (receiver == null)
                 throw new ArgumentException("Receiver not found.");
 
-            // Validate content
-            if (string.IsNullOrWhiteSpace(dto.Content) && dto.Image == null)
+
+            if (string.IsNullOrWhiteSpace(dto.Content) && string.IsNullOrWhiteSpace(dto.ImageUrl))
                 throw new ArgumentException("Message must contain text or image.");
 
             // Upload image if exists
-            string? imageUrl = null;
+            string? imageUrl = dto.ImageUrl;
 
-            if (dto.Image != null)
-            {
-                imageUrl = await _cloudinaryService.UploadFileAsync(dto.Image, "ChatImages");
-            }
 
             // Check if appointment exists
             var hasAppointment = await _context.Appointments
@@ -89,7 +82,8 @@ namespace TadaWy.Infrastructure.Service
                 Content = message.Content,
                 ImageUrl = message.ImageUrl,
                 CreatedAt = message.CreatedAt,
-                IsSeen = message.IsSeen
+                IsSeen = message.IsSeen,
+                Type = message.ImageUrl != null ? "image" : "text"
             };
         }
 
@@ -120,7 +114,8 @@ namespace TadaWy.Infrastructure.Service
                     Content = m.Content,
                     ImageUrl = m.ImageUrl,
                     CreatedAt = m.CreatedAt,
-                    IsSeen = m.IsSeen
+                    IsSeen = m.IsSeen,
+                    Type = m.ImageUrl != null ? "image" : "text"
                 })
                 .ToListAsync();
 
