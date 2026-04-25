@@ -42,20 +42,24 @@ export default function BookingReceiptModal({
         <div className="receipt-row-grid">
           <div>
             <p className="receipt-label">{t("booking.modals.receipt.doctorName")}</p>
-            <p className="receipt-value">{doctor?.id ? t(`discover.clinicsData.${doctor.id}.doctor`) : (doctor?.doctor || "John Doe")}</p>
+            <p className="receipt-value">{doctor?.name || "John Doe"}</p>
             <p className="receipt-label">{t("booking.modals.receipt.doctorLocation")}</p>
-            <p className="receipt-value">{doctor?.id ? t(`discover.clinicsData.${doctor.id}.address`) : (doctor?.address || "City, Government, Country")}</p>
+            <p className="receipt-value">
+              {doctor?.address 
+                ? [doctor.address.city, doctor.address.state].filter(p => p && p.toLowerCase() !== 'unknown').join(', ') || "City, Government, Country"
+                : "City, Government, Country"}
+            </p>
           </div>
           <div>
             <p className="receipt-label">{t("booking.modals.receipt.specialization")}</p>
-            <p className="receipt-value">{doctor?.id ? t(`discover.clinicsData.${doctor.id}.specialty`) : (doctor?.specialty || "Cardiology")}</p>
+            <p className="receipt-value">{doctor?.specialization || "Cardiology"}</p>
             <p className="receipt-label">{t("booking.modals.receipt.phone")}</p>
-            <p className="receipt-value">{doctor?.phone || "+201111111111"}</p>
+            <p className="receipt-value">{doctor?.phoneNumber || doctor?.phone || "+201111111111"}</p>
           </div>
         </div>
         <p className="receipt-label">{t("booking.modals.receipt.locationDetails")}</p>
         <p className="receipt-value">
-          {doctor?.location_description ||
+          {doctor?.addressDescription || doctor?.location_description ||
             t("booking.modals.receipt.locationDetailsPlaceholder")}
         </p>
         <div className="receipt-divider" />

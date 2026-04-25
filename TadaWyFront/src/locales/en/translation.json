@@ -536,11 +536,7 @@
     "reviewsSection": {
       "title": "Reviews",
       "overallRating": "Overall Rating",
-<<<<<<< HEAD
-      "noReviews": "No reviews available yet.",
-=======
       "noReviews": "No reviews available now",
->>>>>>> a6e067a (doctor details)
       "reviews": [
         {
           "author": "John Smith",
@@ -565,7 +561,9 @@
       "availableTime": "Available Times:",
       "cost": "Appointment Cost:",
       "bookBtn": "Book Appointment",
-      "currency": "L.E"
+      "currency": "L.E",
+      "notAvailable": "Not Available Now",
+      "notAvailableDesc": "This doctor has no available times or days currently."
     },
     "modals": {
       "payment": {
