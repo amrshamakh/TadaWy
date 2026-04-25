@@ -148,37 +148,53 @@ namespace TadaWy.Infrastructure.Service
 
             if (patient != null)
             {
-                var doctors = await _context.Appointments
+                var doctorUserIds = await _context.Appointments
                     .Where(a => a.PatientId == userId)
-                    .Include(a => a.Doctor)
-                    .ThenInclude(d => d.Specialization)
-                    .Select(a => a.Doctor)
+                    .Select(a => a.Doctor.UserID)
                     .Distinct()
+                    .ToListAsync();
+
+                //Get ALL messages in ONE query
+                var messages = await _context.Messages
+                    .Where(m =>
+                        (m.SenderUserId == userId && doctorUserIds.Contains(m.ReceiverUserId)) ||
+                        (doctorUserIds.Contains(m.SenderUserId) && m.ReceiverUserId == userId)
+                    )
+                    .ToListAsync();
+
+                //Group in memory
+                var grouped = messages
+                    .GroupBy(m =>
+                        m.SenderUserId == userId ? m.ReceiverUserId : m.SenderUserId
+                    )
+                    .ToDictionary(g => g.Key, g => g.ToList());
+
+                //Get doctors in ONE query
+                var doctors = await _context.Doctors
+                    .Include(d => d.Specialization)
+                    .Where(d => doctorUserIds.Contains(d.UserID))
                     .ToListAsync();
 
                 foreach (var doc in doctors)
                 {
                     var fullName = $"{doc.FirstName} {doc.LastName}";
 
-                    
                     if (!string.IsNullOrEmpty(search) &&
                         !fullName.ToLower().Contains(search.ToLower()))
                         continue;
 
-                    var lastMessage = await _context.Messages
-                        .Where(m =>
-                            (m.SenderUserId == userId && m.ReceiverUserId == doc.UserID) ||
-                            (m.SenderUserId == doc.UserID && m.ReceiverUserId == userId)
-                        )
-                        .OrderByDescending(m => m.CreatedAt)
-                        .FirstOrDefaultAsync();
+                    grouped.TryGetValue(doc.UserID, out var chatMessages);
 
-                    var unreadCount = await _context.Messages
-                        .CountAsync(m =>
+                    var lastMessage = chatMessages?
+                        .OrderByDescending(m => m.CreatedAt)
+                        .FirstOrDefault();
+
+                    var unreadCount = chatMessages?
+                        .Count(m =>
                             m.SenderUserId == doc.UserID &&
                             m.ReceiverUserId == userId &&
                             !m.IsSeen
-                        );
+                        ) ?? 0;
 
                     conversations.Add(new ConversationDto
                     {
@@ -200,10 +216,26 @@ namespace TadaWy.Infrastructure.Service
             {
                 var patientUserIds = await _context.Appointments
                     .Where(a => a.Doctor.UserID == userId)
-                    .Select(a => a.PatientId) // this is ApplicationUser.Id
+                    .Select(a => a.PatientId)
                     .Distinct()
                     .ToListAsync();
 
+                // One query for messages
+                var messages = await _context.Messages
+                    .Where(m =>
+                        (m.SenderUserId == userId && patientUserIds.Contains(m.ReceiverUserId)) ||
+                        (patientUserIds.Contains(m.SenderUserId) && m.ReceiverUserId == userId)
+                    )
+                    .ToListAsync();
+
+                // Group
+                var grouped = messages
+                    .GroupBy(m =>
+                        m.SenderUserId == userId ? m.ReceiverUserId : m.SenderUserId
+                    )
+                    .ToDictionary(g => g.Key, g => g.ToList());
+
+                // Get patients in one query
                 var patients = await _context.Patients
                     .Where(p => patientUserIds.Contains(p.UserID))
                     .ToListAsync();
@@ -212,26 +244,22 @@ namespace TadaWy.Infrastructure.Service
                 {
                     var fullName = $"{pat.FirstName} {pat.LastName}";
 
-                    
                     if (!string.IsNullOrEmpty(search) &&
                         !fullName.ToLower().Contains(search.ToLower()))
                         continue;
 
-                    var lastMessage = await _context.Messages
-                        .Where(m =>
-                            (m.SenderUserId == userId && m.ReceiverUserId == pat.UserID) ||
-                            (m.SenderUserId == pat.UserID && m.ReceiverUserId == userId)
-                        )
+                    grouped.TryGetValue(pat.UserID, out var chatMessages);
+
+                    var lastMessage = chatMessages?
                         .OrderByDescending(m => m.CreatedAt)
-                        .FirstOrDefaultAsync();
+                        .FirstOrDefault();
 
-                    var unreadCount = await _context.Messages
-                        .CountAsync(m =>
-                        m.SenderUserId == pat.UserID &&
-                        m.ReceiverUserId == userId &&
-                        !m.IsSeen
-                        );
-
+                    var unreadCount = chatMessages?
+                        .Count(m =>
+                            m.SenderUserId == pat.UserID &&
+                            m.ReceiverUserId == userId &&
+                            !m.IsSeen
+                        ) ?? 0;
 
                     conversations.Add(new ConversationDto
                     {

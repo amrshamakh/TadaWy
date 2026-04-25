@@ -23,6 +23,9 @@ namespace TadaWy.API.Hubs
             if (string.IsNullOrEmpty(senderUserId))
                 throw new HubException("Unauthorized");
 
+            if (dto == null)
+                throw new HubException("Invalid message.");
+
             var message = await _chatService.SendMessageAsync(senderUserId, dto);   
 
             await Clients.Users(senderUserId, dto.ReceiverUserId).SendAsync("ReceiveMessage", message);
