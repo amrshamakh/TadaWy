@@ -13,10 +13,12 @@ namespace TadaWy.Infrastructure.Service
     public class PatientService : IPatientService
     {
         private readonly TadaWyDbContext _context;
+        private readonly INotificationService _notificationService;
 
-        public PatientService(TadaWyDbContext context)
+        public PatientService(TadaWyDbContext context, INotificationService notificationService)
         {
             _context = context;
+            _notificationService = notificationService;
         }
 
         public async Task<PatientProfileDto> GetPatientProfileAsync(string userId)
@@ -248,6 +250,7 @@ namespace TadaWy.Infrastructure.Service
         public async Task<bool> CancelAppointmentAsync(int appointmentId, string patientId)
         {
             var appointment = await _context.Appointments
+                .Include(a => a.Doctor)
                 .FirstOrDefaultAsync(a => a.Id == appointmentId && a.PatientId == patientId);
 
             if (appointment == null)
@@ -263,6 +266,14 @@ namespace TadaWy.Infrastructure.Service
             appointment.Status = AppointmentStatus.Cancelled;
 
             await _context.SaveChangesAsync();
+
+            // Notify Patient
+            await _notificationService.SendNotificationAsync(patientId, "Appointment Cancelled", $"Your appointment with Dr. {appointment.Doctor.FirstName} {appointment.Doctor.LastName} on {appointment.Date:f} has been cancelled.", NotificationType.AppointmentCancelled, appointment.Id);
+
+            // Notify Doctor
+            var patient = await _context.Patients.FirstOrDefaultAsync(p => p.UserID == patientId);
+            string patientName = patient != null ? $"{patient.FirstName} {patient.LastName}" : "A patient";
+            await _notificationService.SendNotificationAsync(appointment.Doctor.UserID, "Appointment Cancelled by Patient", $"{patientName} has cancelled their appointment on {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
 
             return true;
         }

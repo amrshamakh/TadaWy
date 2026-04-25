@@ -16,12 +16,14 @@ namespace TadaWy.Infrastructure.Service
         private readonly TadaWyDbContext _context;
         private readonly IWebHostEnvironment _env;
         private readonly IImageService _imageService;
+        private readonly INotificationService _notificationService;
 
-        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService)
+        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService)
         {
             _context = context;
             _env = env;
             _imageService = imageService;
+            _notificationService = notificationService;
         }
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
@@ -429,6 +431,30 @@ namespace TadaWy.Infrastructure.Service
                 AppointmentDurationMinutes = duration,
                 AppointmentPrice = doctor.Price ?? 0
             };
+        }
+
+        public async Task<bool> CancelAppointmentAsync(int appointmentId, string userId)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.Doctor)
+                .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Doctor.UserID == userId);
+
+            if (appointment == null)
+                throw new NotFoundException("Appointment not found or you don't have permission to cancel it.");
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
+                return false;
+
+            appointment.Status = AppointmentStatus.Cancelled;
+            await _context.SaveChangesAsync();
+
+            // Notify Doctor
+            await _notificationService.SendNotificationAsync(userId, "Appointment Cancelled", $"You have cancelled the appointment on {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
+
+            // Notify Patient
+            await _notificationService.SendNotificationAsync(appointment.PatientId, "Appointment Cancelled by Doctor", $"Dr. {appointment.Doctor.FirstName} {appointment.Doctor.LastName} has cancelled your appointment on {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
+
+            return true;
         }
     }
 }

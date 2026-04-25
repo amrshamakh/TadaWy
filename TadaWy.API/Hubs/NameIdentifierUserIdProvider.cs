@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace TadaWy.API.Hubs
@@ -7,8 +7,7 @@ namespace TadaWy.API.Hubs
     {
         public string? GetUserId(HubConnectionContext connection)
         {
-            return connection.User?
-                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return connection.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
     }
 }

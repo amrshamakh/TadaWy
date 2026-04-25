@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using TadaWy.Applicaation.DTO.ChatDTOs;
@@ -16,26 +16,16 @@ namespace TadaWy.API.Hubs
             _chatService = chatService;
         }
 
-
         public async Task SendMessage(SendMessageDto dto)
         {
-            // Get sender from JWT Token
-            var senderUserId = Context.User?
-                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+            var senderUserId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(senderUserId))
                 throw new HubException("Unauthorized");
 
-            // Save message using AppService
             var message = await _chatService.SendMessageAsync(senderUserId, dto);
 
-            // Send message to RECEIVER
-            await Clients.User(dto.ReceiverUserId)
-                .SendAsync("ReceiveMessage", message);
-
-            // Send message back to SENDER (to update UI)
-            await Clients.User(senderUserId)
-                .SendAsync("ReceiveMessage", message);
+            await Clients.User(dto.ReceiverUserId).SendAsync("ReceiveMessage", message);
+            await Clients.User(senderUserId).SendAsync("ReceiveMessage", message);
         }
     }
 }

@@ -10,11 +10,13 @@ using System.Text.Json;
 using TadaWy.API.Hubs;
 using TadaWy.API.Middleware;
 using TadaWy.Applicaation.Extensions;
+using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Extensions;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
+using TadaWy.Infrastructure.Service;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +47,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, NameIdentifierUserIdProvider>();
+builder.Services.AddScoped<INotificationHubService, NotificationHubService>();
 
 // Customize the model validation error response for Simple messages Responses for Errors
 
@@ -182,5 +185,17 @@ app.UseAuthorization();
 app.UseHangfireDashboard("/Dashboard");
 app.MapControllers();
 app.MapHub<ChatHub>("/chathub");
+app.MapHub<NotificationHub>("/notificationhub");
+
+// Schedule recurring job for appointment reminders
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+    recurringJobManager.AddOrUpdate<AppointmentReminderJob>(
+        "appointment-reminders",
+        job => job.SendRemindersAsync(),
+        Cron.Hourly() 
+    );
+}
 
 app.Run();

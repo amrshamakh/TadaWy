@@ -18,12 +18,14 @@ namespace TadaWy.Infrastructure.Service
         private readonly TadaWyDbContext _tadaWyDbContext;
         private readonly IPatientService _patientService;
         private readonly IPaymentService _paymentService;
+        private readonly INotificationService _notificationService;
 
-        public AppointmentService(TadaWyDbContext tadaWyDbContext, IPatientService patientService, IPaymentService paymentService)
+        public AppointmentService(TadaWyDbContext tadaWyDbContext, IPatientService patientService, IPaymentService paymentService, INotificationService notificationService)
         {
             _tadaWyDbContext = tadaWyDbContext;
             _patientService = patientService;
             _paymentService = paymentService;
+            _notificationService = notificationService;
         }
 
         private async Task CheckAvilapleSlot(CreateAppointmentRequest request)
@@ -97,7 +99,8 @@ namespace TadaWy.Infrastructure.Service
             _tadaWyDbContext.Payments.Add(payment);
             await _tadaWyDbContext.SaveChangesAsync();
 
-           
+            await _notificationService.SendNotificationAsync(patientid, "Appointment Booked", $"Your appointment with Dr. {doctor.FirstName} {doctor.LastName} on {appointment.Date:f} is booked successfully.", NotificationType.AppointmentBooked, appointment.Id);
+
             return await _patientService.GetReceipt(appointment.Id);
         }
 
@@ -130,6 +133,8 @@ namespace TadaWy.Infrastructure.Service
 
             _tadaWyDbContext.Payments.Add(payment);
             await _tadaWyDbContext.SaveChangesAsync();
+
+            await _notificationService.SendNotificationAsync(patientid, "Appointment Booked", $"Your appointment with Dr. {doctor.FirstName} {doctor.LastName} on {appointment.Date:f} is booked successfully.", NotificationType.AppointmentBooked, appointment.Id);
 
             var orderId = await _paymentService.CreateOrder(payment.Id);
 

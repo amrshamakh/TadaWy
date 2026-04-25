@@ -98,5 +98,18 @@ namespace TadaWy.API.Controllers
             var result = await _doctorService.GetDoctorWeeklySummaryAsync(userId);
             return Ok(result);
         }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpPost("Appointments/cancel/{appointmentId}")]
+        public async Task<IActionResult> CancelAppointment(int appointmentId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _doctorService.CancelAppointmentAsync(appointmentId, userId);
+            if (!result) return BadRequest("Could not cancel appointment");
+
+            return Ok(new { message = "Appointment cancelled successfully" });
+        }
     }
 }
