@@ -17,5 +17,6 @@ namespace TadaWy.Applicaation.IService
         Task AddTimeSlotAsync(string userId, AddDoctorTimeSlotDto dto);
         Task<DoctorScheduleSummaryDto> GetDoctorWeeklySummaryAsync(string userId);
         Task<bool> CancelAppointmentAsync(int appointmentId, string userId);
+        Task<bool> ConfirmAppointmentAsync(int appointmentId, string userId);
     }
 }

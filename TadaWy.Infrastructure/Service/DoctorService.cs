@@ -456,6 +456,32 @@ namespace TadaWy.Infrastructure.Service
 
             return true;
         }
+
+        public async Task<bool> ConfirmAppointmentAsync(int appointmentId, string userId)
+        {
+            var appointment = await _context.Appointments
+                .Include(a => a.Doctor)
+                .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Doctor.UserID == userId);
+
+            if (appointment == null)
+                throw new NotFoundException("Appointment not found or you don't have permission to confirm it.");
+
+            if (appointment.Status != AppointmentStatus.Pending)
+                return false;
+
+            appointment.Status = AppointmentStatus.Confirmed;
+            await _context.SaveChangesAsync();
+
+            // Notify Patient
+            await _notificationService.SendNotificationAsync(
+                appointment.PatientId,
+                "Appointment Confirmed",
+                $"Dr. {appointment.Doctor.FirstName} {appointment.Doctor.LastName} has confirmed your appointment on {appointment.Date:f}.",
+                NotificationType.AppointmentBooked, // Using Booked type for positive confirmation
+                appointment.Id);
+
+            return true;
+        }
     }
 }
 

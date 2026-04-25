@@ -111,5 +111,18 @@ namespace TadaWy.API.Controllers
 
             return Ok(new { message = "Appointment cancelled successfully" });
         }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpPost("Appointments/confirm/{appointmentId}")]
+        public async Task<IActionResult> ConfirmAppointment(int appointmentId)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _doctorService.ConfirmAppointmentAsync(appointmentId, userId);
+            if (!result) return BadRequest("Could not confirm appointment");
+
+            return Ok(new { message = "Appointment confirmed successfully" });
+        }
     }
 }
