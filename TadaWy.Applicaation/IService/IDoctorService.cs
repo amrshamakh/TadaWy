@@ -11,6 +11,7 @@ namespace TadaWy.Applicaation.IService
         Task<DoctorProfileDto> GetDoctorProfileAsync(string userId);
         Task UpdateDoctorProfileAsync(string userId, UpdateDoctorProfileDto updateDto);
         Task<string> UploadDoctorImageAsync(string userId, IFormFile image);
+        Task<(Stream Stream, string ContentType)> GetDoctorImageAsync(int id, string? size = null);
 
         Task<DoctorScheduleDto> GetDoctorScheduleAsync(string userId);
         Task UpdateDoctorScheduleAsync(string userId, UpdateDoctorScheduleDto dto);

@@ -31,6 +31,14 @@ namespace TadaWy.API.Controllers
 
             return Ok(doctor);
         }
+
+        [HttpGet("{id}/image")]
+        public async Task<IActionResult> GetDoctorImage(int id, [FromQuery] string? size = null)
+        {
+            var (stream, contentType) = await _doctorService.GetDoctorImageAsync(id, size);
+            return File(stream, contentType);
+        }
+
         [Authorize(Roles = "Doctor")]
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfile()

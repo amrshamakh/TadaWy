@@ -17,13 +17,15 @@ namespace TadaWy.Infrastructure.Service
         private readonly IWebHostEnvironment _env;
         private readonly IImageService _imageService;
         private readonly INotificationService _notificationService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService)
+        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService, IHttpClientFactory httpClientFactory)
         {
             _context = context;
             _env = env;
             _imageService = imageService;
             _notificationService = notificationService;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
@@ -295,6 +297,50 @@ namespace TadaWy.Infrastructure.Service
             await _context.SaveChangesAsync();
 
             return doctor.ImageUrl;
+        }
+
+        public async Task<(Stream Stream, string ContentType)> GetDoctorImageAsync(int id, string? size = null)
+        {
+            var doctor = await _context.Doctors.FindAsync(id);
+            var imageUrl = doctor?.ImageUrl;
+
+            if (string.IsNullOrEmpty(imageUrl))
+            {
+                throw new NotFoundException("Doctor image not found");
+            }
+
+            // Optional: Apply Cloudinary transformations if size is specified
+            if (!string.IsNullOrEmpty(size))
+            {
+                // Cloudinary transformation format: .../upload/w_200,h_200,c_fill/v12345/...
+                // Basic implementation: insert transformation after '/upload/'
+                var uploadPart = "/upload/";
+                var uploadIndex = imageUrl.IndexOf(uploadPart);
+                if (uploadIndex != -1)
+                {
+                    var transformation = size.ToLower() switch
+                    {
+                        "small" => "w_150,h_150,c_fill/",
+                        "medium" => "w_300,h_300,c_fill/",
+                        "large" => "w_600,h_600,c_fill/",
+                        _ => ""
+                    };
+                    imageUrl = imageUrl.Insert(uploadIndex + uploadPart.Length, transformation);
+                }
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetAsync(imageUrl);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Unable to retrieve doctor image");
+            }
+
+            var stream = await response.Content.ReadAsStreamAsync();
+            var contentType = response.Content.Headers.ContentType?.ToString() ?? "image/jpeg";
+            
+            return (stream, contentType);
         }
 
         public async Task<DoctorScheduleDto> GetDoctorScheduleAsync(string userId)
