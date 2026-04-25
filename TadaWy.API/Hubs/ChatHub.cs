@@ -29,6 +29,15 @@ namespace TadaWy.API.Hubs
             var message = await _chatService.SendMessageAsync(senderUserId, dto);   
 
             await Clients.Users(senderUserId, dto.ReceiverUserId).SendAsync("ReceiveMessage", message);
+
+            var unreadCount = await _chatService.GetUnreadCount(dto.ReceiverUserId, senderUserId);
+
+            await Clients.User(dto.ReceiverUserId)
+                .SendAsync("UnreadCountUpdated", new
+                {
+                    fromUserId = senderUserId,
+                    unreadCount = unreadCount
+                });
         }
     }
 }

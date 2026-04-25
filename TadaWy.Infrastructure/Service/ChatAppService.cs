@@ -283,6 +283,21 @@ namespace TadaWy.Infrastructure.Service
             return conversations;
         }
 
+
+        ////////////////////////////////////////
+        ///unread Count For real time///////////
+        ////////////////////////////////////////
+
+        public async Task<int> GetUnreadCount(string userId, string fromUserId)
+        {
+            return await _context.Messages
+                .CountAsync(m =>
+                    m.SenderUserId == fromUserId &&
+                    m.ReceiverUserId == userId &&
+                    !m.IsSeen
+                );
+        }
+
         ////////////////////////////////////////
         ///Seen Messages (Mark as Seen)/////////
         ////////////////////////////////////////

@@ -14,6 +14,8 @@ namespace TadaWy.Applicaation.IService
         Task<List<MessageDto>> GetChatHistoryAsync(string userId, string otherUserId, DateTime? lastCreatedAt);
 
         Task<List<ConversationDto>> GetConversationsAsync(string userId, string? search);
+
+        Task<int> GetUnreadCount(string userId, string otherUserId);
         Task MarkMessagesAsSeenAsync(string userId, string otherUserId);
     }
 }
