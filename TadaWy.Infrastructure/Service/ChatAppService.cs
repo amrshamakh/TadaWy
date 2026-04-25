@@ -17,13 +17,16 @@ namespace TadaWy.Infrastructure.Service
     {
         private readonly TadaWyDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ICloudinaryService _cloudinaryService;
 
         public ChatAppService(
             TadaWyDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ICloudinaryService cloudinaryService)
         {
             _context = context;
             _userManager = userManager;
+            _cloudinaryService = cloudinaryService;
         }
 
         ////////////////////////////////////////////
@@ -42,8 +45,16 @@ namespace TadaWy.Infrastructure.Service
                 throw new ArgumentException("Receiver not found.");
 
             // Validate content
-            if (string.IsNullOrWhiteSpace(dto.Content) && string.IsNullOrWhiteSpace(dto.ImageUrl))
+            if (string.IsNullOrWhiteSpace(dto.Content) && dto.Image == null)
                 throw new ArgumentException("Message must contain text or image.");
+
+            // Upload image if exists
+            string? imageUrl = null;
+
+            if (dto.Image != null)
+            {
+                imageUrl = await _cloudinaryService.UploadFileAsync(dto.Image, "ChatImages");
+            }
 
             // Check if appointment exists
             var hasAppointment = await _context.Appointments
@@ -61,7 +72,7 @@ namespace TadaWy.Infrastructure.Service
                 SenderUserId = senderUserId,
                 ReceiverUserId = dto.ReceiverUserId,
                 Content = dto.Content,
-                ImageUrl = dto.ImageUrl,
+                ImageUrl = imageUrl,
                 CreatedAt = DateTime.UtcNow,
                 IsSeen = false
             };

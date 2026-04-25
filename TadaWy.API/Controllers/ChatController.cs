@@ -22,7 +22,8 @@ namespace TadaWy.API.Controllers
         ///////////////SEND MESSAGE////////////////////
         ///////////////////////////////////////////////
         [HttpPost("send")]
-        public async Task<IActionResult> SendMessage([FromBody] SendMessageDto dto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> SendMessage([FromForm] SendMessageDto dto)
         {
             try
             {
