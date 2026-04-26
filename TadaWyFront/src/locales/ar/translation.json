@@ -422,10 +422,11 @@
     "selectDateHint": "اختر تاريخاً لعرض المواعيد",
     "noAppointments": "لا توجد مواعيد",
     "allAppointments": "جميع المواعيد",
+    "noCurrentAppointments": "لا توجد مواعيد حالية",
     "status": {
-      "completed": "مكتمل",
-      "upcoming": "قادم",
-      "missed": "فائت"
+      "confirmed": "مؤكد",
+      "pending": "قيد الانتظار",
+      "cancelled": "ملغى"
     },
     "legend": {
       "today": "اليوم",
@@ -433,6 +434,9 @@
       "appointment": "موعد",
       "paid": "تم الدفع",
       "notPaid": "لم يتم الدفع"
+    },
+    "receipt": {
+      "title": "تفاصيل الوصل"
     }
   },
   "doctorDashboard": {

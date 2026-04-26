@@ -21,13 +21,12 @@ function getDaysForMonth(year, monthIndex) {
 }
 
 const DOT = {
-  upcoming: "bg-[#00BBA7]",
-  missed: "bg-[#EF4444]",
-  completed: "bg-[#94A3B8]",
+  pending: "bg-[#EF4444]",
+  cancelled: "bg-[#EF4444]",
+  confirmed: "bg-[#94A3B8]",
 };
 
-export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDates }) {
-  const [currentDate, setCurrentDate] = useState(() => new Date(2026, 3, 1));
+export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDates, currentDate, onMonthChange }) {
   const [showLegend, setShowLegend] = useState(false);
   const legendWrapRef = useRef(null);
 
@@ -60,12 +59,12 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
     selectedDate.day === day;
 
   const handlePrevMonth = () => {
-    setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+    onMonthChange(new Date(year, monthIndex - 1, 1));
     onSelectDay?.(null);
   };
 
   const handleNextMonth = () => {
-    setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+    onMonthChange(new Date(year, monthIndex + 1, 1));
     onSelectDay?.(null);
   };
 
@@ -164,18 +163,18 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
             cellClass += "bg-[#E6FFFA] dark:bg-[#00BBA7]/20 border-[#00BBA7] text-gray-800 dark:text-white ";
           } else if (isToday) {
             cellClass += "bg-transparent border-[#00BBA7] text-gray-800 dark:text-white ";
-          } else if (status === "upcoming") {
+          } else if (status === "pending") {
             cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
-          } else if (status === "missed") {
+          } else if (status === "cancelled") {
             cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
-          } else if (status === "completed") {
+          } else if (status === "confirmed") {
             cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
           } else {
             cellClass +=
               "bg-transparent border-transparent text-gray-700 dark:text-[#94A3B8] hover:bg-gray-100 dark:hover:bg-[#334155] ";
           }
 
-          const dotClass = status ? DOT[status] : DOT.upcoming;
+          const dotClass = status ? DOT[status] : DOT.pending;
 
           return (
             <div key={index} className="flex flex-col items-center">
