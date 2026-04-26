@@ -26,7 +26,7 @@ const getTimeOptions = (t) => [
 // Note: If you want to translate the times themselves (e.g. 10 صباحاً), 
 // you can use t() logic here. For now keeping numbers but labels could be translated.
 
-export default function BookingSidebar({ doctor }) {
+export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -139,6 +139,7 @@ export default function BookingSidebar({ doctor }) {
       try {
         await bookOfflineAppointment(payload);
         setActiveModal("success");
+        if (onBookingSuccess) onBookingSuccess();
       } catch (error) {
         console.error("Failed to book offline appointment:", error);
         let errorMsg = "Failed to book appointment. Please try again.";

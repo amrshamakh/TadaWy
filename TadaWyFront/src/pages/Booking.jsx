@@ -1,5 +1,5 @@
 import { useParams, useLocation, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getDoctorById } from "../modules/patient/api/doctorDiscoveryApi";
 import DoctorCard from "../components/Booking/DoctorCard";
 import LocationCard from "../components/Booking/LocationCard";
@@ -14,25 +14,25 @@ export default function Booking() {
   const [loading, setLoading] = useState(!doctor || !!id);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchDoctor = async () => {
-      if (!id) return;
-      
-      setLoading(true);
-      try {
-        const data = await getDoctorById(id);
-        setDoctor(data);
-        setError(null);
-      } catch (err) {
-        console.error("Failed to fetch doctor details:", err);
-        setError("Failed to load doctor information.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDoctor();
+  const fetchDoctor = useCallback(async (isInitial = false) => {
+    if (!id) return;
+    
+    if (isInitial) setLoading(true);
+    try {
+      const data = await getDoctorById(id);
+      setDoctor(data);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch doctor details:", err);
+      if (isInitial) setError("Failed to load doctor information.");
+    } finally {
+      if (isInitial) setLoading(false);
+    }
   }, [id]);
+
+  useEffect(() => {
+    fetchDoctor(true);
+  }, [fetchDoctor]);
 
   if (loading) {
     return (
@@ -56,7 +56,7 @@ export default function Booking() {
             <ReviewsSection doctor={doctor} />
           </div>
 
-          <BookingSidebar doctor={doctor} />
+          <BookingSidebar doctor={doctor} onBookingSuccess={() => fetchDoctor(false)} />
         </div>
       </div>
     </div>
