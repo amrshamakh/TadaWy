@@ -4,60 +4,17 @@ import CalendarGrid from "./CalendarGrid";
 import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
 import infoIcon from "../../assets/info.svg";
+import {
+  getAppointmentsByStatus,
+  getAppointmentsByDate,
+  getCalendarAppointments,
+} from "../../modules/patient/api/patientAppointmentsApi";
 
-// Mock data for appointments list
-const SAMPLE_APPOINTMENTS = [
-  {
-    clinicKey: "3",
-    year: 2026,
-    month: 3,
-    day: 12,
-    hour: 14,
-    minute: 0,
-    status: "upcoming",
-    paid: true,
-  },
-  {
-    clinicKey: "1",
-    year: 2026,
-    month: 3,
-    day: 21,
-    hour: 10,
-    minute: 0,
-    status: "upcoming",
-    paid: false,
-  },
-  {
-    clinicKey: "2",
-    year: 2026,
-    month: 3,
-    day: 7,
-    hour: 11,
-    minute: 30,
-    status: "missed",
-    paid: false,
-  },
-  {
-    clinicKey: "3",
-    year: 2026,
-    month: 3,
-    day: 2,
-    hour: 9,
-    minute: 0,
-    status: "completed",
-    paid: false,
-  },
-];
-
-function getAppointmentsForDate(appointments, selectedDate) {
-  if (!selectedDate) return [];
-  return appointments.filter(
-    (apt) =>
-      apt.year === selectedDate.year &&
-      apt.month === selectedDate.month &&
-      apt.day === selectedDate.day,
-  );
-}
+const STATUS_TO_API = {
+  pending: 0,
+  confirmed: 1,
+  cancelled: 2,
+};
 
 function formatSelectedDate(selectedDate, language) {
   if (!selectedDate) return "";
@@ -68,11 +25,84 @@ function formatSelectedDate(selectedDate, language) {
 }
 
 export default function Calender() {
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [activeStatus, setActiveStatus] = useState("upcoming");
+  const today = new Date();
+  const [currentDate, setCurrentDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+  const [selectedDate, setSelectedDate] = useState({
+    year: today.getFullYear(),
+    month: today.getMonth(),
+    day: today.getDate(),
+  });
+  const [activeStatus, setActiveStatus] = useState("pending");
   const [showPaymentLegend, setShowPaymentLegend] = useState(false);
   const paymentLegendRef = useRef(null);
   const { t, i18n } = useTranslation();
+
+  const [appointmentDates, setAppointmentDates] = useState([]);
+  const [appointmentsForSelectedDay, setAppointmentsForSelectedDay] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
+
+  // Fetch calendar dots when month/year changes
+  useEffect(() => {
+    const fetchCalendar = async () => {
+      try {
+        const month = currentDate.getMonth() + 1;
+        const year = currentDate.getFullYear();
+        const data = await getCalendarAppointments(month, year);
+        // data: [{ date: "2026-04-25T00:00:00", hasAppointments: true }, ...]
+        if (Array.isArray(data)) {
+          const dates = data
+            .filter((d) => d.hasAppointments)
+            .map((d) => {
+              const dt = new Date(d.date);
+              return {
+                year: dt.getFullYear(),
+                month: dt.getMonth(),
+                day: dt.getDate(),
+                status: "pending", // Generic dot
+              };
+            });
+          setAppointmentDates(dates);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCalendar();
+  }, [currentDate]);
+
+  // Fetch specific day appointments when selectedDate changes
+  useEffect(() => {
+    const fetchDay = async () => {
+      if (!selectedDate) {
+        setAppointmentsForSelectedDay([]);
+        return;
+      }
+      try {
+        const pad = (n) => n.toString().padStart(2, "0");
+        const dateStr = `${selectedDate.year}-${pad(selectedDate.month + 1)}-${pad(selectedDate.day)}T00:00:00`;
+        const data = await getAppointmentsByDate(dateStr);
+        setAppointmentsForSelectedDay(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error(err);
+        setAppointmentsForSelectedDay([]);
+      }
+    };
+    fetchDay();
+  }, [selectedDate]);
+
+  // Fetch all appointments by status when status changes
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const data = await getAppointmentsByStatus(STATUS_TO_API[activeStatus]);
+        setAllAppointments(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error(err);
+        setAllAppointments([]);
+      }
+    };
+    fetchAll();
+  }, [activeStatus]);
 
   useEffect(() => {
     if (!showPaymentLegend) return;
@@ -91,67 +121,67 @@ export default function Calender() {
     return () => document.removeEventListener("mousedown", close);
   }, [showPaymentLegend]);
 
-  const localizedAppointments = useMemo(() => {
-    return SAMPLE_APPOINTMENTS.map((apt) => {
-      const clinic = t(`discover.clinicsData.${apt.clinicKey}.name`);
-      const doctor = t(`discover.clinicsData.${apt.clinicKey}.doctor`);
-      const specialty = t(`discover.clinicsData.${apt.clinicKey}.specialty`);
-      const dateObj = new Date(apt.year, apt.month, apt.day, apt.hour, apt.minute);
+  // Filter "all appointments" for the current viewing month/year locally
+  const filteredAppointments = useMemo(() => {
+    const list = allAppointments
+      .filter((apt) => {
+        if (!apt.date) return false;
+        const d = new Date(apt.date);
+        return d.getFullYear() === currentDate.getFullYear() && d.getMonth() === currentDate.getMonth();
+      })
+      .map((apt) => {
+        const d = new Date(apt.date);
+        return {
+          id: apt.id,
+          clinic: apt.specialty || "Clinic",
+          doctor: apt.doctorName,
+          specialty: apt.specialty,
+          date: d.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" }),
+          time: d.toLocaleTimeString(i18n.language, { hour: "numeric", minute: "2-digit" }),
+          rawDate: apt.date,
+          status: activeStatus,
+          paid: apt.isPaid === 1,
+        };
+      });
+      
+    return list.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+  }, [allAppointments, currentDate, activeStatus, i18n.language]);
+
+  const localizedDayAppointments = useMemo(() => {
+    const list = appointmentsForSelectedDay.map((apt) => {
+      const d = new Date(apt.date);
+      // Map API fields to what UI expects
       return {
-        ...apt,
-        clinic,
-        doctor,
-        specialty,
-        date: dateObj.toLocaleDateString(i18n.language, {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }),
-        time: dateObj.toLocaleTimeString(i18n.language, {
-          hour: "numeric",
-          minute: "2-digit",
-        }),
+        id: apt.id,
+        clinic: apt.specialty || "Clinic",
+        doctor: apt.doctorName,
+        specialty: apt.specialty,
+        date: d.toLocaleDateString(i18n.language, { month: "short", day: "numeric", year: "numeric" }),
+        time: d.toLocaleTimeString(i18n.language, { hour: "numeric", minute: "2-digit" }),
+        rawDate: apt.date,
+        paid: apt.isPaid === 1,
       };
     });
-  }, [i18n.language, t]);
-
-  const appointmentsForSelectedDay = useMemo(
-    () => getAppointmentsForDate(localizedAppointments, selectedDate),
-    [selectedDate, localizedAppointments],
-  );
-
-  const appointmentDates = useMemo(
-    () =>
-      localizedAppointments.map(({ year, month, day, status }) => ({
-        year,
-        month,
-        day,
-        status,
-      })),
-    [localizedAppointments],
-  );
-
-  const filteredAppointments = useMemo(
-    () => localizedAppointments.filter((apt) => apt.status === activeStatus),
-    [localizedAppointments, activeStatus],
-  );
+    
+    return list.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
+  }, [appointmentsForSelectedDay, i18n.language]);
 
   const statusTabs = [
-    { key: "completed", label: t("calendar.status.completed") },
-    { key: "missed", label: t("calendar.status.missed") },
-    { key: "upcoming", label: t("calendar.status.upcoming") },
+    { key: "confirmed", label: t("calendar.status.confirmed") },
+    { key: "cancelled", label: t("calendar.status.cancelled") },
+    { key: "pending", label: t("calendar.status.pending") },
   ];
 
   const getStatusTabClass = (statusKey) => {
     const base =
       "px-6 py-2 text-sm font-medium border-r border-gray-200 dark:border-[#334155] last:border-r-0 transition-colors";
     if (activeStatus !== statusKey) {
-      if (statusKey === "missed") return `${base} text-red-600 dark:text-red-400 bg-white dark:bg-[#0F172A]`;
-      if (statusKey === "upcoming") return `${base} text-[#00AFA0] dark:text-[#5EEAD4] bg-white dark:bg-[#0F172A]`;
+      if (statusKey === "cancelled") return `${base} text-red-600 dark:text-red-400 bg-white dark:bg-[#0F172A]`;
+      if (statusKey === "pending") return `${base} text-[#00AFA0] dark:text-[#5EEAD4] bg-white dark:bg-[#0F172A]`;
       return `${base} text-[#64748B] dark:text-[#94A3B8] bg-white dark:bg-[#0F172A]`;
     }
-    if (statusKey === "completed") return `${base} text-white bg-[#64748B] dark:bg-[#475569]`;
-    if (statusKey === "missed") return `${base} text-white bg-[#FF001A]`;
+    if (statusKey === "confirmed") return `${base} text-white bg-[#64748B] dark:bg-[#475569]`;
+    if (statusKey === "cancelled") return `${base} text-white bg-[#FF001A]`;
     return `${base} text-white bg-[#00BBA7]`;
   };
 
@@ -167,6 +197,8 @@ export default function Calender() {
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 mb-4 items-stretch">
         <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-6 flex flex-col gap-6 overflow-hidden">
           <CalendarGrid
+            currentDate={currentDate}
+            onMonthChange={setCurrentDate}
             selectedDate={selectedDate}
             onSelectDay={setSelectedDate}
             appointmentDates={appointmentDates}
@@ -187,11 +219,11 @@ export default function Calender() {
             </div>
           ) : (
             <div className="flex-1 flex flex-col pt-3 gap-4">
-              {appointmentsForSelectedDay.length === 0 ? (
+              {localizedDayAppointments.length === 0 ? (
                 <p className="text-sm text-gray-500 dark:text-[#94A3B8]">{t("calendar.noAppointments")}</p>
               ) : (
                 <div className="flex flex-col gap-2.5">
-                  {appointmentsForSelectedDay.map((apt, i) => (
+                  {localizedDayAppointments.map((apt, i) => (
                     <div
                       key={i}
                       className="p-3 rounded-xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#0F172A]"
@@ -258,18 +290,30 @@ export default function Calender() {
           </div>
 
           <div className="flex flex-col gap-3">
-            {filteredAppointments.map((apt, i) => (
-              <AppointmentCard
-                key={`${apt.year}-${apt.month}-${apt.day}-${i}`}
-                clinic={apt.clinic}
-                doctor={apt.doctor}
-                specialty={apt.specialty}
-                date={apt.date}
-                time={apt.time}
-                status={apt.status}
-                paid={apt.paid}
-              />
-            ))}
+            {filteredAppointments.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center py-4">
+                {t("calendar.noCurrentAppointments") || "No current appointments"}
+              </p>
+            ) : (
+              filteredAppointments.map((apt, i) => (
+                <AppointmentCard
+                  key={`${apt.id}-${i}`}
+                  id={apt.id}
+                  clinic={apt.clinic}
+                  doctor={apt.doctor}
+                  specialty={apt.specialty}
+                  date={apt.date}
+                  time={apt.time}
+                  rawDate={apt.rawDate}
+                  status={apt.status}
+                  paid={apt.paid}
+                  onCancel={() => {
+                    setAppointmentsForSelectedDay((prev) => prev.filter((p) => p.id !== apt.id));
+                    setAllAppointments((prev) => prev.filter((p) => p.id !== apt.id));
+                  }}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
