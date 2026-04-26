@@ -2,17 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AdminDTO;
-using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.DTO.Common;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
-using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Domain.Entities.Identity;
 using TadaWy.Domain.Enums;
 using TadaWy.Infrastructure.Presistence;
@@ -21,20 +16,23 @@ namespace TadaWy.Infrastructure.Service
 {
     public class AdminService : IAdminService
     {
-        private TadaWyDbContext _TadaWyDbContext;
+        private readonly TadaWyDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
 
-        public AdminService(TadaWyDbContext tadaWyDbContext, UserManager<ApplicationUser> userManager, IEmailService emailService)
+        public AdminService(
+            TadaWyDbContext db,
+            UserManager<ApplicationUser> userManager,
+            IEmailService emailService)
         {
-            _TadaWyDbContext = tadaWyDbContext;
+            _db = db;
             _userManager = userManager;
             _emailService = emailService;
         }
 
         public async Task<PagedResult<DoctorListToAdmin>> GetDoctorsForAdminAsync(AdminGetDoctorsRequest request)
         {
-            var query = _TadaWyDbContext.Doctors.AsNoTracking();
+            var query = _db.Doctors.AsNoTracking();
 
             
             if (request.Status.HasValue)
@@ -46,10 +44,9 @@ namespace TadaWy.Infrastructure.Service
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 var search = request.Search.Trim();
-
                 query = query.Where(d =>
                     d.FirstName.Contains(search) ||
-                    d.LastName.Contains(search)); 
+                    d.LastName.Contains(search));
             }
 
             var projected = query.Select(d => new DoctorListToAdmin
@@ -59,7 +56,7 @@ namespace TadaWy.Infrastructure.Service
                 SpecializationId = d.SpecializationId,
                 Status = d.Status,
                 CreatedAt = d.CreatedAt,
-                Rating = d.Rating,
+                Rating = d.Rating
             });
 
             var totalCount = await projected.CountAsync();
@@ -78,97 +75,132 @@ namespace TadaWy.Infrastructure.Service
                 PageSize = request.PageSize
             };
         }
-        public async Task<DoctorDetailsToAdminDto> GetDoctorById(int DoctorId)
+
+        public async Task<DoctorDetailsToAdminDto> GetDoctorById(int doctorId)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId)?? throw new Exception("Doctor not found");
+            var doctor = await _db.Doctors
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == doctorId)
+                ?? throw new Exception("Doctor not found");
 
-            var user = await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not found");
-
+            var user = await _userManager.FindByIdAsync(doctor.UserID)
+                ?? throw new Exception("User not found");
 
             return new DoctorDetailsToAdminDto
             {
-                Rating = result.Rating,
-                Email=user.Email,
-                PhoneNumber=user.PhoneNumber,
-                DoctorName = result.FirstName + " " + result.LastName,
-                Status = result.Status,
-                SpecializationId = result.SpecializationId,
-                Address = result.Address,
-                AddressDescription = result.AddressDescription,
-                Id = result.Id,
-                VerificationDocumentPath = result.VerificationDocumentPath,
-                RejectionReason = result.RejectionReason,
-                BannedReason = result.BannedReason,
+                Rating = doctor.Rating,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                DoctorName = doctor.FirstName + " " + doctor.LastName,
+                Status = doctor.Status,
+                SpecializationId = doctor.SpecializationId,
+                Address = doctor.Address,
+                AddressDescription = doctor.AddressDescription,
+                Id = doctor.Id,
+                VerificationDocumentPath = doctor.VerificationDocumentPath,
+                RejectionReason = doctor.RejectionReason,
+                BannedReason = doctor.BannedReason,
             };
-              
         }
 
-        public async Task<bool> ApproveDoctorAsync(int DoctorId)
+        public async Task<bool> ApproveDoctorAsync(int doctorId)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId)?? throw new Exception("Doctor not found"); ;
-            var User =await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not found");
+            var doctor = await _db.Doctors
+                .FirstOrDefaultAsync(d => d.Id == doctorId)
+                ?? throw new Exception("Doctor not found");
 
-            if(result == null)
-            {
-                return false;
-            }
+            var user = await _userManager.FindByIdAsync(doctor.UserID)
+                ?? throw new Exception("User not found");
 
-            result.Status = Domain.Enums.DoctorStatus.Approved;
-            await _TadaWyDbContext.SaveChangesAsync();
+            doctor.Status = DoctorStatus.Approved;
+            doctor.RejectionReason = null;
+            doctor.BannedReason = null;
+            doctor.BannedAt = null;
 
-            BackgroundJob.Enqueue(()=>_emailService.SendEmail(User.Email, "Email confirmed", "welcome to tadawy login and enjoy the experience"));
+            await _db.SaveChangesAsync();
+
+            BackgroundJob.Enqueue(() =>
+                _emailService.SendEmail(
+                    user.Email,
+                    "Doctor account approved",
+                    "Your doctor account has been approved. You can now log in and start using Tadawy."));
 
             return true;
         }
 
-        public async Task<bool> RejectDoctorAsync(int DoctorId,string? rejectionReason)
+        public async Task<bool> RejectDoctorAsync(int doctorId, string? rejectionReason)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId) ?? throw new Exception("Doctor not found");
-            var User = await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not fouund");
+            var doctor = await _db.Doctors
+                .FirstOrDefaultAsync(d => d.Id == doctorId)
+                ?? throw new Exception("Doctor not found");
 
-            if (result == null)
-            {
-                return false;
-            }
+            var user = await _userManager.FindByIdAsync(doctor.UserID)
+                ?? throw new Exception("User not found");
 
-            result.Status =Domain.Enums.DoctorStatus.Rejected;
-            result.RejectionReason = rejectionReason??"";
-            await _TadaWyDbContext.SaveChangesAsync();
-            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please",result.RejectionReason));
+            doctor.Status = DoctorStatus.Rejected;
+            doctor.RejectionReason = rejectionReason ?? string.Empty;
+            doctor.BannedReason = null;
+            doctor.BannedAt = null;
+
+            await _db.SaveChangesAsync();
+
+            BackgroundJob.Enqueue(() =>
+                _emailService.SendEmail(
+                    user.Email,
+                    "Doctor registration rejected",
+                    string.IsNullOrWhiteSpace(doctor.RejectionReason)
+                        ? "Your registration was rejected."
+                        : doctor.RejectionReason));
+
             return true;
         }
 
-        public async Task<bool> BannDoctorAsync(int DoctorId, string? BannReason)
+        public async Task<bool> BannDoctorAsync(int doctorId, string? banReason)
         {
-            var result = await _TadaWyDbContext.Doctors.FirstOrDefaultAsync(d => d.Id == DoctorId) ?? throw new Exception("Doctor not found");
-            var User = await _userManager.FindByIdAsync(result.UserID) ?? throw new Exception("User not found");
+            var doctor = await _db.Doctors
+                .FirstOrDefaultAsync(d => d.Id == doctorId)
+                ?? throw new Exception("Doctor not found");
 
+            var user = await _userManager.FindByIdAsync(doctor.UserID)
+                ?? throw new Exception("User not found");
 
-            result.Status = Domain.Enums.DoctorStatus.Banned;
-            result.BannedReason = BannReason??"";
-            await _TadaWyDbContext.SaveChangesAsync();
-            BackgroundJob.Enqueue(()=> _emailService.SendEmail(User.Email, "please",result.BannedReason));
+            doctor.Status = DoctorStatus.Banned;
+            doctor.BannedReason = banReason ?? string.Empty;
+            doctor.BannedAt = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            BackgroundJob.Enqueue(() =>
+                _emailService.SendEmail(
+                    user.Email,
+                    "Doctor account banned",
+                    string.IsNullOrWhiteSpace(doctor.BannedReason)
+                        ? "Your account has been banned."
+                        : doctor.BannedReason));
+
             return true;
         }
 
         public async Task<bool> UnbanDoctorAsync(int doctorId)
         {
-            var doctor = await _TadaWyDbContext.Doctors.FindAsync(doctorId);
+            var doctor = await _db.Doctors.FindAsync(doctorId);
             if (doctor == null) return false;
 
             doctor.Status = DoctorStatus.Approved;
             doctor.BannedReason = null;
             doctor.BannedAt = null;
 
-            await _TadaWyDbContext.SaveChangesAsync();
+            await _db.SaveChangesAsync();
             return true;
         }
 
         public async Task<string?> GetDoctorCvUrlAsync(int doctorId)
         {
-            var doctor = await _TadaWyDbContext.Doctors.FindAsync(doctorId);
+            var doctor = await _db.Doctors
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.Id == doctorId);
+
             return doctor?.VerificationDocumentPath;
         }
-
     }
 }
