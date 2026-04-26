@@ -23,3 +23,12 @@ export function getDoctors(params) {
 
   return ApiClient.get("/Doctor", { params: cleanParams });
 }
+
+/**
+ * Fetches a single doctor's details by ID.
+ * 
+ * @param {number|string} id - The doctor's ID.
+ */
+export function getDoctorById(id) {
+  return ApiClient.get(`/Doctor/${id}`);
+}

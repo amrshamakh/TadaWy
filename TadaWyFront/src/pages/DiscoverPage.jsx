@@ -103,7 +103,7 @@ export default function DiscoverPage() {
   };
 
   const handleBookAppointment = (doctor) => {
-    navigate("/booking", { state: { doctor } });
+    navigate(`/booking/${doctor.id}`, { state: { doctor } });
   };
 
   return (

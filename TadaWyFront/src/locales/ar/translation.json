@@ -545,7 +545,7 @@
     "reviewsSection": {
       "title": "التقييمات",
       "overallRating": "التقييم العام",
-      "noReviews": "لا توجد تقييمات متاحة حتى الآن.",
+      "noReviews": "لا توجد تقييمات متاحة حالياً",
       "reviews": [
         {
           "author": "جون سميث",
@@ -570,7 +570,9 @@
       "availableTime": "الأوقات المتاحة:",
       "cost": "تكلفة الموعد:",
       "bookBtn": "احجز الموعد",
-      "currency": "ج.م"
+      "currency": "ج.م",
+      "notAvailable": "غير متاح الآن",
+      "notAvailableDesc": "لا يوجد لدى هذا الطبيب أوقات أو أيام متاحة حالياً."
     },
     "modals": {
       "payment": {

@@ -11,40 +11,42 @@ export default function DoctorCard({ doctor }) {
       <div className="booking-doctor-header">
         <div className="booking-doctor-avatar">
           <img
-            src={UserIcon}
+            src={doctor.imageUrl || UserIcon}
             alt="Doctor"
-            className="booking-doctor-avatar-img placeholder-user-svg"
+            className={`booking-doctor-avatar-img ${!doctor.imageUrl ? "placeholder-user-svg" : ""}`}
           />
         </div>
         <div className="booking-doctor-main">
           <h2 className="booking-doctor-name">
-            {doctor.id ? t(`discover.clinicsData.${doctor.id}.doctor`) : doctor.doctor}
+            {doctor.name || doctor.doctorName || doctor.doctor || (doctor.id ? t(`discover.clinicsData.${doctor.id}.doctor`) : "")}
           </h2>
 
           <div className="booking-doctor-tags">
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.specialization")}:</span>
               <span className="booking-doctor-tag-value">
-                {doctor.id ? t(`discover.clinicsData.${doctor.id}.specialty`) : doctor.specialty}
+                {doctor.specialization || doctor.specialty || (doctor.id ? t(`discover.clinicsData.${doctor.id}.specialty`) : "")}
               </span>
             </div>
 
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.experience")}:</span>
               <span className="booking-doctor-tag-value">
-                {t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
+                {doctor.yearsOfExperience !== undefined 
+                  ? t("doctorDashboard.profile.experienceSubtitle", { count: doctor.yearsOfExperience })
+                  : t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
               </span>
             </div>
 
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.phone")}:</span>
-              <span className="booking-doctor-tag-value">{doctor.phone || t("booking.doctorCard.notAvailable")}</span>
+              <span className="booking-doctor-tag-value">{doctor.phoneNumber || doctor.phone || t("booking.doctorCard.notAvailable")}</span>
             </div>
 
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.rating")}</span>
               <span className="booking-doctor-tag-value">
-                {doctor.rating?.toFixed ? doctor.rating.toFixed(1) : doctor.rating}/5
+                {(doctor.rating ?? doctor.rate ?? 0).toFixed(1)}/5
               </span>
             </div>
           </div>
