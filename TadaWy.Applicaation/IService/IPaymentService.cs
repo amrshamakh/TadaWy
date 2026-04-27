@@ -7,7 +7,6 @@ namespace TadaWy.Applicaation.IService
     {
         Task HandleSuccessfulPayment(int paymentId);
         Task HandleFailedPayment(int paymentId);
-        Task ConfirmOfflinePaymentAsync(int paymentId);
 
         Task<string> CreateOrder(int paymentId);
 
