@@ -9,6 +9,7 @@ using TadaWy.Applicaation.DTO.ChatDTOs;
 using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Entities;
 using TadaWy.Domain.Entities.Identity;
+using TadaWy.Domain.Enums;
 using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.Infrastructure.Service
@@ -17,13 +18,16 @@ namespace TadaWy.Infrastructure.Service
     {
         private readonly TadaWyDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly INotificationService _notificationService;
 
         public ChatAppService(
             TadaWyDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            INotificationService notificationService)
         {
             _context = context;
             _userManager = userManager;
+            _notificationService = notificationService;
         }
 
         ////////////////////////////////////////////
@@ -72,6 +76,34 @@ namespace TadaWy.Infrastructure.Service
 
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
+
+            // --- Notification Logic ---
+            var doctorReceiver = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == dto.ReceiverUserId);
+            if (doctorReceiver != null)
+            {
+                // Receiver is a Doctor
+                var totalUnread = await GetTotalUnreadCount(dto.ReceiverUserId);
+                await _notificationService.SendNotificationAsync(
+                    dto.ReceiverUserId,
+                    "New Messages",
+                    $"You have {totalUnread} new messages.",
+                    NotificationType.ChatMessage
+                );
+            }
+            else
+            {
+                // Receiver is likely a Patient, sender is a Doctor
+                var doctorSender = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == senderUserId);
+                var senderName = doctorSender != null ? $"Dr. {doctorSender.FirstName} {doctorSender.LastName}" : "New Message";
+                var preview = !string.IsNullOrEmpty(message.Content) ? message.Content : "Sent an image";
+
+                await _notificationService.SendNotificationAsync(
+                    dto.ReceiverUserId,
+                    senderName,
+                    preview,
+                    NotificationType.ChatMessage
+                );
+            }
 
             // Response DTO
             return new MessageDto
@@ -293,6 +325,15 @@ namespace TadaWy.Infrastructure.Service
             return await _context.Messages
                 .CountAsync(m =>
                     m.SenderUserId == fromUserId &&
+                    m.ReceiverUserId == userId &&
+                    !m.IsSeen
+                );
+        }
+
+        public async Task<int> GetTotalUnreadCount(string userId)
+        {
+            return await _context.Messages
+                .CountAsync(m =>
                     m.ReceiverUserId == userId &&
                     !m.IsSeen
                 );

@@ -108,6 +108,17 @@ namespace TadaWy.API.Controllers
         }
 
         [Authorize(Roles = "Doctor")]
+        [HttpGet("appointments")]
+        public async Task<IActionResult> GetAppointments([FromQuery] GetDoctorAppointmentsRequest request)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var result = await _doctorService.GetDoctorAppointmentsAsync(userId, request);
+            return Ok(result);
+        }
+
+        [Authorize(Roles = "Doctor")]
         [HttpPost("Appointments/cancel/{appointmentId}")]
         public async Task<IActionResult> CancelAppointment(int appointmentId)
         {

@@ -503,10 +503,65 @@ namespace TadaWy.Infrastructure.Service
             return true;
         }
 
+        public async Task<DoctorAppointmentsDto> GetDoctorAppointmentsAsync(string userId, GetDoctorAppointmentsRequest request)
+        {
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == userId);
+            if (doctor == null) throw new NotFoundException("Doctor not found");
+
+            var query = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Payment)
+                .Where(a => a.DoctorId == doctor.Id);
+
+            // Apply filters
+            if (request.Day.HasValue)
+            {
+                var targetDate = request.Day.Value.Date;
+                query = query.Where(a => a.Date.Date == targetDate);
+            }
+
+            if (request.PaymentMethod.HasValue)
+            {
+                query = query.Where(a => a.Payment != null && a.Payment.Method == request.PaymentMethod.Value);
+            }
+
+            var appointments = await query.ToListAsync();
+
+            var userIds = appointments.Select(a => a.PatientId).Distinct().ToList();
+            var patients = await _context.Patients
+                .Where(p => userIds.Contains(p.UserID))
+                .ToListAsync();
+
+            var appointmentList = appointments.Select(a =>
+            {
+                var patient = patients.FirstOrDefault(p => p.UserID == a.PatientId);
+                return new AppointmentListItemDto
+                {
+                    Id = a.Id,
+                    PatientName = patient != null ? $"{patient.FirstName} {patient.LastName}" : "Unknown",
+                    PatientPhone = a.Patient?.PhoneNumber ?? "N/A",
+                    PaymentMethod = a.Payment?.Method ?? PaymentMethod.Offline,
+                    DurationMinutes = doctor.AppointmentDurationMinutes ?? 20,
+                    AppointmentDate = a.Date,
+                    Status = a.Status
+                };
+            }).OrderBy(a => a.AppointmentDate).ToList();
+
+            return new DoctorAppointmentsDto
+            {
+                TotalAppointments = appointmentList.Count,
+                ConfirmedCount = appointmentList.Count(a => a.Status == AppointmentStatus.Confirmed),
+                PendingCount = appointmentList.Count(a => a.Status == AppointmentStatus.Pending),
+                CancelledCount = appointmentList.Count(a => a.Status == AppointmentStatus.Cancelled),
+                Appointments = appointmentList
+            };
+        }
+
         public async Task<bool> ConfirmAppointmentAsync(int appointmentId, string userId)
         {
             var appointment = await _context.Appointments
                 .Include(a => a.Doctor)
+                .Include(a => a.Payment)
                 .FirstOrDefaultAsync(a => a.Id == appointmentId && a.Doctor.UserID == userId);
 
             if (appointment == null)
@@ -516,6 +571,14 @@ namespace TadaWy.Infrastructure.Service
                 return false;
 
             appointment.Status = AppointmentStatus.Confirmed;
+
+            // Update payment status if offline
+            if (appointment.Payment != null && appointment.Payment.Method == PaymentMethod.Offline)
+            {
+                appointment.Payment.Status = PaymentStatus.Paid;
+                appointment.Payment.PaymentDate = DateTime.Now;
+            }
+
             await _context.SaveChangesAsync();
 
             // Notify Patient
