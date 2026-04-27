@@ -51,7 +51,6 @@ const [position, setPosition] = useState(
     ["lastName", t("profile.personalInfo.lastName")],
     ["email", t("profile.personalInfo.email")],
     ["phoneNumber", t("profile.personalInfo.phoneNumber")],
-    ["age", t("profile.personalInfo.age")],
     ["gender", t("profile.personalInfo.gender")],
   ];
 
@@ -163,6 +162,31 @@ const [position, setPosition] = useState(
             />
           </div>
         ))}
+
+        {/* Special field for DOB / Age */}
+        <div>
+          <p className="text-sm font-medium mb-1 dark:text-white">
+            {isEditing ? t("auth.signup.dateOfBirth") : t("profile.personalInfo.age")}
+          </p>
+          {isEditing ? (
+            <input
+              type="date"
+              value={data.dateOfBirth ? data.dateOfBirth.split("T")[0] : ""}
+              onChange={(e) => onChange("dateOfBirth", e.target.value)}
+              className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] outline-teal-500 text-gray-500 dark:text-gray-200 bg-teal-50/40 dark:bg-teal-900/10"
+            />
+          ) : (
+            <div className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d] text-gray-500 dark:text-gray-200">
+              {data.dateOfBirth ? (
+                <span>
+                  {data.dateOfBirth.split("T")[0]} ({data.age} {t("doctorDashboard.schedule.perAppt").includes("appointment") ? "years" : "سنة"})
+                </span>
+              ) : (
+                data.age || ""
+              )}
+            </div>
+          )}
+        </div>
 
         {/*  LOCATION INPUT */}
         <div className="col-span-2">

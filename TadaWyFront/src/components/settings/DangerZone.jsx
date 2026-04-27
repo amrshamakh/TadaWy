@@ -1,8 +1,17 @@
 import { LuLogOut } from "react-icons/lu";
 import { useTranslation } from 'react-i18next';
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const DangerZone = () => {
   const { t } = useTranslation();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <div className="rounded-2xl border border-[#DC262680] dark:border-red-900 w-full max-w-full dark:bg-[#1E293B]">
@@ -25,7 +34,10 @@ const DangerZone = () => {
               {t('settings.dangerZone.signOutDescription')}
             </p>
           </div>
-          <button className="mt-2 sm:mt-0 flex items-center justify-center gap-2 bg-red-500 dark:bg-red-600 text-white rounded-lg text-sm px-3 py-2 sm:px-4 sm:py-2 w-full sm:w-auto hover:bg-red-600 dark:hover:bg-red-700">
+          <button 
+            onClick={handleLogout}
+            className="mt-2 sm:mt-0 flex items-center justify-center gap-2 bg-red-500 dark:bg-red-600 text-white rounded-lg text-sm px-3 py-2 sm:px-4 sm:py-2 w-full sm:w-auto hover:bg-red-600 dark:hover:bg-red-700"
+          >
             <LuLogOut className="text-base sm:text-lg" />
             {t('settings.dangerZone.signOut')}
           </button>

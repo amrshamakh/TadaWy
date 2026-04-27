@@ -68,6 +68,9 @@ export default function AppointmentCard({ apt }) {
             <button className="px-5 py-2 bg-teal-500 hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-500 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer">
               {t("doctorDashboard.appointments.viewProfile")}
             </button>
+            <button className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer">
+              {t("doctorDashboard.appointments.confirm")}
+            </button>
             <button className="px-5 py-2 border border-red-300 dark:border-red-900/50 text-red-400 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 text-sm font-semibold rounded-lg transition-colors cursor-pointer">
               {t("doctorDashboard.appointments.cancel")}
             </button>

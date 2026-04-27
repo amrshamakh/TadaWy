@@ -24,7 +24,7 @@ import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
 import DoctorAppointments from "./components/doctor/appointments/DoctorAppointments";
 import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
-import DoctorRejectBanPlaceholder from "./components/doctor/DoctorRejectBanPlaceholder";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -63,10 +63,10 @@ const App = () => {
         </Route>
         {/* Doctor routes */}
         <Route path="/doctor" element={<DoctorLayout />}>
-          <Route index element={<DoctorProfile />} />
+          <Route index element={<DoctorSchedule />} />
           <Route path="appointments" element={<DoctorAppointments />} />
           <Route path="schedule" element={<DoctorSchedule />} />
-          <Route path="reject-ban" element={<DoctorRejectBanPlaceholder />} />
+          <Route path="profile" element={<DoctorProfile />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

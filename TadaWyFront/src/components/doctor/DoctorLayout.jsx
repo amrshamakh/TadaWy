@@ -17,13 +17,11 @@ const DoctorLayout = () => {
       return null;
     }
   });
-
   const doctorMenu = useMemo(
     () => [
-      { to: "", icon: assets.profileIcon, label: t("doctorDashboard.profile.title"), end: true },
       { to: "appointments", icon: assets.homeIcon, label: t("doctorDashboard.appointments.title"), end: false },
-      { to: "schedule", icon: assets.calenderIcon, label: t("doctorDashboard.schedule.title"), end: false },
-      { to: "reject-ban", icon: assets.settingIcon, label: "Reject & Ban", end: false },
+      { to: "", icon: assets.calenderIcon, label: t("doctorDashboard.schedule.title"), end: true },
+      { to: "profile", icon: assets.profileIcon, label: t("doctorDashboard.profile.title"), end: false },
       { to: "settings", icon: assets.settingIcon, label: t("nav.settings"), end: false },
     ],
     [t]

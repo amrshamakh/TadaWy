@@ -304,10 +304,16 @@ const Profile = () => {
           data={profileData.personalInfo}
           isEditing={isEditing}
           onChange={(key, value) =>
-            setProfileData((prev) => ({
-              ...prev,
-              personalInfo: { ...prev.personalInfo, [key]: value },
-            }))
+            setProfileData((prev) => {
+              const newPersonalInfo = { ...prev.personalInfo, [key]: value };
+              if (key === "dateOfBirth") {
+                newPersonalInfo.age = calcAge(value);
+              }
+              return {
+                ...prev,
+                personalInfo: newPersonalInfo,
+              };
+            })
           }
         />
 

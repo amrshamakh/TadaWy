@@ -249,7 +249,19 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  scrollbar-width: thin;
+  scrollbar-color: #00BBA7 transparent;
+}
+
+.booking-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.booking-sidebar::-webkit-scrollbar-thumb {
+  background-color: #00BBA7;
+  border-radius: 20px;
 }
 
 
