@@ -1,0 +1,132 @@
+[33m3906d5c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m8908e05[m .
+[33m724efd2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m add doctor appointments endpoint with stats/filters and chat notification logic
+[33ma6f4cee[m add Oauth with Google
+[33m22b80b6[m Merge branch 'patient/calender-integration'
+[33m3410eeb[m[33m ([m[1;31morigin/patient/calender-integration[m[33m)[m removing clinics name
+[33m30589a1[m Merge branch 'patient/calender-integration'
+[33m74cb0c1[m Merge branch 'patient/integration-bookings'
+[33mdacff91[m[33m ([m[1;31morigin/patient/integration-bookings[m[33m)[m reloading available slots after bookings
+[33m6eb2a09[m calender integration
+[33m71d8c61[m improve
+[33m6775fe8[m Unread Count Now in Real Time
+[33m6ce8cfe[m Small modification For Chat Conversations for beter performance
+[33m24bc465[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m6f7d909[m Chat Modification
+[33m1447d04[m fetch endpoint from cloudinary
+[33m5c26d80[m appointment confirm and notification
+[33m620df01[m Implement real time notification system with SignalR and Hangfire reminders
+[33mce3f8b1[m booking and payment
+[33mf1022ce[m doctor details
+[33m4808959[m integrating doctor profile
+[33m72d2e46[m Editing Chat Request
+[33mbd2f7fe[m Chat Controller Added with Service modification
+[33mfd8fc5d[m fix setting endpoint and add updateSetting endpoint
+[33m7ae50e5[m case sensitive
+[33mde270a2[m merge
+[33mf8a96ac[m case sensitive
+[33m52dbb1a[m Change Patient Auth until fix
+[33mbf9be8f[m fix
+[33m8012d85[m add authorization
+[33m58503c5[m return appoimentid at list
+[33m3315b0e[m using doctorid (int ) for appoiment
+[33mbc3f17b[m fix appoiment errors (please before you run delete all data from appoiment and payment tables and update-database) this is important
+[33m7f54cad[m fix error
+[33maa484f3[m using userid rather than doctor,patient id at appoiment
+[33m703436a[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m8a0a16c[m updated the profile with the asked data
+[33m25ffed8[m fix errors for Doctor Dtos
+[33mf1c4725[m edit connection
+[33m71b02cc[m ,
+[33m811b3e3[m ,
+[33m30c4641[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m13a0f91[m add the image url to the doctor details and get all doctors endpoints
+[33ma947261[m[33m ([m[1;31morigin/discover/api-integration[m[33m)[m ... adding
+[33m211ab5b[m searching subtitle modified
+[33mfd23e0c[m adding pagination
+[33m88bae7c[m integrating cards details
+[33m4a4d286[m merge
+[33maafd352[m Chat Hub and initial service added
+[33me0848fb[m[33m ([m[1;31morigin/UI-Enhancements[m[33m)[m finalize UI changes
+[33mde7dcc7[m save progress'
+[33m945acf9[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33mc4da2c3[m update change password function (fix errors)
+[33m97f3a52[m DTos Added
+[33m4ee0ffa[m merge
+[33m47f69b4[m about proberty added to the doctor details
+[33m3eb6724[m Chat Entity Added
+[33mc9151f6[m[33m ([m[1;31morigin/doctor/Schedule-integration[m[33m)[m adding transltion to error message
+[33mcd2a14b[m validation on selecting identical or overlaped time slots
+[33m61ef10e[m connecting doctor secdule
+[33m6624d76[m fixing history display  and enhance language detection
+[33mdb05d35[m return policy
+[33m9a3989f[m handle errors and fix calender error
+[33m4cb75d4[m edit cors
+[33me0f2eab[m change orderid to int
+[33m7f74e13[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m4b97aa2[m fix AppoimentRequestdto
+[33m9f9c102[m add online payment (payment service-controller) +fix payment offline +integration payment with paymob
+[33m8d9518d[m[33m ([m[1;31morigin/AI/Integration[m[33m)[m AI Chat Bot integration
+[33mc4c7ebd[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m0b3d48e[m add payment offline Service and Controller and Confirm doctor payment ,add online payment Entites
+[33md539c31[m solving conflict
+[33ma7cb586[m[33m ([m[1;31morigin/admin/api-integration[m[33m)[m enhance styling
+[33m8a80da4[m moving banned to admin page, enhancing integrating api
+[33m247d1b4[m adding missing changes due to conflicts
+[33mb451f6a[m resolving conflicts
+[33m2bb7713[m admin integration
+[33m927e645[m[33m ([m[1;31morigin/doctor/auth-integration[m[33m)[m fetching user email and name for navbar
+[33md06e2d1[m edit entities
+[33mf741dff[m add Receipt service,DTo And Endpoint
+[33m268fc0a[m add cancel Appoiment service and Endpoint And edit on GetCalender ENdpoint
+[33m24286c8[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m7275be7[m appointment , payment entities corrected
+[33mc2490ff[m Merge pull request #5 from amrshamakh/feature/payment
+[33m2ea213f[m[33m ([m[1;31morigin/feature/payment[m[33m)[m Resolve merge from main into feature/payment
+[33m68e7bab[m Add reset password pages UI
+[33mf3bba41[m Cloudinary AI fix and translation implementation with responses with Arabic and Engilsh Description
+[33m3feac4f[m Add Arabic support for doctor pages and add ban reason feature
+[33m7f62c0d[m Add Arabic language support for payment pages
+[33m10dd994[m Add dark mode to remaining pages
+[33mae72dc5[m Refactored FileStorageService, ImageService, and AiBrainScanAppService to use Cloudinary and the requested folder      structure (DoctorCvs, DoctorImages, AiImages).
+[33m94d9a89[m login redirection for user and doctor
+[33m3985d2e[m solving doctor registertion
+[33m5ac643b[m solved the doctor register problem
+[33m2e00efb[m Merge branch 'patient/profile-api-integration'
+[33mc90db54[m editing fields to match API
+[33m2eaa11c[m[33m ([m[1;31morigin/patient/profile-api-integration[m[33m)[m removing user adding new data
+[33mbd8ebec[m feat: integrate doctor registration flow with searchable specialization and pending page
+[33m8cf0aae[m Merge branch 'auth/api-integration'
+[33m0f8cd7d[m[33m ([m[1;31morigin/auth/api-integration[m[33m)[m adding refresh token functionality
+[33m55cff3f[m Merge branch 'main' of https://github.com/amrshamakh/TadaWy
+[33m3f7f45f[m Merge branch 'patient/profile-api-integration'
+[33m670eccf[m adding alregies and diseases
+[33m56ba069[m Merge pull request #4 from amrshamakh/feature/payment
+[33m053d74f[m Add online payment pages
+[33m0bdd88c[m Update payment receipt logo
+[33m0d54ae6[m  add change password page and update navbar
+[33m0cc120a[m Merge pull request #3 from amrshamakh/feature/payment
+[33m57934dc[m  implement payment flow and UI
+[33m43a9d43[m save progress
+[33mb802c9d[m save progress'
+[33m895731d[m doctor registartion function
+[33m9ce0b72[m personal info integration
+[33m2b3518d[m removing emergency contact
+[33mc3cbf52[m edit name of Api
+[33m30ce9d9[m merge
+[33m6636e45[m add page CalenderApis +Settingtable +page Setting Apis(Change password-Delete User)
+[33m0be4467[m Merge branch 'auth/api-integration'
+[33m18d4bb7[m login integration+ user name and email from regestrion on navbar
+[33mbb5d83a[m implement advanced doctor scheduling, patient reviews, and experience tracking
+[33m1597893[m api regester patient
+[33ma154344[m AI Improvements with Pagination Imageurl responses Appsettings Config for Links
+[33m933eb73[m AI History API Added and small fix for AI configration and retry function in AIBrainScan Service for connection time out
+[33mff7575c[m JWT Token Auth Added to AIBrain Scan instead of Userid directly
+[33ma16ca12[m Merge pull request #2 from amrshamakh/feature/DoctorShedule
+[33m31cf0a3[m[33m ([m[1;31morigin/feature/DoctorShedule[m[33m)[m doctorSchedule
+[33mcba5c4c[m Merge pull request #1 from amrshamakh/feature/DoctorProfile
+[33m3e7a9a4[m[33m ([m[1;31morigin/feature/DoctorProfile[m[33m)[m doctorProfile
+[33m8517cfc[m add React frontend
+[33m52f1a05[m patient profile endpoints, lookup endpoints
+[33m5b88d36[m specializations getting endpoint , allow the doctor to update the image and add the logic to remove the old image
+[33me754e8b
