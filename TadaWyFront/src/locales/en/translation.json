@@ -418,10 +418,11 @@
     "selectDateHint": "Select a date to view appointments",
     "noAppointments": "No appointments",
     "allAppointments": "All Appointments",
+    "noCurrentAppointments": "No current appointments",
     "status": {
-      "completed": "Completed",
-      "upcoming": "Upcoming",
-      "missed": "Missed"
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
     },
     "legend": {
       "today": "Today",
@@ -429,6 +430,9 @@
       "appointment": "Appointment",
       "paid": "Paid",
       "notPaid": "Not paid"
+    },
+    "receipt": {
+      "title": "Receipt Details"
     }
   },
   "doctorDashboard": {
@@ -536,7 +540,7 @@
     "reviewsSection": {
       "title": "Reviews",
       "overallRating": "Overall Rating",
-      "noReviews": "No reviews available yet.",
+      "noReviews": "No reviews available now",
       "reviews": [
         {
           "author": "John Smith",
@@ -561,7 +565,9 @@
       "availableTime": "Available Times:",
       "cost": "Appointment Cost:",
       "bookBtn": "Book Appointment",
-      "currency": "L.E"
+      "currency": "L.E",
+      "notAvailable": "Not Available Now",
+      "notAvailableDesc": "This doctor has no available times or days currently."
     },
     "modals": {
       "payment": {

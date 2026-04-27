@@ -12,11 +12,13 @@ export default function LocationCard({ doctor }) {
       <div className="booking-location-header">
         <MapPin size={20} className="booking-location-icon" />
         <p className="booking-location-address-main">
-          {doctor.id ? t(`discover.clinicsData.${doctor.id}.address`) : doctor.address || "123 Medical Plaza, DownTown"}
+          {doctor.address 
+            ? `${doctor.address.street !== "UnKnown" ? doctor.address.street + ", " : ""}${doctor.address.city !== "UnKnown" ? doctor.address.city + ", " : ""}${doctor.address.state}`
+            : (doctor.id ? t(`discover.clinicsData.${doctor.id}.address`) : doctor.address || "123 Medical Plaza, DownTown")}
         </p>
       </div>
       <p className="booking-location-desc">
-        {doctor.location_description || t("booking.locationCard.locationDetailsPlaceholder")}
+        {doctor.addressDescription || doctor.location_description || t("booking.locationCard.locationDetailsPlaceholder")}
       </p>
     </section>
   );

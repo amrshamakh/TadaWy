@@ -5,10 +5,12 @@ import infoIcon from "../../assets/info.svg";
 import html2canvas from "html2canvas";
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import PaymentMethodModal from "./payments/PaymentMethodModal";
 import BookingReceiptModal from "./payments/BookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
 import { getVisibleDays, toReadableDateTime } from "./utils/bookingDate";
+import { bookOfflineAppointment, bookOnlineAppointment } from "../../modules/patient/api/appointmentApi";
 import AuthRequiredModal from "../AuthRequiredModal";
 import "./Booking.css";
 
@@ -24,7 +26,7 @@ const getTimeOptions = (t) => [
 // Note: If you want to translate the times themselves (e.g. 10 صباحاً), 
 // you can use t() logic here. For now keeping numbers but labels could be translated.
 
-export default function BookingSidebar({ doctor }) {
+export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -33,10 +35,21 @@ export default function BookingSidebar({ doctor }) {
     return new Date(today.getFullYear(), today.getMonth(), today.getDate());
   }, []);
   const [dateOffset, setDateOffset] = useState(0);
-  const [selectedDateStr, setSelectedDateStr] = useState(
-    `${baseDate.getDate()} ${baseDate.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`
-  );
+  
+  const availability = useMemo(() => {
+    if (!doctor?.availableDaysSlots) return [];
+    return doctor.availableDaysSlots;
+  }, [doctor]);
+
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [selectedTime, setSelectedTime] = useState(null);
+  
+  const selectedDateStr = useMemo(() => {
+    if (!availability[selectedDayIndex]) return null;
+    const date = new Date(availability[selectedDayIndex].date);
+    return `${date.getDate()} ${date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`;
+  }, [availability, selectedDayIndex, i18n.language]);
+
   const [activeModal, setActiveModal] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -48,10 +61,24 @@ export default function BookingSidebar({ doctor }) {
 
   const currentDays = useMemo(() => getVisibleDays(baseDate, dateOffset, i18n.language), [baseDate, dateOffset, i18n.language]);
 
-  const TIME_OPTIONS = useMemo(() => getTimeOptions(t), [t]);
+  const TIME_OPTIONS = useMemo(() => {
+    if (!availability[selectedDayIndex]) return [];
+    return availability[selectedDayIndex].slots.map(slot => {
+      const start = new Date(slot.startTime);
+      return start.toLocaleTimeString(i18n.language === "ar" ? "ar-EG" : "en-US", { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      });
+    });
+  }, [availability, selectedDayIndex, i18n.language]);
 
-  const handlePrev = () => setDateOffset(prev => prev - 1);
-  const handleNext = () => setDateOffset(prev => prev + 1);
+  const handlePrev = () => {
+    if (selectedDayIndex > 0) setSelectedDayIndex(prev => prev - 1);
+  };
+  const handleNext = () => {
+    if (selectedDayIndex < availability.length - 1) setSelectedDayIndex(prev => prev + 1);
+  };
 
   const handleBook = () => {
     if (!doctor || !selectedDateStr || !selectedTime) return;
@@ -82,24 +109,89 @@ export default function BookingSidebar({ doctor }) {
     []
   );
 
-  const handlePaymentSelection = (method) => {
-    if (method === "offline") {
-      setActiveModal("success");
-      return;
-    }
-    if (method === "online") {
-      navigate("/online-payment", {
-        state: {
-          doctor,
-          patientName,
-          patientEmail,
-          appointmentDateValue,
-          appointmentCost,
-        },
+  const handlePaymentSelection = async (method) => {
+    setActiveModal(null); // Close the payment method modal immediately
+
+    // Find the exact ISO start time for the selected time
+    let isoDate = new Date().toISOString();
+    if (availability[selectedDayIndex]) {
+      const selectedSlot = availability[selectedDayIndex].slots.find(slot => {
+        const start = new Date(slot.startTime);
+        const formattedStart = start.toLocaleTimeString(i18n.language === "ar" ? "ar-EG" : "en-US", { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true 
+        });
+        return formattedStart === selectedTime;
       });
+      if (selectedSlot) {
+        isoDate = selectedSlot.startTime;
+      }
+    }
+
+    const payload = {
+      doctorId: doctor.id,
+      date: isoDate,
+      amount: appointmentCost,
+    };
+
+    if (method === "offline") {
+      try {
+        await bookOfflineAppointment(payload);
+        setActiveModal("success");
+        if (onBookingSuccess) onBookingSuccess();
+      } catch (error) {
+        console.error("Failed to book offline appointment:", error);
+        let errorMsg = "Failed to book appointment. Please try again.";
+        if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        } else if (typeof error.response?.data === 'string') {
+          errorMsg = error.response.data;
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+        toast.error(errorMsg);
+      }
       return;
     }
-    setActiveModal(null);
+
+    if (method === "online") {
+      try {
+        const response = await bookOnlineAppointment(payload);
+        
+        // Handle both object {url: '...'} and plain string URL responses
+        let url = null;
+        if (response && response.url) {
+          url = response.url;
+        } else if (typeof response === 'string' && response.startsWith('http')) {
+          url = response;
+        }
+
+        if (url) {
+          toast.info("Redirecting to payment gateway...");
+          setTimeout(() => {
+            window.location.href = url; // Opens in current tab
+          }, 500); // Small delay to let the user see the toast
+        } else if (response && response.message) {
+           toast.error(response.message);
+        } else {
+          // Fallback if no URL is provided but it succeeds
+          toast.success("Online booking initiated!");
+        }
+      } catch (error) {
+        console.error("Failed to book online appointment:", error);
+        let errorMsg = "Failed to initiate online payment.";
+        if (error.response?.data?.message) {
+          errorMsg = error.response.data.message;
+        } else if (typeof error.response?.data === 'string') {
+          errorMsg = error.response.data;
+        } else if (error.message) {
+          errorMsg = error.message;
+        }
+        toast.error(errorMsg);
+      }
+      return;
+    }
   };
 
   const handlePrintReceipt = async () => {
@@ -177,53 +269,82 @@ export default function BookingSidebar({ doctor }) {
       </div>
 
       <div className="booking-sidebar-content">
-        <div className="booking-sidebar-section">
-          <p className="booking-sidebar-label flex items-center gap-1.5">
-            {t("booking.sidebar.selectDay")}
-            <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0 dark:invert dark:opacity-90" />
-          </p>
-          <div className="booking-date-carousel">
-            <button type="button" className="booking-carousel-nav" onClick={handlePrev} aria-label="Previous options">
-              <ArrowLeft size={20} />
-            </button>
-
-            <div className="booking-date-grid">
-              {currentDays.map((item) => (
-                <button
-                  key={item.date}
-                  type="button"
-                  className={`booking-date-pill ${selectedDateStr === item.date ? "booking-date-pill-selected" : ""
-                    }`}
-                  onClick={() => setSelectedDateStr(item.date)}
-                >
-                  <span className="booking-date-pill-day">{item.day}</span>
-                  <span className="booking-date-pill-date">{item.date}</span>
+        {availability.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8 px-4 text-center bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800 mt-4">
+            <Calendar size={48} className="text-gray-300 dark:text-slate-600 mb-3" />
+            <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-1">
+              {t("booking.sidebar.notAvailable")}
+            </h4>
+            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px]">
+              {t("booking.sidebar.notAvailableDesc")}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="booking-sidebar-section">
+              <p className="booking-sidebar-label flex items-center gap-1.5">
+                {t("booking.sidebar.selectDay")}
+                <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0 dark:invert dark:opacity-90" />
+              </p>
+              <div className="booking-date-carousel">
+                <button type="button" className="booking-carousel-nav" onClick={handlePrev} disabled={selectedDayIndex === 0} aria-label="Previous options">
+                  <ArrowLeft size={20} />
                 </button>
-              ))}
+
+                <div className="booking-date-grid">
+                  {availability.map((item, index) => {
+                    const date = new Date(item.date);
+                    const dayName = date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { weekday: 'short' });
+                    const datePill = `${date.getDate()} ${date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`;
+                    
+                    return (
+                      <button
+                        key={item.date}
+                        type="button"
+                        className={`booking-date-pill ${selectedDayIndex === index ? "booking-date-pill-selected" : ""}`}
+                        onClick={() => {
+                          setSelectedDayIndex(index);
+                          setSelectedTime(null);
+                        }}
+                      >
+                        <span className="booking-date-pill-day">{dayName}</span>
+                        <span className="booking-date-pill-date">{datePill}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex >= availability.length - 1} aria-label="Next options">
+                  <ArrowRight size={20} />
+                </button>
+              </div>
             </div>
 
-            <button type="button" className="booking-carousel-nav" onClick={handleNext} aria-label="Next options">
-              <ArrowRight size={20} />
-            </button>
-          </div>
-        </div>
-
-        <div className="booking-sidebar-section">
-          <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
-          <div className="booking-time-grid">
-            {TIME_OPTIONS.map((time) => (
-              <button
-                key={time}
-                type="button"
-                className={`booking-time-pill ${selectedTime === time ? "booking-time-pill-selected" : ""
-                  }`}
-                onClick={() => setSelectedTime(time)}
-              >
-                {time}
-              </button>
-            ))}
-          </div>
-        </div>
+            <div className="booking-sidebar-section">
+              <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
+              <div className="booking-time-grid">
+                {TIME_OPTIONS.length > 0 ? (
+                  TIME_OPTIONS.map((time) => (
+                    <button
+                      key={time}
+                      type="button"
+                      className={`booking-time-pill ${selectedTime === time ? "booking-time-pill-selected" : ""}`}
+                      onClick={() => setSelectedTime(time)}
+                    >
+                      {time}
+                    </button>
+                  ))
+                ) : (
+                  <div className="col-span-full flex flex-col items-center justify-center py-4 bg-gray-50 dark:bg-slate-800/30 rounded-lg">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+                      {t("booking.sidebar.notAvailable")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="booking-sidebar-footer">
           <div className="booking-price">
