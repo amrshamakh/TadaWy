@@ -7,9 +7,13 @@ import { FiUser, FiMenu } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 
+import NotificationDropdown from "./NotificationDropdown";
+
 export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) {
   const [open, setOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const notifRef = useRef(null);
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -25,6 +29,9 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpen(false);
       }
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -32,6 +39,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
   const goTo = (path) => {
     setOpen(false);
+    setNotifOpen(false);
     navigate(path);
   };
   const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim():"";
@@ -73,10 +81,16 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
           {isLoggedIn && !isAdmin ? (
             <div className="flex items-center gap-4">
               {/* Notification */}
-              <button className="hidden md:flex p-2 text-black dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg relative">
-                <IoMdNotificationsOutline size={24} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
+              <div className="relative" ref={notifRef}>
+                <button 
+                  onClick={() => setNotifOpen(!notifOpen)}
+                  className="hidden md:flex p-2 text-black dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg relative cursor-pointer"
+                >
+                  <IoMdNotificationsOutline size={24} />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <NotificationDropdown isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
+              </div>
 
               {/* Language Switcher */}
               <button
