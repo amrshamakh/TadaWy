@@ -495,7 +495,9 @@
         "today": "اليوم"
       },
       "confirm": "تأكيد",
-      "details": "التفاصيل"
+      "details": "التفاصيل",
+      "totalAppts": "مواعيد",
+      "timePassed": "لقد مر وقت هذا الموعد"
     },
     "schedule": {
       "title": "الجدول الأسبوعي",

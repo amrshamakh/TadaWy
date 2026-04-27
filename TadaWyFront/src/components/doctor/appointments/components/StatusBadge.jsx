@@ -18,11 +18,20 @@ const STATUS_CONFIG = {
 
 export default function StatusBadge({ status }) {
   const { t } = useTranslation();
-  const { badge, icon } = STATUS_CONFIG[status] ?? STATUS_CONFIG.pending;
+  
+  // Map numeric status from API to string status
+  const statusMap = {
+    0: "pending",
+    1: "confirmed",
+    2: "cancelled",
+  };
+  
+  const statusKey = typeof status === "number" ? statusMap[status] : status;
+  const { badge, icon } = STATUS_CONFIG[statusKey] ?? STATUS_CONFIG.pending;
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${badge}`}>
       {icon}
-      {t(`doctorDashboard.appointments.stats.${status}`)}
+      {t(`doctorDashboard.appointments.stats.${statusKey}`)}
     </span>
   );
 }

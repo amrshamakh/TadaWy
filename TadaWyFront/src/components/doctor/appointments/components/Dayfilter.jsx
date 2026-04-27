@@ -23,6 +23,13 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
   const year = currentDate.getFullYear();
   const monthIndex = currentDate.getMonth();
   const daysGrid = useMemo(() => getDaysGrid(year, monthIndex), [year, monthIndex]);
+  const formatDateKey = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
+
   const stripDays = useMemo(() => {
     const list = [];
     for (let i = 0; i < 6; i++) {
@@ -31,7 +38,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
       list.push({
         label: d.toLocaleDateString(locale, { weekday: "short" }),
         date: d.toLocaleDateString(locale, { day: "numeric" }),
-        value: d.toISOString().split("T")[0],
+        value: formatDateKey(d),
         dayKey: d.toLocaleDateString("en-US", { weekday: "short" }).toLowerCase(),
       });
     }
@@ -40,7 +47,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
 
   const pickDate = (day) => {
     const dateObj = new Date(year, monthIndex, day);
-    const dateKey = dateObj.toISOString().split("T")[0];
+    const dateKey = formatDateKey(dateObj);
     onDatePick(dateKey);
     setShowCalendar(false);
   };
@@ -175,7 +182,7 @@ export default function DayFilter({ activeDay, onDayChange, onDatePick, selected
               const selected =
                 day &&
                 selectedDateKey &&
-                selectedDateKey === new Date(year, monthIndex, day).toISOString().split("T")[0];
+                selectedDateKey === formatDateKey(new Date(year, monthIndex, day));
               return day ? (
                 <button
                   key={`${day}-${idx}`}

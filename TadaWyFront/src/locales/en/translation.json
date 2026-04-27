@@ -486,7 +486,9 @@
         "today": "Today"
       },
       "confirm": "Confirm",
-      "details": "Details"
+      "details": "Details",
+      "totalAppts": "Appointments",
+      "timePassed": "This appointment's time has passed"
     },
     "schedule": {
       "title": "Weekly Schedule",
