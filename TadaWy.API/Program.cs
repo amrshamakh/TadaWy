@@ -17,6 +17,9 @@ using TadaWy.Infrastructure.Extensions;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Infrastructure.Seeders;
 using TadaWy.Infrastructure.Service;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.DataProtection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,10 +102,18 @@ builder.Services.AddSwaggerGen(c =>
                 });
 });
 
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(@"./keys"));
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+});
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
 })
 .AddJwtBearer(options =>
 {
@@ -154,7 +165,19 @@ builder.Services.AddAuthentication(options =>
             return context.Response.WriteAsync(result);
         }
     };
+}).AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+   
+    options.CallbackPath = "/signin-google";
+    options.SignInScheme = IdentityConstants.ExternalScheme;
+
+    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
+
 
 
 
@@ -177,6 +200,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.All
+});
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");

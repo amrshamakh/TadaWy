@@ -1,12 +1,17 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TadaWy.API.Requests;
 using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.DTO.ResetPasswordDTOs;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Infrastructure.Presistence;
+using Microsoft.AspNetCore.Identity;
 
 namespace TadaWy.API.Controllers
 {
@@ -153,6 +158,38 @@ namespace TadaWy.API.Controllers
             };
 
             Response.Cookies.Append("refreshToken", RefreshToken, cookieOption);
+        }
+
+        [HttpGet("google-login")]
+        [AllowAnonymous]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action( nameof(GoogleCallback), "Auth",values: null,protocol: Request.Scheme,host: Request.Host.ToString());
+
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = redirectUrl!
+            };
+
+            
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("google-callback")]
+        public async Task<IActionResult> GoogleCallback()
+        {
+            var authenticateResult =
+                await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+
+            if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
+                return Unauthorized(new { message = "Google authentication failed" });
+
+            var email = authenticateResult.Principal
+                .FindFirst(ClaimTypes.Email)?.Value;
+
+            var authModel = await _authService.LoginWithGoogleAsync(email);
+
+            return Ok(authModel);
         }
     }
 }

@@ -73,7 +73,8 @@ namespace TadaWy.Infrastructure.service
 
             var resetLink = $"https://TadaWy/reset-password?email={Email}&token={encodedToken}";
 
-            BackgroundJob.Enqueue<IEmailService>(x =>  x.SendEmail("a7medhamada45h@gmail.com","ResetPassword",$"Reset your password from here: {resetLink}"));
+            BackgroundJob.Enqueue<IEmailService>(x =>
+      x.SendEmail(result.Email, "ResetPassword", $"Reset your password from here: {resetLink}"));
         }
 
         public async Task<bool> ResetPasswordAsync(ResetPasswordDTO dto)
@@ -156,9 +157,9 @@ namespace TadaWy.Infrastructure.service
                 
 
             };
-             _tadaWyDbContext.Add(doctor);
-            _tadaWyDbContext.SaveChanges();
-;
+            _tadaWyDbContext.Add(doctor);
+            await _tadaWyDbContext.SaveChangesAsync();
+            ;
             return new AuthModel
             {
                 Success = true,
@@ -197,13 +198,8 @@ namespace TadaWy.Infrastructure.service
 
             if (!result.Succeeded)
             {
-                var errors = string.Empty;
-
-                foreach (var error in result.Errors)
-                {
-                    errors += $"{error.Description}";
-                    return new AuthModel { Messege = errors };
-                }
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                return new AuthModel { Messege = errors };
             }
             await _userManager.AddToRoleAsync(user, "Patient");
 
@@ -273,7 +269,7 @@ namespace TadaWy.Infrastructure.service
                 issuer: _Jwt.Issuer,
                 audience: _Jwt.Audience,
                 claims: Claims,
-                expires: DateTime.Now.AddDays(_Jwt.DurationInDays),
+               expires: DateTime.UtcNow.AddDays(_Jwt.DurationInDays),
                 signingCredentials: singcre);
 
             return JWTToken;
@@ -483,5 +479,81 @@ namespace TadaWy.Infrastructure.service
             return authModel;
         }
 
+        public async Task<AuthModel> LoginWithGoogleAsync(string email)
+        {
+            var authModel = new AuthModel();
+
+            
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                authModel.IsAuthenticated = false;
+                authModel.Messege = "No account found with this email. Please register first.";
+                return authModel;
+            }
+
+            
+            var roles = await _userManager.GetRolesAsync(user);
+
+          
+            if (roles.Contains("Doctor"))
+            {
+                var doctor = await _tadaWyDbContext.Doctors
+                    .FirstOrDefaultAsync(d => d.UserID == user.Id);
+
+                if (doctor == null)
+                {
+                    authModel.Messege = "Doctor profile not found";
+                    return authModel;
+                }
+
+                if (doctor.Status == Domain.Enums.DoctorStatus.Banned)
+                {
+                    authModel.Messege = $"Your account was banned. Reason: {doctor.BannedReason}";
+                    return authModel;
+                }
+
+                if (doctor.Status == Domain.Enums.DoctorStatus.Rejected)
+                {
+                    authModel.Messege = $"Your account was rejected. Reason: {doctor.RejectionReason}";
+                    return authModel;
+                }
+
+                if (doctor.Status == Domain.Enums.DoctorStatus.Pending)
+                {
+                    authModel.Messege = "Your account is pending admin approval";
+                    return authModel;
+                }
+            }
+
+           
+            var jwtSecurityToken = await CreateJwtToken(user);
+            var stringToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+            authModel.Email = user.Email;
+            authModel.IsAuthenticated = true;
+            authModel.Username = user.UserName;
+            authModel.Token = stringToken;
+            authModel.Role = roles.ToList();
+            authModel.ExpireOn = jwtSecurityToken.ValidTo;
+
+            if (user.RefreshTokens.Any(t => t.IsActive))
+            {
+                var activeRefreshToken = user.RefreshTokens.First(t => t.IsActive);
+                authModel.RefreshToken = activeRefreshToken.Token;
+                authModel.RefreshTokenExpireOn = activeRefreshToken.ExpireOn.ToLocalTime();
+            }
+            else
+            {
+                var refreshToken = GenerateRefreshToken();
+                authModel.RefreshToken = refreshToken.Token;
+                authModel.RefreshTokenExpireOn = refreshToken.ExpireOn.ToLocalTime();
+                user.RefreshTokens.Add(refreshToken);
+                await _userManager.UpdateAsync(user);
+            }
+
+            return authModel;
+        }
     }
 }

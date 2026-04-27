@@ -7,10 +7,12 @@ namespace TadaWy.API.Middleware
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -25,22 +27,25 @@ namespace TadaWy.API.Middleware
             }
             catch (Exception ex)
             {
+                // سجّل الـ exception كامل
+                _logger.LogError(ex, "Unhandled exception");
+
                 await HandleException(context, HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
-        private static async Task HandleException(HttpContext context, HttpStatusCode statusCode, string message)
+        private static Task HandleException(HttpContext context, HttpStatusCode statusCode, string message)
         {
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
 
-            var response = new
+            var result = JsonSerializer.Serialize(new
             {
                 success = false,
-                message = message
-            };
+                message
+            });
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            return context.Response.WriteAsync(result);
         }
     }
 }

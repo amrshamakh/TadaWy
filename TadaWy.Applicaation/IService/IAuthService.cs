@@ -28,5 +28,7 @@ namespace TadaWy.Applicaation.IServices
 
         Task<AuthModel> ChangePasswordAsync(string userId, ChangePasswordDto dto);
 
+        Task<AuthModel> LoginWithGoogleAsync(string email);
+
     }
 }
