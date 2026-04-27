@@ -12,6 +12,7 @@ namespace TadaWy.Domain.Enums
         AppointmentReminder = 2,
         AppointmentCancelled = 3,
         AppointmentReminder12h = 4,
-        AppointmentReminder2h = 5
+        AppointmentReminder2h = 5,
+        ChatMessage = 6
     }
 }

@@ -16,6 +16,7 @@ namespace TadaWy.Applicaation.IService
         Task<List<ConversationDto>> GetConversationsAsync(string userId, string? search);
 
         Task<int> GetUnreadCount(string userId, string otherUserId);
+        Task<int> GetTotalUnreadCount(string userId);
         Task MarkMessagesAsSeenAsync(string userId, string otherUserId);
     }
 }
