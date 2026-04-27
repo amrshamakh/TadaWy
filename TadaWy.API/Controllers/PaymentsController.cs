@@ -16,15 +16,6 @@ namespace TadaWy.API.Controllers
             _paymentService = paymentService;
         }
 
-
-        [Authorize(Roles = "Patient")]
-        [HttpPost("{paymentId}/confirm-offline")]
-        public async Task<IActionResult> ConfirmOffline(int paymentId)
-        {
-            await _paymentService.ConfirmOfflinePaymentAsync(paymentId);
-            return Ok(new { message = "Offline payment confirmed." });
-        }
-
         [HttpPost("paymob-callback")]
         public async Task<IActionResult> PaymobCallback([FromForm] PaymobCallbackDto callback)
         {

@@ -210,20 +210,7 @@ namespace TadaWy.Infrastructure.Service
             return $"https://accept.paymob.com/api/acceptance/iframes/{_settings.IframeId}?payment_token={paymentToken}";
         }
 
-        public async Task ConfirmOfflinePaymentAsync(int paymentId)
-        {
-            var payment = await _context.Payments.FirstOrDefaultAsync(p => p.Id == paymentId && p.Method == PaymentMethod.Offline);
-
-            if (payment == null)
-                throw new Exception("Payment not found.");
-
-            if (payment.Status == PaymentStatus.Paid)
-                return; 
-
-            payment.Status = PaymentStatus.Paid;
-            payment.PaymentDate = DateTime.UtcNow;
-
-            await _context.SaveChangesAsync();
-        }
+     
+        
     }
 }
