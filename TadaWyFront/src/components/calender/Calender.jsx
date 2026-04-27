@@ -229,7 +229,9 @@ export default function Calender() {
                       className="p-3 rounded-xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#0F172A]"
                     >
                       <p className="text-base font-semibold text-gray-800 dark:text-white m-0">{apt.clinic}</p>
-                      <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{apt.specialty}</p>
+                      {apt.specialty && apt.specialty !== apt.clinic && (
+                        <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{apt.specialty}</p>
+                      )}
                       <div className="mt-2 flex flex-col gap-1.5">
                         <div className="flex items-center gap-1.5">
                           <User size={14} className="text-gray-400 dark:text-[#94A3B8]" />

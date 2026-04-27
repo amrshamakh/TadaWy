@@ -94,7 +94,7 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
           <div className="min-w-0 flex-1">
             <p className="text-base font-semibold text-gray-800 dark:text-white m-0">{clinic}</p>
             <p className="text-sm text-gray-700 dark:text-[#94A3B8] m-0">{doctor}</p>
-            {specialty && (
+            {specialty && specialty !== clinic && (
               <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{specialty}</p>
             )}
           </div>
