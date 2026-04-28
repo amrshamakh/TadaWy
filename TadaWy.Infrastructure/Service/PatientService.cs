@@ -237,6 +237,7 @@ namespace TadaWy.Infrastructure.Service
                 .Select(a => new AppointmentDto
                 {
                     Id = a.Id,
+                    DoctorId = a.Doctor.Id,
                     DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
                     Specialty = a.Doctor.Specialization.Name,
                     Date = a.Date,
@@ -291,6 +292,7 @@ namespace TadaWy.Infrastructure.Service
                     Id = a.Id,
                     DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
                     Specialty = a.Doctor.Specialization.Name,
+                    DoctorId=a.Doctor.Id,
                     Date = a.Date,
                     Status = a.Status,
                     IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
