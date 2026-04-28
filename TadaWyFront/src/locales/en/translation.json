@@ -433,6 +433,15 @@
     },
     "receipt": {
       "title": "Receipt Details"
+    },
+    "review": {
+      "title": "Rate with stars:",
+      "placeholder": "Write your review.........",
+      "cancel": "Cancel",
+      "done": "Done",
+      "selectRating": "Please select a rating",
+      "success": "Review submitted successfully",
+      "error": "Failed to submit review"
     }
   },
   "doctorDashboard": {
