@@ -4,13 +4,15 @@ import { ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import { cancelAppointment, getAppointmentReceipt } from "../../modules/patient/api/patientAppointmentsApi";
 import ReceiptModal from "./ReceiptModal";
+import ReviewModal from "./ReviewModal";
 
-export default function AppointmentCard({ id, clinic, doctor, specialty, date, time, rawDate, status, paid, onCancel }) {
+export default function AppointmentCard({ id, clinic, doctor, specialty, date, time, rawDate, status, paid, doctorId, onCancel }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [isFetchingReceipt, setIsFetchingReceipt] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const isPending = status === "pending";
   const isCancelled = status === "cancelled";
@@ -144,6 +146,7 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
             {isConfirmed && (
               <button
                 type="button"
+                onClick={() => setShowReviewModal(true)}
                 className="px-4 py-1.5 text-sm rounded-full bg-[#00BBA7] text-white hover:bg-[#009e8f] active:bg-[#008f82] transition-colors"
               >
                 {t("doctorDashboard.profile.reviews")}
@@ -154,6 +157,7 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
       </div>
 
       {receipt && <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />}
+      {showReviewModal && <ReviewModal doctorId={doctorId} onClose={() => setShowReviewModal(false)} />}
     </>
   );
 }

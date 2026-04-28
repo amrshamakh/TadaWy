@@ -141,6 +141,7 @@ export default function Calender() {
           rawDate: apt.date,
           status: activeStatus,
           paid: apt.isPaid === 1,
+          doctorId: apt.doctorId || apt.doctorID || apt.DoctorId,
         };
       });
       
@@ -160,6 +161,7 @@ export default function Calender() {
         time: d.toLocaleTimeString(i18n.language, { hour: "numeric", minute: "2-digit" }),
         rawDate: apt.date,
         paid: apt.isPaid === 1,
+        doctorId: apt.doctorId || apt.doctorID || apt.DoctorId,
       };
     });
     
@@ -309,6 +311,7 @@ export default function Calender() {
                   rawDate={apt.rawDate}
                   status={apt.status}
                   paid={apt.paid}
+                  doctorId={apt.doctorId}
                   onCancel={() => {
                     setAppointmentsForSelectedDay((prev) => prev.filter((p) => p.id !== apt.id));
                     setAllAppointments((prev) => prev.filter((p) => p.id !== apt.id));
