@@ -234,5 +234,6 @@ using (var scope = app.Services.CreateScope())
       Cron.Hourly()
   );
 }
+RecurringJob.RemoveIfExists("expire-pending-appointment-payments");
 
 app.Run();
