@@ -26,6 +26,7 @@ import DoctorAppointments from "./components/doctor/appointments/DoctorAppointme
 import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import Messages from "./components/Messages/Messages";
 
 const App = () => {
   const { i18n } = useTranslation();
@@ -54,6 +55,7 @@ const App = () => {
           <Route path="calendar" element={<ProtectedRoute renderBlockedContent><Calender /></ProtectedRoute>} />
           <Route path="booking/:id?" element={<Booking />} />
           <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
           <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Route>
         {/* Admin routes */}

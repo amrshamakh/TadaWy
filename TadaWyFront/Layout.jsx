@@ -11,11 +11,13 @@ const Layout = () => {
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
   const isDiscoverPage = location.pathname === "/discover";
-  const noPadding = isLandingPage || isDiscoverPage;
+  const isMessagesPage = location.pathname === "/messages";
+  const noPadding = isLandingPage || isDiscoverPage || isMessagesPage;
   const userMenu = [
     { to: "/discover", icon: assets.homeIcon, label: t("nav.home"), end: true },
     { to: "/calendar", icon: assets.calenderIcon, label: t("nav.calendar"), end: false },
     { to: "/profile", icon: assets.profileIcon, label: t("nav.profile"), end: false },
+    { to: "/messages", icon: assets.messagesIcon, label: t("nav.messages"), end: false },
     { to: "/settings", icon: assets.settingIcon, label: t("nav.settings"), end: false },
   ];
 

@@ -17,6 +17,7 @@ import infoIcon from './protect.svg';
 import languageIcon from './language.svg';
 import container from './container.jpeg';
 import brainIcon from './brain.svg';
+import messagesIcon from './messages.svg';
 
 
 
@@ -41,7 +42,8 @@ export const assets = {
   infoIcon,
   languageIcon,
   brainIcon,
-  container
+  container,
+  messagesIcon
 
 
 

@@ -162,7 +162,8 @@
     "appointmentCompletedDesc": "Appointment with Emma Lawrence is complete. Please leave a review.",
     "signOut": "Sign Out",
     "search": "Search for clinic, doctor, or specialty...",
-    "doctorDashboard": "Doctor Dashboard"
+    "doctorDashboard": "Doctor Dashboard",
+    "messages": "Messages"
   },
   "common": {
     "save": "Save",
@@ -694,5 +695,15 @@
       "weakPassword": "Password must be at least 6 characters.",
       "passwordMismatch": "Passwords do not match!"
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "searchDoctors": "Search for doctors...",
+    "typeMessage": "Type your message here...",
+    "endToEnd": "END-TO-END ENCRYPTED MEDICAL COMMUNICATION",
+    "seen": "Seen",
+    "unseen": "unSeen",
+    "yesterday": "Yesterday",
+    "selectChat": "Select a chat to start messaging"
   }
 }
