@@ -63,9 +63,12 @@ namespace TadaWy.Infrastructure.service
                 return;
 
             var doctor = await _tadaWyDbContext.Doctors
-        .FirstOrDefaultAsync(d => d.UserID == result.Id);
+                .FirstOrDefaultAsync(d => d.UserID == result.Id);
 
-            if (doctor != null ||doctor.Status!=Domain.Enums.DoctorStatus.Approved)
+            //if (doctor != null ||doctor.Status!=Domain.Enums.DoctorStatus.Approved)
+            //    return;
+
+            if (doctor != null && doctor.Status != Domain.Enums.DoctorStatus.Approved)
                 return;
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(result);
