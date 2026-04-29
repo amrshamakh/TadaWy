@@ -455,6 +455,15 @@
     },
     "receipt": {
       "title": "تفاصيل الوصل"
+    },
+    "review": {
+      "title": "قيم بالنجوم:",
+      "placeholder": "أكتب تقييمك.........",
+      "cancel": "إلغاء",
+      "done": "تم",
+      "selectRating": "يرجى اختيار التقييم",
+      "success": "تم إرسال التقييم بنجاح",
+      "error": "فشل في إرسال التقييم"
     }
   },
   "doctorDashboard": {
@@ -508,7 +517,9 @@
         "today": "اليوم"
       },
       "confirm": "تأكيد",
-      "details": "التفاصيل"
+      "details": "التفاصيل",
+      "totalAppts": "مواعيد",
+      "timePassed": "لقد مر وقت هذا الموعد"
     },
     "schedule": {
       "title": "الجدول الأسبوعي",

@@ -18,14 +18,17 @@ namespace TadaWy.Infrastructure.Service
         private readonly IImageService _imageService;
         private readonly INotificationService _notificationService;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IPaymentService _paymentService;
 
-        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService, IHttpClientFactory httpClientFactory)
+
+        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService, IHttpClientFactory httpClientFactory, IPaymentService paymentService)
         {
             _context = context;
             _env = env;
             _imageService = imageService;
             _notificationService = notificationService;
             _httpClientFactory = httpClientFactory;
+            _paymentService = paymentService;
         }
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
@@ -56,6 +59,7 @@ namespace TadaWy.Infrastructure.Service
             var projected = query.Select(d => new
             {
                 d.Id,
+                d.UserID,
                 d.FirstName,
                 d.LastName,
                 d.ImageUrl,
@@ -81,6 +85,7 @@ namespace TadaWy.Infrastructure.Service
                 .Select(d => new DoctorListDto
                 {
                     Id = d.Id,
+                    UserId = d.UserID,
                     DoctorName = d.FirstName + " " + d.LastName,
                     Rate = Math.Round(d.Rating, 1),
                     Specialization = d.SpecializationName,
@@ -490,6 +495,21 @@ namespace TadaWy.Infrastructure.Service
 
             if (appointment.Status == AppointmentStatus.Cancelled)
                 return false;
+            if (appointment.Date <= DateTime.Now)
+                return false;
+
+            if (appointment.Payment != null &&
+                appointment.Payment.Method == PaymentMethod.Online &&
+                appointment.Payment.Amount > 0 &&
+                appointment.Payment.Status == PaymentStatus.Paid)
+            {
+                var refundSucceeded = await _paymentService.RefundAsync(appointment.Payment.Id);
+
+                if (!refundSucceeded)
+                {
+                    return false;
+                }
+            }
 
             appointment.Status = AppointmentStatus.Cancelled;
             await _context.SaveChangesAsync();
@@ -550,8 +570,8 @@ namespace TadaWy.Infrastructure.Service
             return new DoctorAppointmentsDto
             {
                 TotalAppointments = appointmentList.Count,
-                ConfirmedCount = appointmentList.Count(a => a.Status == AppointmentStatus.Confirmed),
-                PendingCount = appointmentList.Count(a => a.Status == AppointmentStatus.Pending),
+                ConfirmedCount = appointmentList.Count(a => a.Status == AppointmentStatus.Completed),
+                PendingCount = appointmentList.Count(a => a.Status == AppointmentStatus.Upcoming),
                 CancelledCount = appointmentList.Count(a => a.Status == AppointmentStatus.Cancelled),
                 Appointments = appointmentList
             };
@@ -567,10 +587,10 @@ namespace TadaWy.Infrastructure.Service
             if (appointment == null)
                 throw new NotFoundException("Appointment not found or you don't have permission to confirm it.");
 
-            if (appointment.Status != AppointmentStatus.Pending)
+            if (appointment.Status != AppointmentStatus.Upcoming)
                 return false;
 
-            appointment.Status = AppointmentStatus.Confirmed;
+            appointment.Status = AppointmentStatus.Completed;
 
             // Update payment status if offline
             if (appointment.Payment != null && appointment.Payment.Method == PaymentMethod.Offline)

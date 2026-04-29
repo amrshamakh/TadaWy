@@ -14,11 +14,13 @@ namespace TadaWy.Infrastructure.Service
     {
         private readonly TadaWyDbContext _context;
         private readonly INotificationService _notificationService;
+        private readonly IPaymentService _paymentService;
 
-        public PatientService(TadaWyDbContext context, INotificationService notificationService)
+        public PatientService(TadaWyDbContext context, INotificationService notificationService,IPaymentService paymentService)
         {
             _context = context;
             _notificationService = notificationService;
+            _paymentService= paymentService;
         }
 
         public async Task<PatientProfileDto> GetPatientProfileAsync(string userId)
@@ -237,6 +239,7 @@ namespace TadaWy.Infrastructure.Service
                 .Select(a => new AppointmentDto
                 {
                     Id = a.Id,
+                    DoctorId = a.Doctor.Id,
                     DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
                     Specialty = a.Doctor.Specialization.Name,
                     Date = a.Date,
@@ -260,8 +263,22 @@ namespace TadaWy.Infrastructure.Service
                 return false;
 
 
-            if (appointment.Date < DateTime.Now)
+            if (appointment.Date <= DateTime.Now)
                 return false;
+
+
+            if (appointment.Payment != null &&
+                appointment.Payment.Method == PaymentMethod.Online &&
+                appointment.Payment.Amount > 0 &&
+                appointment.Payment.Status == PaymentStatus.Paid)
+            {
+                var refundSucceeded = await _paymentService.RefundAsync(appointment.Payment.Id);
+
+                if (!refundSucceeded)
+                {
+                    return false;
+                }
+            }
 
             appointment.Status = AppointmentStatus.Cancelled;
 
@@ -291,6 +308,7 @@ namespace TadaWy.Infrastructure.Service
                     Id = a.Id,
                     DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
                     Specialty = a.Doctor.Specialization.Name,
+                    DoctorId=a.Doctor.Id,
                     Date = a.Date,
                     Status = a.Status,
                     IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending

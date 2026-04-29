@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using TadaWy.Domain.Entities;
@@ -17,6 +18,10 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
 
             builder.Property(d => d.UserID)
                    .IsRequired();
+
+            builder
+               .Property(d => d.Price)
+              .HasColumnType("decimal(18,2)");
 
             builder.HasIndex(d => d.UserID)
                    .IsUnique();

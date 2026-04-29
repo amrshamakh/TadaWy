@@ -15,6 +15,7 @@ namespace TadaWy.Domain.Entities
         public string DoctorId { get; set; }
 
         public DateTime? PaymentDate { get; set; }  //online  and when doctor change status to paid
+        public DateTime? RefundedAt { get; set; }  //online  and when doctor change status to paid
         public string? ExternalTransactionId { get; set; } //online
         public string? ExternalOrderId { get; set; }  //online 
         public decimal CommissionAmount { get; set; }  //online
@@ -22,10 +23,5 @@ namespace TadaWy.Domain.Entities
 
         public int AppointmentId { get; set; }
         public Appointment Appointment { get; set; }
-    }
-    public enum PaymentMethod
-    {
-        Offline=0,
-        Online=1
     }
 }

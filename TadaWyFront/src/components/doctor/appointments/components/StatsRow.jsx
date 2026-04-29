@@ -1,7 +1,6 @@
-import { stats } from "../data/appointmentsData";
 import { useTranslation } from "react-i18next";
 
-export default function StatsRow() {
+export default function StatsRow({ stats = [] }) {
   const { t } = useTranslation();
 
   return (

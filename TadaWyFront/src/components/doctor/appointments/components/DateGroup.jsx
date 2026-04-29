@@ -2,7 +2,7 @@ import { Calendar } from "lucide-react";
 import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
 
-export default function DateGroup({ dateLabel, apts }) {
+export default function DateGroup({ dateLabel, apts, onConfirm, onCancel }) {
   const { t } = useTranslation();
 
   return (
@@ -18,7 +18,12 @@ export default function DateGroup({ dateLabel, apts }) {
       {/* Cards */}
       <div className="space-y-2">
         {apts.map((apt) => (
-          <AppointmentCard key={apt.id} apt={apt} />
+          <AppointmentCard 
+            key={apt.id} 
+            apt={apt} 
+            onConfirm={onConfirm} 
+            onCancel={onCancel} 
+          />
         ))}
       </div>
     </div>

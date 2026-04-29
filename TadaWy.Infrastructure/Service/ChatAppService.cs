@@ -56,8 +56,8 @@ namespace TadaWy.Infrastructure.Service
             // Check if appointment exists
             var hasAppointment = await _context.Appointments
                 .AnyAsync(a =>
-                    a.PatientId == senderUserId && a.Doctor.UserID == dto.ReceiverUserId ||
-                    a.PatientId == dto.ReceiverUserId && a.Doctor.UserID == senderUserId
+                    (a.PatientId == senderUserId && a.Doctor.UserID == dto.ReceiverUserId) ||
+                    (a.PatientId == dto.ReceiverUserId && a.Doctor.UserID == senderUserId)
                 );
 
             if (!hasAppointment)

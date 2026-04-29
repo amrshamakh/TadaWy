@@ -8,8 +8,9 @@ namespace TadaWy.Domain.Enums
 {
     public enum AppointmentStatus
     {
-        Pending = 0,
-        Confirmed = 1,
-        Cancelled = 2
+        Upcoming = 0,
+        Completed = 1,
+        Cancelled = 2,
+        Missed=3
     }
 }

@@ -39,5 +39,23 @@ namespace TadaWy.API.Hubs
                     unreadCount = unreadCount
                 });
         }
+
+        public async Task MarkAsSeen(string otherUserId)
+        {
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                throw new HubException("Unauthorized");
+
+            await _chatService.MarkMessagesAsSeenAsync(userId, otherUserId);
+
+            // notify sender that messages are seen
+            await Clients.User(otherUserId)
+                .SendAsync("MessagesSeen", new
+                {
+                    SeenByUserId = userId,
+                    ConversationUserId = otherUserId
+                });
+        }
     }
 }

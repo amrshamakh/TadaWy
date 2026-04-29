@@ -204,9 +204,13 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -224,6 +228,12 @@ using (var scope = app.Services.CreateScope())
         job => job.SendRemindersAsync(),
         Cron.Hourly() 
     );
+    recurringJobManager.AddOrUpdate<IAppointmentService>(
+      "mark-missed-appointments",
+      job => job.MarkMissedAppointmentsAsync(),
+      Cron.Hourly()
+  );
 }
+RecurringJob.RemoveIfExists("expire-pending-appointment-payments");
 
 app.Run();

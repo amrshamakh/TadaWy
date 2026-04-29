@@ -11,7 +11,7 @@ namespace TadaWy.Domain.Entities
         public ApplicationUser Patient { get; set; }
         public int DoctorId { get; set; }
         public Doctor Doctor { get; set; }
-        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Upcoming;
 
        
         public Payment? Payment { get; set; }
