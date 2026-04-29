@@ -85,9 +85,9 @@ namespace TadaWy.Infrastructure.service
             var user = await _userManager.FindByEmailAsync(dto.Email);
             if (user == null)
                 return false;
-
-
+            
             var decodedToken = WebUtility.UrlDecode(dto.Token);
+            
 
             var result = await _userManager.ResetPasswordAsync(
                 user,

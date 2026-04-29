@@ -550,8 +550,8 @@ namespace TadaWy.Infrastructure.Service
             return new DoctorAppointmentsDto
             {
                 TotalAppointments = appointmentList.Count,
-                ConfirmedCount = appointmentList.Count(a => a.Status == AppointmentStatus.Confirmed),
-                PendingCount = appointmentList.Count(a => a.Status == AppointmentStatus.Pending),
+                ConfirmedCount = appointmentList.Count(a => a.Status == AppointmentStatus.Completed),
+                PendingCount = appointmentList.Count(a => a.Status == AppointmentStatus.Upcoming),
                 CancelledCount = appointmentList.Count(a => a.Status == AppointmentStatus.Cancelled),
                 Appointments = appointmentList
             };
@@ -567,10 +567,10 @@ namespace TadaWy.Infrastructure.Service
             if (appointment == null)
                 throw new NotFoundException("Appointment not found or you don't have permission to confirm it.");
 
-            if (appointment.Status != AppointmentStatus.Pending)
+            if (appointment.Status != AppointmentStatus.Upcoming)
                 return false;
 
-            appointment.Status = AppointmentStatus.Confirmed;
+            appointment.Status = AppointmentStatus.Completed;
 
             // Update payment status if offline
             if (appointment.Payment != null && appointment.Payment.Method == PaymentMethod.Offline)

@@ -29,7 +29,7 @@ namespace TadaWy.Infrastructure.Service
             var twelveHoursFromNow = now.AddHours(12);
             var app12h = await _context.Appointments
                 .Include(a => a.Doctor)
-                .Where(a => a.Status == AppointmentStatus.Pending &&
+                .Where(a => a.Status == AppointmentStatus.Upcoming &&
                             a.Date <= twelveHoursFromNow &&
                             a.Date > now.AddHours(11)) // Looking for appointments in the next hour's window (11-12h away)
                 .ToListAsync();
@@ -55,7 +55,7 @@ namespace TadaWy.Infrastructure.Service
             var twoHoursFromNow = now.AddHours(2);
             var app2h = await _context.Appointments
                 .Include(a => a.Doctor)
-                .Where(a => a.Status == AppointmentStatus.Pending &&
+                .Where(a => a.Status == AppointmentStatus.Upcoming &&
                             a.Date <= twoHoursFromNow &&
                             a.Date > now) // Any pending appointment in the next 2 hours
                 .ToListAsync();

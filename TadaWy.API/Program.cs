@@ -228,6 +228,11 @@ using (var scope = app.Services.CreateScope())
         job => job.SendRemindersAsync(),
         Cron.Hourly() 
     );
+    recurringJobManager.AddOrUpdate<IAppointmentService>(
+      "mark-missed-appointments",
+      job => job.MarkMissedAppointmentsAsync(),
+      Cron.Hourly()
+  );
 }
 
 app.Run();

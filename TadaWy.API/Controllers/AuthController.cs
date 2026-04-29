@@ -12,6 +12,7 @@ using TadaWy.Applicaation.IServices;
 using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Infrastructure.Presistence;
 using Microsoft.AspNetCore.Identity;
+using TadaWy.Domain.Entities;
 
 namespace TadaWy.API.Controllers
 {
@@ -143,7 +144,7 @@ namespace TadaWy.API.Controllers
         {
             var result = await _authService.ResetPasswordAsync(dto);
             if (!result)
-                return BadRequest("Invalid token or email");
+                return BadRequest();
 
             return Ok("Password reset successfully");
         }

@@ -81,7 +81,7 @@ namespace TadaWy.Infrastructure.Service
                 DoctorId = doctor.Id,
                 PatientId = patientid,
                 Date = request.Date,
-                Status = AppointmentStatus.Pending
+                Status = AppointmentStatus.Upcoming
             };
 
             _tadaWyDbContext.Appointments.Add(appointment);
@@ -115,7 +115,7 @@ namespace TadaWy.Infrastructure.Service
                 DoctorId = doctor.Id,
                 PatientId = patientid,
                 Date = request.Date,
-                Status = AppointmentStatus.Pending
+                Status = AppointmentStatus.Upcoming
             };
 
             _tadaWyDbContext.Appointments.Add(appointment);
@@ -145,6 +145,26 @@ namespace TadaWy.Infrastructure.Service
             return iframeUrl;
         }
 
-        
+
+        public async Task MarkMissedAppointmentsAsync()
+        {
+            var now = DateTime.UtcNow;
+            var cutoff = now.AddHours(-24);
+
+            var toMiss = await _tadaWyDbContext.Appointments
+                .Where(a =>a.Payment.Method==PaymentMethod.Offline && a.Status == AppointmentStatus.Upcoming &&
+                            a.Date < cutoff)
+                .ToListAsync();
+
+            if (!toMiss.Any())
+                return;
+
+            foreach (var appt in toMiss)
+            {
+                appt.Status = AppointmentStatus.Missed;
+            }
+
+            await _tadaWyDbContext.SaveChangesAsync();
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace TadaWy.Applicaation.IService
 
         Task<string> CreateOnlineAppointmentAsync(CreateAppointmentRequest request,string patientid);
 
+        Task MarkMissedAppointmentsAsync();
+
 
     }
 }
