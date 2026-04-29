@@ -55,7 +55,7 @@ namespace TadaWy.Infrastructure.Service
 
             return calculatedHmac == callback.Hmac.ToLowerInvariant();
         }
-        public async Task HandleSuccessfulPayment(int paymentId)
+        public async Task HandleSuccessfulPayment(int paymentId, string externalTransactionId, string externalOrderId)
         {
 
             var payment = await _context.Payments
@@ -66,6 +66,8 @@ namespace TadaWy.Infrastructure.Service
 
             payment.Status = PaymentStatus.Paid;
             payment.PaymentDate = DateTime.UtcNow;
+            payment.ExternalTransactionId = externalTransactionId;
+            payment.ExternalOrderId = externalOrderId;
 
             payment.CommissionAmount = payment.Amount * 0.2m;
             payment.DoctorAmount = payment.Amount - payment.CommissionAmount;
@@ -210,7 +212,79 @@ namespace TadaWy.Infrastructure.Service
             return $"https://accept.paymob.com/api/acceptance/iframes/{_settings.IframeId}?payment_token={paymentToken}";
         }
 
-     
-        
+        public async Task<bool> RefundAsync(int paymentId)
+        {
+            var payment = await _context.Payments
+                .FirstOrDefaultAsync(p => p.Id == paymentId);
+
+            if (payment == null)
+                return false;
+
+            if (payment.Status != PaymentStatus.Paid)
+                return false;
+
+            if (string.IsNullOrEmpty(payment.ExternalTransactionId))
+                return false;
+
+            var token = await GetAuthToken();
+
+            using var client = new HttpClient();
+
+            var body = new
+            {
+                auth_token = token,
+                transaction_id = payment.ExternalTransactionId,
+                amount_cents = (int)(payment.Amount * 100)
+            };
+
+            var response = await client.PostAsJsonAsync(
+                "https://accept.paymob.com/api/acceptance/void_refund/refund",
+                body
+            );
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                return false;
+            }
+
+            payment.Status = PaymentStatus.Refunded;
+            payment.RefundedAt = DateTime.UtcNow;
+
+            await RevertWalletForRefund(payment);
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        private async Task RevertWalletForRefund(Payment payment)
+        {
+            // نفس فكرة AddToWallet بس بالعكس
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(i => i.UserID == payment.DoctorId)
+                ?? throw new Exception("doctor not found");
+
+            var wallet = await _context.DoctorWallets
+                .FirstOrDefaultAsync(x => x.DoctorId == doctor.Id);
+
+            if (wallet == null)
+                return;
+
+            wallet.Balance -= payment.DoctorAmount;
+
+            var transaction = new WalletTransaction
+            {
+                DoctorId = doctor.Id,
+                Amount = -payment.DoctorAmount,
+                Type = TransactionType.Debit,
+                PaymentId = payment.Id,
+                Description = "Refund deducted from wallet"
+            };
+
+            _context.walletTransactions.Add(transaction);
+        }
+
+
     }
 }

@@ -23,23 +23,26 @@ namespace TadaWy.API.Controllers
                 throw new UnauthorizedAccessException("Invalid HMAC");
 
             int paymentId = int.Parse(callback.Obj.Order.MerchantOrderId);
+
             if (callback.Success
                 && callback.Obj != null
                 && callback.Obj.Order != null)
             {
-               
+                var externalTransactionId = callback.Obj.Id.ToString();
+                var externalOrderId = callback.Obj.Order.MerchantOrderId.ToString();
 
-                await _paymentService.HandleSuccessfulPayment(paymentId);
-               
+                await _paymentService.HandleSuccessfulPayment(
+                    paymentId,
+                    externalTransactionId,
+                    externalOrderId
+                );
             }
             else
             {
                 await _paymentService.HandleFailedPayment(paymentId);
-              
             }
 
             return Ok();
-
         }
     }
 }

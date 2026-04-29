@@ -1,4 +1,3 @@
-using TadaWy.Domain.Entities;
 using TadaWy.Domain.Enums;
 
 namespace TadaWy.Applicaation.DTO.DoctorDTOs

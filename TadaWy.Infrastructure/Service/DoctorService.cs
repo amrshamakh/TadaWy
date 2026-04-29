@@ -18,14 +18,17 @@ namespace TadaWy.Infrastructure.Service
         private readonly IImageService _imageService;
         private readonly INotificationService _notificationService;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IPaymentService _paymentService;
 
-        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService, IHttpClientFactory httpClientFactory)
+
+        public DoctorService(TadaWyDbContext context, IWebHostEnvironment env, IImageService imageService, INotificationService notificationService, IHttpClientFactory httpClientFactory, IPaymentService paymentService)
         {
             _context = context;
             _env = env;
             _imageService = imageService;
             _notificationService = notificationService;
             _httpClientFactory = httpClientFactory;
+            _paymentService = paymentService;
         }
 
         public async Task<PagedResult<DoctorListDto>> GetDoctorsAsync(GetDoctorsRequest request)
@@ -492,6 +495,21 @@ namespace TadaWy.Infrastructure.Service
 
             if (appointment.Status == AppointmentStatus.Cancelled)
                 return false;
+            if (appointment.Date <= DateTime.Now)
+                return false;
+
+            if (appointment.Payment != null &&
+                appointment.Payment.Method == PaymentMethod.Online &&
+                appointment.Payment.Amount > 0 &&
+                appointment.Payment.Status == PaymentStatus.Paid)
+            {
+                var refundSucceeded = await _paymentService.RefundAsync(appointment.Payment.Id);
+
+                if (!refundSucceeded)
+                {
+                    return false;
+                }
+            }
 
             appointment.Status = AppointmentStatus.Cancelled;
             await _context.SaveChangesAsync();
