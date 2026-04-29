@@ -56,6 +56,7 @@ namespace TadaWy.Infrastructure.Service
             var projected = query.Select(d => new
             {
                 d.Id,
+                d.UserID,
                 d.FirstName,
                 d.LastName,
                 d.ImageUrl,
@@ -81,6 +82,7 @@ namespace TadaWy.Infrastructure.Service
                 .Select(d => new DoctorListDto
                 {
                     Id = d.Id,
+                    UserId = d.UserID,
                     DoctorName = d.FirstName + " " + d.LastName,
                     Rate = Math.Round(d.Rating, 1),
                     Specialization = d.SpecializationName,

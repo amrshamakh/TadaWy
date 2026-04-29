@@ -44,3 +44,12 @@ export const getAppointmentReceipt = async (id) => {
     throw error;
   }
 };
+
+export const submitReview = async (reviewData) => {
+  try {
+    return await ApiClient.post("/Patient/review", reviewData);
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    throw error;
+  }
+};
