@@ -148,9 +148,22 @@
     "profile": "Profile",
     "settings": "Settings",
     "notifications": "Notifications",
+    "markAllRead": "Mark all as read",
+    "clickToReview": "Click to Review",
+    "clickForDetails": "Click for Details",
+    "justNow": "Just now",
+    "hoursAgo": "{{count}} hours ago",
+    "yesterday": "Yesterday",
+    "appointmentReminder": "Appointment Reminder",
+    "appointmentReminderDesc": "Upcoming appointment with Sarah Miller today at 2:00 PM.",
+    "appointmentBooked": "Appointment Booked",
+    "appointmentBookedDesc": "New booking confirmed: David Chen for a General Consultation on Oct 12.",
+    "appointmentCompleted": "Appointment Completed",
+    "appointmentCompletedDesc": "Appointment with Emma Lawrence is complete. Please leave a review.",
     "signOut": "Sign Out",
     "search": "Search for clinic, doctor, or specialty...",
-    "doctorDashboard": "Doctor Dashboard"
+    "doctorDashboard": "Doctor Dashboard",
+    "messages": "Messages"
   },
   "common": {
     "save": "Save",
@@ -693,5 +706,15 @@
       "weakPassword": "Password must be at least 6 characters.",
       "passwordMismatch": "Passwords do not match!"
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "searchDoctors": "Search for doctors...",
+    "typeMessage": "Type your message here...",
+    "endToEnd": "END-TO-END ENCRYPTED MEDICAL COMMUNICATION",
+    "seen": "Seen",
+    "unseen": "unSeen",
+    "yesterday": "Yesterday",
+    "selectChat": "Select a chat to start messaging"
   }
 }

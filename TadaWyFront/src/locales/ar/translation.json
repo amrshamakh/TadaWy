@@ -148,9 +148,22 @@
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "notifications": "الإشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "clickToReview": "اضغط للتقييم",
+    "clickForDetails": "اضغط للتفاصيل",
+    "justNow": "الآن",
+    "hoursAgo": "منذ {{count}} ساعة",
+    "yesterday": "أمس",
+    "appointmentReminder": "تذكير بموعد",
+    "appointmentReminderDesc": "موعدك القادم مع سارة ميلر اليوم في تمام الساعة 2:00 مساءً.",
+    "appointmentBooked": "تم حجز موعد",
+    "appointmentBookedDesc": "تم تأكيد حجز جديد: ديفيد تشين لاستشارة عامة في 12 أكتوبر.",
+    "appointmentCompleted": "تم اكتمال الموعد",
+    "appointmentCompletedDesc": "اكتمل موعدك مع إيما لورانس. يرجى ترك تقييمك.",
     "signOut": "تسجيل الخروج",
     "search": "ابحث عن عيادة أو طبيب أو تخصص...",
-    "doctorDashboard": "لوحة تحكم الطبيب"
+    "doctorDashboard": "لوحة تحكم الطبيب",
+    "messages": "الرسائل"
   },
   "common": {
     "save": "حفظ",
@@ -702,5 +715,15 @@
       "weakPassword": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
       "passwordMismatch": "كلمتا المرور غير متطابقتين!"
     }
+  },
+  "messages": {
+    "title": "الرسائل",
+    "searchDoctors": "ابحث عن الأطباء...",
+    "typeMessage": "اكتب رسالتك هنا...",
+    "endToEnd": "اتصال طبي مشفر من طرف إلى طرف",
+    "seen": "مقروء",
+    "unseen": "غير مقروء",
+    "yesterday": "أمس",
+    "selectChat": "اختر محادثة للبدء"
   }
 }
