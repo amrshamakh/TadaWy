@@ -74,7 +74,7 @@ namespace TadaWy.Infrastructure.service
             var token = await _userManager.GeneratePasswordResetTokenAsync(result);
             var encodedToken = WebUtility.UrlEncode(token);
 
-            var resetLink = $"https://TadaWy/reset-password?email={Email}&token={encodedToken}";
+            var resetLink = $"http://localhost:5173/reset-password?email={Email}&token={encodedToken}";
 
             BackgroundJob.Enqueue<IEmailService>(x =>
       x.SendEmail(result.Email, "ResetPassword", $"Reset your password from here: {resetLink}"));
