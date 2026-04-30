@@ -18,8 +18,6 @@ namespace TadaWy.Domain.Entities
         public string Language { get; set; } = "en";
 
         public bool EmailNotifications { get; set; } = true;
-
-        public bool AppointmentReminders { get; set; } = true;
-        public bool NewBookingAlerts { get; set; } = true;
+        public bool ApplicationNotifications { get; set; } = true;
     }
 }

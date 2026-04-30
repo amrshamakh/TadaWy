@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using TadaWy.Applicaation.DTO.AppointmentDTOs;
 using TadaWy.Applicaation.DTO.LookUpDTOs;
 using TadaWy.Applicaation.DTO.PatientDTOs;
+using TadaWy.Applicaation.DTO.DoctorDTOs;
 using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Entities;
 using TadaWy.Domain.Enums;
@@ -21,6 +22,34 @@ namespace TadaWy.Infrastructure.Service
             _context = context;
             _notificationService = notificationService;
             _paymentService= paymentService;
+        }
+
+        public async Task<PatientDetailsForDoctorDto> GetPatientDetailsForDoctorAsync(int patientId)
+        {
+            var patient = await _context.Patients
+                .Include(p => p.PatientAllergies).ThenInclude(pa => pa.Allergy)
+                .Include(p => p.PatientChronicDiseases).ThenInclude(pc => pc.ChronicDisease)
+                .FirstOrDefaultAsync(p => p.Id == patientId)
+                ?? throw new NotFoundException("Patient not found");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == patient.UserID)
+                ?? throw new NotFoundException("Patient user account not found");
+
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            var age = today.Year - patient.DateOfBirth.Year;
+            if (patient.DateOfBirth > today.AddYears(-age)) age--;
+
+            return new PatientDetailsForDoctorDto
+            {
+                FullName = $"{patient.FirstName} {patient.LastName}",
+                Email = user.Email ?? "N/A",
+                Phone = user.PhoneNumber ?? "N/A",
+                Gender = patient.Gendre.ToString(),
+                Age = age,
+                BloodType = patient.BloodType,
+                Allergies = patient.PatientAllergies.Select(a => a.Allergy.Name).ToList(),
+                ChronicDiseases = patient.PatientChronicDiseases.Select(d => d.ChronicDisease.Name).ToList()
+            };
         }
 
         public async Task<PatientProfileDto> GetPatientProfileAsync(string userId)

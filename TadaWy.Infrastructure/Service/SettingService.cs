@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,6 +10,7 @@ using TadaWy.Applicaation.DTO.SettingDtos;
 using TadaWy.Applicaation.IService;
 using TadaWy.Domain.Entities;
 using TadaWy.Domain.Entities.Identity;
+using TadaWy.Domain.Exceptions;
 using TadaWy.Infrastructure.Presistence;
 
 namespace TadaWy.Infrastructure.Service
@@ -17,15 +18,13 @@ namespace TadaWy.Infrastructure.Service
     public class SettingService:ISettingService
     {
         private readonly TadaWyDbContext _context;
-        private readonly IPasswordHasher<ApplicationUser> _passwordHasher;
 
-        public SettingService(TadaWyDbContext tadaWyDbContext, IPasswordHasher<ApplicationUser> passwordHasher)
+        public SettingService(TadaWyDbContext tadaWyDbContext)
         {
             _context = tadaWyDbContext;
-            _passwordHasher = passwordHasher;
         }
 
-        public async Task<UserSettings> SeedSettingAsync(string userId)
+        private async Task<UserSettings> SeedSettingAsync(string userId)
         {
             var settings = new UserSettings
             {
@@ -33,8 +32,7 @@ namespace TadaWy.Infrastructure.Service
                 Theme = "light",
                 Language = "ar",
                 EmailNotifications = true,
-                AppointmentReminders = true,
-                NewBookingAlerts = true
+                ApplicationNotifications = true
             };
 
             _context.UserSettings.Add(settings);
@@ -42,15 +40,15 @@ namespace TadaWy.Infrastructure.Service
 
             return settings;
         }
+
         public async Task<SettingDto> GetSettings(string userId)
         {
             var user = await _context.Users
                 .Include(x => x.Settings)
                 .FirstOrDefaultAsync(x => x.Id == userId)
-                ?? throw new Exception("The user not found");
+                ?? throw new NotFoundException("The user not found");
 
-            var settings = await _context.UserSettings
-                .FirstOrDefaultAsync(x => x.UserId == userId);
+            var settings = user.Settings;
 
             if (settings == null)
                 settings = await SeedSettingAsync(userId); 
@@ -60,16 +58,20 @@ namespace TadaWy.Infrastructure.Service
                 Theme = settings.Theme,
                 Language = settings.Language,
                 EmailNotifications = settings.EmailNotifications,
-                AppointmentReminders = settings.AppointmentReminders,
-                NewBookingAlerts = settings.NewBookingAlerts,
+                ApplicationNotifications = settings.ApplicationNotifications,
                 Email = user.Email,
                 Id = user.Id
             };
         }
+
         public async Task<SettingDto> UpdateSettings(string userId, UpdateSettingsDto dto)
         {
-            var settings = await _context.UserSettings
-                .FirstOrDefaultAsync(x => x.UserId == userId);
+            var user = await _context.Users
+                .Include(x => x.Settings)
+                .FirstOrDefaultAsync(u => u.Id == userId)
+                ?? throw new NotFoundException("User not found");
+
+            var settings = user.Settings;
 
             if (settings == null)
                 settings = await SeedSettingAsync(userId);
@@ -83,13 +85,8 @@ namespace TadaWy.Infrastructure.Service
             if (dto.EmailNotifications.HasValue)
                 settings.EmailNotifications = dto.EmailNotifications.Value;
 
-            if (dto.AppointmentReminders.HasValue)
-                settings.AppointmentReminders = dto.AppointmentReminders.Value;
-
-            if (dto.NewBookingAlerts.HasValue)
-                settings.NewBookingAlerts = dto.NewBookingAlerts.Value;
-
-            var user = await _context.Users.FindAsync(userId);
+            if (dto.ApplicationNotifications.HasValue)
+                settings.ApplicationNotifications = dto.ApplicationNotifications.Value;
 
             await _context.SaveChangesAsync();
 
@@ -98,9 +95,8 @@ namespace TadaWy.Infrastructure.Service
                 Theme = settings.Theme,
                 Language = settings.Language,
                 EmailNotifications = settings.EmailNotifications,
-                AppointmentReminders = settings.AppointmentReminders,
-                NewBookingAlerts = settings.NewBookingAlerts,
-                Email = user?.Email,
+                ApplicationNotifications = settings.ApplicationNotifications,
+                Email = user.Email,
                 Id = userId
             };
         }
