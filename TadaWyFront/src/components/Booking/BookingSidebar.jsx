@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
-import infoIcon from "../../assets/info.svg";
+import infoIcon from "@/assets/Info.svg";
 import html2canvas from "html2canvas";
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
@@ -9,46 +9,38 @@ import { toast } from "react-toastify";
 import PaymentMethodModal from "./payments/PaymentMethodModal";
 import BookingReceiptModal from "./payments/BookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
-import { getVisibleDays, toReadableDateTime } from "./utils/bookingDate";
+import { toReadableDateTime } from "./utils/bookingDate";
 import { bookOfflineAppointment, bookOnlineAppointment } from "../../modules/patient/api/appointmentApi";
 import AuthRequiredModal from "../AuthRequiredModal";
 import "./Booking.css";
-
-const getTimeOptions = (t) => [
-  `10:00 ${t("common.am")}`,
-  `11:00 ${t("common.am")}`,
-  `12:00 ${t("common.pm")}`,
-  `1:00 ${t("common.pm")}`,
-  `2:00 ${t("common.pm")}`,
-  `3:00 ${t("common.pm")}`,
-];
-
-// Note: If you want to translate the times themselves (e.g. 10 صباحاً), 
-// you can use t() logic here. For now keeping numbers but labels could be translated.
 
 export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const baseDate = useMemo(() => {
-    const today = new Date();
-    return new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  }, []);
-  const [dateOffset, setDateOffset] = useState(0);
+  const isAr = i18n.language === "ar";
   
   const availability = useMemo(() => {
-    if (!doctor?.availableDaysSlots) return [];
-    return doctor.availableDaysSlots;
+    return doctor?.availableDaysSlots || [];
   }, [doctor]);
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+  const [startIndex, setStartIndex] = useState(0);
+  const visibleDaysCount = 5;
   const [selectedTime, setSelectedTime] = useState(null);
-  
+
+  // Ensure selection resets when doctor changes
+  useEffect(() => {
+    setSelectedDayIndex(0);
+    setStartIndex(0);
+    setSelectedTime(null);
+  }, [availability]);
+
   const selectedDateStr = useMemo(() => {
     if (!availability[selectedDayIndex]) return null;
     const date = new Date(availability[selectedDayIndex].date);
-    return `${date.getDate()} ${date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`;
-  }, [availability, selectedDayIndex, i18n.language]);
+    return `${date.getDate()} ${date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { month: "short" })}`;
+  }, [availability, selectedDayIndex, isAr]);
 
   const [activeModal, setActiveModal] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -59,25 +51,40 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
 
   const appointmentCost = doctor?.price || 150;
 
-  const currentDays = useMemo(() => getVisibleDays(baseDate, dateOffset, i18n.language), [baseDate, dateOffset, i18n.language]);
-
   const TIME_OPTIONS = useMemo(() => {
     if (!availability[selectedDayIndex]) return [];
     return availability[selectedDayIndex].slots.map(slot => {
       const start = new Date(slot.startTime);
-      return start.toLocaleTimeString(i18n.language === "ar" ? "ar-EG" : "en-US", { 
+      return start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", { 
         hour: '2-digit', 
         minute: '2-digit',
         hour12: true 
       });
     });
-  }, [availability, selectedDayIndex, i18n.language]);
+  }, [availability, selectedDayIndex, isAr]);
 
+  // handlePrev: Move focus back. Slide carousel back only if focus goes out of view.
   const handlePrev = () => {
-    if (selectedDayIndex > 0) setSelectedDayIndex(prev => prev - 1);
+    if (selectedDayIndex > 0) {
+      const prevIndex = selectedDayIndex - 1;
+      setSelectedDayIndex(prevIndex);
+      setSelectedTime(null);
+      if (prevIndex < startIndex) {
+        setStartIndex(prevIndex);
+      }
+    }
   };
+
+  // handleNext: Move focus forward. Slide carousel forward if focus goes out of view.
   const handleNext = () => {
-    if (selectedDayIndex < availability.length - 1) setSelectedDayIndex(prev => prev + 1);
+    if (selectedDayIndex < availability.length - 1) {
+      const nextIndex = selectedDayIndex + 1;
+      setSelectedDayIndex(nextIndex);
+      setSelectedTime(null);
+      if (nextIndex >= startIndex + visibleDaysCount) {
+        setStartIndex(nextIndex - visibleDaysCount + 1);
+      }
+    }
   };
 
   const handleBook = () => {
@@ -110,23 +117,20 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   );
 
   const handlePaymentSelection = async (method) => {
-    setActiveModal(null); // Close the payment method modal immediately
+    setActiveModal(null); 
 
-    // Find the exact ISO start time for the selected time
     let isoDate = new Date().toISOString();
     if (availability[selectedDayIndex]) {
       const selectedSlot = availability[selectedDayIndex].slots.find(slot => {
         const start = new Date(slot.startTime);
-        const formattedStart = start.toLocaleTimeString(i18n.language === "ar" ? "ar-EG" : "en-US", { 
+        const formattedStart = start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", { 
           hour: '2-digit', 
           minute: '2-digit',
           hour12: true 
         });
         return formattedStart === selectedTime;
       });
-      if (selectedSlot) {
-        isoDate = selectedSlot.startTime;
-      }
+      if (selectedSlot) isoDate = selectedSlot.startTime;
     }
 
     const payload = {
@@ -141,16 +145,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
         setActiveModal("success");
         if (onBookingSuccess) onBookingSuccess();
       } catch (error) {
-        console.error("Failed to book offline appointment:", error);
-        let errorMsg = "Failed to book appointment. Please try again.";
-        if (error.response?.data?.message) {
-          errorMsg = error.response.data.message;
-        } else if (typeof error.response?.data === 'string') {
-          errorMsg = error.response.data;
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        toast.error(errorMsg);
+        toast.error(error.response?.data?.message || error.message || "Failed to book");
       }
       return;
     }
@@ -158,37 +153,13 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     if (method === "online") {
       try {
         const response = await bookOnlineAppointment(payload);
-        
-        // Handle both object {url: '...'} and plain string URL responses
-        let url = null;
-        if (response && response.url) {
-          url = response.url;
-        } else if (typeof response === 'string' && response.startsWith('http')) {
-          url = response;
-        }
-
+        const url = response?.url || (typeof response === 'string' && response.startsWith('http') ? response : null);
         if (url) {
-          toast.info("Redirecting to payment gateway...");
-          setTimeout(() => {
-            window.location.href = url; // Opens in current tab
-          }, 500); // Small delay to let the user see the toast
-        } else if (response && response.message) {
-           toast.error(response.message);
-        } else {
-          // Fallback if no URL is provided but it succeeds
-          toast.success("Online booking initiated!");
+          toast.info("Redirecting...");
+          setTimeout(() => { window.location.href = url; }, 500);
         }
       } catch (error) {
-        console.error("Failed to book online appointment:", error);
-        let errorMsg = "Failed to initiate online payment.";
-        if (error.response?.data?.message) {
-          errorMsg = error.response.data.message;
-        } else if (typeof error.response?.data === 'string') {
-          errorMsg = error.response.data;
-        } else if (error.message) {
-          errorMsg = error.message;
-        }
-        toast.error(errorMsg);
+        toast.error("Failed to initiate payment");
       }
       return;
     }
@@ -198,29 +169,26 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     if (!receiptRef.current || isPrinting) return;
     setIsPrinting(true);
     try {
-      const canvas = await html2canvas(receiptRef.current, {
-        backgroundColor: "#ffffff",
-        scale: 2,
-      });
+      const canvas = await html2canvas(receiptRef.current, { backgroundColor: "#ffffff", scale: 2 });
       const link = document.createElement("a");
       link.href = canvas.toDataURL("image/png");
       link.download = `receipt-${Date.now()}.png`;
       link.click();
     } catch (error) {
-      console.error("Failed to export receipt image", error);
+      console.error(error);
     } finally {
       setIsPrinting(false);
     }
   };
 
-  const handleReceiptDone = () => setActiveModal(null);
-
   useEffect(() => {
-    if (activeModal !== "success") return;
-    const timer = setTimeout(() => setActiveModal("receipt"), 1200);
-    return () => clearTimeout(timer);
+    if (activeModal === "success") {
+      const timer = setTimeout(() => setActiveModal("receipt"), 1200);
+      return () => clearTimeout(timer);
+    }
   }, [activeModal]);
 
+  // Sidebar positioning logic (Fixed on scroll)
   useEffect(() => {
     const updatePosition = () => {
       if (!wrapperRef.current || !sidebarRef.current) return;
@@ -232,7 +200,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
         sidebar.style.top = '96px';
         sidebar.style.width = `${wrapperRect.width}px`;
         sidebar.style.left = `${wrapperRect.left}px`;
-        sidebar.style.right = 'auto'; // ensure RTL doesn't break
+        sidebar.style.right = 'auto';
       } else {
         sidebar.style.position = 'static';
         sidebar.style.top = 'auto';
@@ -242,17 +210,9 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     };
 
     window.addEventListener('scroll', updatePosition, true);
-    
-    // Setup ResizeObserver to react when Layout Sidebar toggles
-    const resizeObserver = new ResizeObserver(() => {
-      updatePosition();
-    });
-    
-    if (wrapperRef.current) {
-      resizeObserver.observe(wrapperRef.current);
-    }
-    
-    updatePosition(); // Initial position setup
+    const resizeObserver = new ResizeObserver(updatePosition);
+    if (wrapperRef.current) resizeObserver.observe(wrapperRef.current);
+    updatePosition();
 
     return () => {
       window.removeEventListener('scroll', updatePosition, true);
@@ -263,68 +223,59 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   return (
     <div ref={wrapperRef} className="booking-sidebar-wrapper">
       <aside ref={sidebarRef} className="booking-card booking-sidebar">
-      <div className="booking-sidebar-header-bar">
-        <Calendar size={20} className="booking-sidebar-header-icon" />
-        <h3 className="booking-sidebar-header-title">{t("booking.sidebar.title")}</h3>
-      </div>
+        <div className="booking-sidebar-header-bar">
+          <Calendar size={20} className="booking-sidebar-header-icon" />
+          <h3 className="booking-sidebar-header-title">{t("booking.sidebar.title")}</h3>
+        </div>
 
-      <div className="booking-sidebar-content">
-        {availability.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 px-4 text-center bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-800 mt-4">
-            <Calendar size={48} className="text-gray-300 dark:text-slate-600 mb-3" />
-            <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-1">
-              {t("booking.sidebar.notAvailable")}
-            </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-[200px]">
-              {t("booking.sidebar.notAvailableDesc")}
-            </p>
-          </div>
-        ) : (
-          <>
-            <div className="booking-sidebar-section">
-              <p className="booking-sidebar-label flex items-center gap-1.5">
-                {t("booking.sidebar.selectDay")}
-                <img src={infoIcon} alt="" className="w-3.5 h-3.5 shrink-0 dark:invert dark:opacity-90" />
-              </p>
-              <div className="booking-date-carousel">
-                <button type="button" className="booking-carousel-nav" onClick={handlePrev} disabled={selectedDayIndex === 0} aria-label="Previous options">
-                  <ArrowLeft size={20} />
-                </button>
-
-                <div className="booking-date-grid">
-                  {availability.map((item, index) => {
-                    const date = new Date(item.date);
-                    const dayName = date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { weekday: 'short' });
-                    const datePill = `${date.getDate()} ${date.toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", { month: "short" })}`;
-                    
-                    return (
-                      <button
-                        key={item.date}
-                        type="button"
-                        className={`booking-date-pill ${selectedDayIndex === index ? "booking-date-pill-selected" : ""}`}
-                        onClick={() => {
-                          setSelectedDayIndex(index);
-                          setSelectedTime(null);
-                        }}
-                      >
-                        <span className="booking-date-pill-day">{dayName}</span>
-                        <span className="booking-date-pill-date">{datePill}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex >= availability.length - 1} aria-label="Next options">
-                  <ArrowRight size={20} />
-                </button>
-              </div>
+        <div className="booking-sidebar-content flex-1 overflow-y-auto">
+          {availability.length === 0 ? (
+            <div className="py-8 text-center bg-gray-50 dark:bg-slate-800/50 rounded-xl mt-4">
+              <p className="text-sm text-gray-500">{t("booking.sidebar.notAvailable")}</p>
             </div>
+          ) : (
+            <>
+              <div className="booking-sidebar-section">
+                <p className="booking-sidebar-label flex items-center gap-1.5">
+                  {t("booking.sidebar.selectDay")}
+                  <img src={infoIcon} alt="" className="w-3.5 h-3.5 dark:invert" />
+                </p>
+                <div className="booking-date-carousel" style={{ direction: "ltr" }}>
+                  <button type="button" className="booking-carousel-nav" onClick={handlePrev} disabled={selectedDayIndex === 0}>
+                    <ArrowLeft size={20} />
+                  </button>
 
-            <div className="booking-sidebar-section">
-              <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
-              <div className="booking-time-grid">
-                {TIME_OPTIONS.length > 0 ? (
-                  TIME_OPTIONS.map((time) => (
+                  <div className="booking-date-grid">
+                    {availability.slice(startIndex, startIndex + visibleDaysCount).map((item, localIndex) => {
+                      const index = startIndex + localIndex;
+                      const date = new Date(item.date);
+                      const dayName = date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { weekday: 'short' });
+                      const datePill = `${date.getDate()} ${date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { month: "short" })}`;
+                      
+                      return (
+                        <button
+                          key={item.date}
+                          type="button"
+                          className={`booking-date-pill ${selectedDayIndex === index ? "booking-date-pill-selected" : ""}`}
+                          onClick={() => { setSelectedDayIndex(index); setSelectedTime(null); }}
+                        >
+                          <span className="booking-date-pill-day">{dayName}</span>
+                          <span className="booking-date-pill-date">{datePill}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex === availability.length - 1}>
+                    <ArrowRight size={20} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="booking-sidebar-section mt-4">
+                <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
+                <div className="booking-time-grid">
+                  {TIME_OPTIONS.map((time) => (
                     <button
                       key={time}
                       type="button"
@@ -333,20 +284,14 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                     >
                       {time}
                     </button>
-                  ))
-                ) : (
-                  <div className="col-span-full flex flex-col items-center justify-center py-4 bg-gray-50 dark:bg-slate-800/30 rounded-lg">
-                    <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-                      {t("booking.sidebar.notAvailable")}
-                    </p>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
 
-        <div className="booking-sidebar-footer">
+        <div className="booking-sidebar-footer border-t dark:border-slate-800">
           <div className="booking-price">
             <span className="booking-price-label">{t("booking.sidebar.cost")}</span>
             <span className="booking-price-box">
@@ -354,58 +299,32 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
               <span className="booking-price-currency"> {t("booking.sidebar.currency")}</span>
             </span>
           </div>
-          <div className="booking-submit-wrapper">
-            <button
-              type="button"
-              className="booking-submit-btn"
-              onClick={handleBook}
-              disabled={isDisabled}
-            >
-              <Calendar size={18} className="booking-submit-icon" />
-              {t("booking.sidebar.bookBtn")}
-            </button>
-          </div>
+          <button type="button" className="booking-submit-btn mt-4" onClick={handleBook} disabled={isDisabled}>
+            <Calendar size={18} className="mr-2" />
+            {t("booking.sidebar.bookBtn")}
+          </button>
         </div>
-      </div>
 
-      {activeModal && (
-        <div
-          className="fixed inset-0 z-[98] bg-white/78 dark:bg-[#0f172a]/80 backdrop-blur-[5px]"
-        />
-      )}
+        {activeModal && <div className="fixed inset-0 z-[98] bg-black/20 backdrop-blur-sm" />}
 
-      {showAuthModal && (
-        <AuthRequiredModal
-          onLogin={() => {
-            setShowAuthModal(false);
-            navigate("/login");
-          }}
-          onCancel={() => setShowAuthModal(false)}
-        />
-      )}
-
-      {activeModal === "payment" && (
-        <PaymentMethodModal onSelectMethod={handlePaymentSelection} />
-      )}
-
-      {activeModal === "receipt" && (
-        <BookingReceiptModal
-          receiptRef={receiptRef}
-          receiptNumber={receiptNumber}
-          patientName={patientName}
-          patientEmail={patientEmail}
-          doctor={doctor}
-          appointmentDateValue={appointmentDateValue}
-          appointmentCost={appointmentCost}
-          isPrinting={isPrinting}
-          onPrintReceipt={handlePrintReceipt}
-          onDone={handleReceiptDone}
-        />
-      )}
-
-      {activeModal === "success" && <BookingSuccessModal />}
+        {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login")} onCancel={() => setShowAuthModal(false)} />}
+        {activeModal === "payment" && <PaymentMethodModal onSelectMethod={handlePaymentSelection} />}
+        {activeModal === "receipt" && (
+          <BookingReceiptModal
+            receiptRef={receiptRef}
+            receiptNumber={receiptNumber}
+            patientName={patientName}
+            patientEmail={patientEmail}
+            doctor={doctor}
+            appointmentDateValue={appointmentDateValue}
+            appointmentCost={appointmentCost}
+            isPrinting={isPrinting}
+            onPrintReceipt={handlePrintReceipt}
+            onDone={() => setActiveModal(null)}
+          />
+        )}
+        {activeModal === "success" && <BookingSuccessModal />}
       </aside>
     </div>
   );
 }
-

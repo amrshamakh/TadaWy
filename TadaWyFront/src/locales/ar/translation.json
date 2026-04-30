@@ -56,6 +56,7 @@
     "personalInfo": {
       "title": "المعلومات الشخصية",
       "subtitle": "تفاصيلك الشخصية الأساسية",
+      "fullName": "الاسم الكامل",
       "firstName": "الاسم الأول",
       "lastName": "اسم العائلة",
       "nameMap": {
@@ -678,7 +679,9 @@
   "common": {
     "am": "ص",
     "pm": "م",
-    "reviews": "التقييمات"
+    "reviews": "التقييمات",
+    "years": "سنة",
+    "none": "لا يوجد"
   },
   "changePassword": {
     "title": "تغيير كلمة المرور",

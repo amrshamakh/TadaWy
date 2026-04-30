@@ -56,6 +56,7 @@
     "personalInfo": {
       "title": "Personal Information",
       "subtitle": "Your basic personal details",
+      "fullName": "Full Name",
       "firstName": "First Name",
       "lastName": "Last Name",
       "nameMap": {
@@ -669,7 +670,9 @@
   "common": {
     "am": "AM",
     "pm": "PM",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "years": "Years",
+    "none": "None"
   },
   "changePassword": {
     "title": "Change your Password",

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Clock, ChevronDown, ClipboardList } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import PatientViewProfile from "./PatientViewProfile";
 import { useTranslation } from "react-i18next";
 
 export default function AppointmentCard({ apt, onConfirm, onCancel }) {
   const [expanded, setExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const { t, i18n } = useTranslation();
 
   const paymentLabelMap = {
@@ -89,7 +91,10 @@ export default function AppointmentCard({ apt, onConfirm, onCancel }) {
             </div>
           </div>
           <div className="flex justify-end gap-3">
-            <button className="px-5 py-2 bg-teal-500 hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-500 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer">
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowProfile(true); }}
+              className="px-5 py-2 bg-teal-500 hover:bg-teal-600 dark:bg-teal-600 dark:hover:bg-teal-500 text-white text-sm font-semibold rounded-lg transition-colors cursor-pointer"
+            >
               {t("doctorDashboard.appointments.viewProfile")}
             </button>
             
@@ -121,6 +126,14 @@ export default function AppointmentCard({ apt, onConfirm, onCancel }) {
             )}
           </div>
         </div>
+      )}
+
+      {/* Patient Profile Modal */}
+      {showProfile && (
+        <PatientViewProfile 
+          appointment={apt} 
+          onClose={() => setShowProfile(false)} 
+        />
       )}
     </div>
   );
