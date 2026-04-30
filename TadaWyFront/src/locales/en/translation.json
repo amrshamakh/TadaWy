@@ -498,15 +498,16 @@
       "cancel": "Cancel",
       "phone": "Phone Number:",
       "payment": "Payment:",
-      "details": "Appointment Details",
       "allPayments": "All Payments",
       "paidOnline": "Paid Online",
       "payAtClinic": "Pay at Clinic",
       "stats": {
         "all": "All Appointments",
         "confirmed": "Confirmed",
-        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "pending": "Upcoming",
         "cancelled": "Cancelled",
+        "missed": "Missed",
         "today": "Today"
       },
       "confirm": "Confirm",

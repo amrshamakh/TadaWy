@@ -512,12 +512,14 @@
       "paidOnline": "دفع أونلاين",
       "payAtClinic": "دفع في العيادة",
       "stats": {
-        "all": "جميع المواعيد",
-        "confirmed": "تم التأكيد",
-        "pending": "قيد الانتظار",
-        "cancelled": "ملغاة",
-        "today": "اليوم"
-      },
+      "all": "جميع المواعيد",
+      "confirmed": "تم التأكيد",
+      "upcoming": "القادمة",
+      "pending": "القادمة",
+      "cancelled": "ملغاة",
+      "missed": "فائتة",
+      "today": "اليوم"
+    },
       "confirm": "تأكيد",
       "details": "التفاصيل",
       "totalAppts": "مواعيد",
