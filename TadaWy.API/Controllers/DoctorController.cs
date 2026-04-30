@@ -12,10 +12,20 @@ namespace TadaWy.API.Controllers
     public class DoctorController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
+        private readonly IPatientService _patientService;
 
-        public DoctorController(IDoctorService doctorService)
+        public DoctorController(IDoctorService doctorService, IPatientService patientService)
         {
             _doctorService = doctorService;
+            _patientService = patientService;
+        }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpGet("patient-profile/{id}")]
+        public async Task<IActionResult> GetPatientProfile(int id)
+        {
+            var result = await _patientService.GetPatientDetailsForDoctorAsync(id);
+            return Ok(result);
         }
 
         [HttpGet]

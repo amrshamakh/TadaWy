@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TadaWy.Infrastructure.Presistence;
 
@@ -11,9 +12,11 @@ using TadaWy.Infrastructure.Presistence;
 namespace TadaWy.Infrastructure.Migrations
 {
     [DbContext(typeof(TadaWyDbContext))]
-    partial class TadaWyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260430112028_UpdateUserSettingsAndNotificationSettings")]
+    partial class UpdateUserSettingsAndNotificationSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -433,14 +436,11 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("AvailableBalance")
+                    b.Property<decimal>("Balance")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
-
-                    b.Property<decimal>("TotalBalance")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -701,9 +701,6 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<string>("ExternalTransactionId")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<bool>("IsReleasedToWallet")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Method")
                         .HasColumnType("int");

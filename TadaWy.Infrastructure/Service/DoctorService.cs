@@ -558,6 +558,7 @@ namespace TadaWy.Infrastructure.Service
                 return new AppointmentListItemDto
                 {
                     Id = a.Id,
+                    PatientId = patient?.Id ?? 0,
                     PatientName = patient != null ? $"{patient.FirstName} {patient.LastName}" : "Unknown",
                     PatientPhone = a.Patient?.PhoneNumber ?? "N/A",
                     PaymentMethod = a.Payment?.Method ?? PaymentMethod.Offline,

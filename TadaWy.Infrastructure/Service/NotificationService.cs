@@ -25,6 +25,10 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task SendNotificationAsync(string userId, string title, string message, NotificationType type, int? appointmentId = null)
         {
+            var settings = await _context.UserSettings.FirstOrDefaultAsync(s => s.UserId == userId);
+            if (settings != null && !settings.ApplicationNotifications)
+                return;
+
             var notification = new Notification
             {
                 UserId = userId,
