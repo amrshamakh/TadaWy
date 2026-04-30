@@ -444,7 +444,7 @@
     "status": {
       "completed": "مكتمل",
       "confirmed": "مؤكد",
-      "pending": "قيد الانتظار",
+      "pending": "القادمة",
       "cancelled": "ملغى",
       "missed": "فائت"
     },

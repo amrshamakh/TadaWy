@@ -435,7 +435,7 @@
     "status": {
       "completed": "Completed",
       "confirmed": "Confirmed",
-      "pending": "Pending",
+      "pending": "Upcoming",
       "cancelled": "Cancelled",
       "missed": "Missed"
     },
