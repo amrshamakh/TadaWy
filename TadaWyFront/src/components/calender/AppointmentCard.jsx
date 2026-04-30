@@ -21,15 +21,25 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
   const isPending = status === "pending";
   const isCancelled = status === "cancelled";
   const isConfirmed = status === "completed";
+  const isMissed = status === "missed";
   
   const isPastAppointment = rawDate && new Date(rawDate) < new Date();
 
-  const statusLabel = isPending ? t("calendar.status.pending") : isCancelled ? t("calendar.status.cancelled") : t("calendar.status.confirmed");
+  const statusLabel = isPending 
+    ? t("calendar.status.pending") 
+    : isCancelled 
+      ? t("calendar.status.cancelled") 
+      : isMissed
+        ? t("calendar.status.missed")
+        : t("calendar.status.confirmed");
+
   const statusPillClass = isPending
-    ? "text-[#00BBA7] border-[#00BBA7] bg-transparent"
-    : isCancelled
-      ? "text-[#DC2626] border-[#DC2626] bg-transparent"
-      : "text-[#64748B] border-[#64748B] bg-transparent";
+    ? "text-yellow-600 border-yellow-600 bg-transparent"
+    : isCancelled || isMissed
+      ? "text-red-600 border-red-600 bg-transparent"
+      : isConfirmed
+        ? "text-emerald-600 border-emerald-600 bg-transparent"
+        : "text-[#64748B] border-[#64748B] bg-transparent";
 
   const executeCancel = async () => {
     try {
