@@ -1,51 +1,11 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
+import { useResetPassword } from "../hooks/useResetPassword";
+
 
 const ResetPassword = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [formErrors, setFormErrors] = useState({
-    newPassword: "",
-    confirmPassword: "",
-  });
-  const [toastMessage, setToastMessage] = useState("");
-
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setFormErrors((prev) => ({ ...prev, [field]: "" }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let hasError = false;
-    const nextErrors = { newPassword: "", confirmPassword: "" };
-
-    if (formData.newPassword.length < 6) {
-      nextErrors.newPassword = t("resetPassword.errors.weakPassword");
-      hasError = true;
-    }
-    if (formData.newPassword !== formData.confirmPassword) {
-      nextErrors.confirmPassword = t("resetPassword.errors.passwordMismatch");
-      hasError = true;
-    }
-
-    setFormErrors(nextErrors);
-    if (hasError) {
-      return;
-    }
-
-    setToastMessage(t("resetPassword.success"));
-    setTimeout(() => {
-      navigate("/login");
-    }, 1200);
-  };
+  const { formData, formErrors, loading, handleChange, handleSubmit } = useResetPassword();
 
   return (
     <div className="min-h-screen bg-linear-to-b from-1% from-white via-teal-200 to-white to-95% dark:from-[#0b2a3a] dark:via-[#0f5a57] dark:to-[#0b2a3a] dark:to-99% flex items-center justify-center p-4">
@@ -64,20 +24,7 @@ const ResetPassword = () => {
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              {t("resetPassword.email")}
-            </label>
-            <input
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              placeholder={t("resetPassword.emailPlaceholder")}
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-              required
-            />
-          </div>
-
+          {/* New Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t("resetPassword.newPassword")}
@@ -86,15 +33,18 @@ const ResetPassword = () => {
               type="password"
               value={formData.newPassword}
               onChange={(e) => handleChange("newPassword", e.target.value)}
-              placeholder={t("resetPassword.newPasswordPlaceholder")}
+              placeholder="(A-Z) (a-z) (0-9) min 8 chars + symbol (@#$!…)"
               className="w-full px-4 py-3 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
               required
+              disabled={loading}
             />
+
             {formErrors.newPassword && (
               <p className="mt-1 text-xs text-red-500">{formErrors.newPassword}</p>
             )}
           </div>
 
+          {/* Confirm Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               {t("resetPassword.confirmPassword")}
@@ -103,33 +53,25 @@ const ResetPassword = () => {
               type="password"
               value={formData.confirmPassword}
               onChange={(e) => handleChange("confirmPassword", e.target.value)}
-              placeholder={t("resetPassword.confirmPasswordPlaceholder")}
+              placeholder="Re-enter your new password"
               className="w-full px-4 py-3 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
               required
+              disabled={loading}
             />
             {formErrors.confirmPassword && (
               <p className="mt-1 text-xs text-red-500">{formErrors.confirmPassword}</p>
             )}
-
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {t("resetPassword.passwordHint")}
-            </p>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+            disabled={loading}
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
           >
-            {t("resetPassword.confirm")}
+            {loading ? "Resetting…" : t("resetPassword.confirm")}
           </button>
         </form>
       </div>
-
-      {toastMessage && (
-        <div className="fixed top-4 right-4 z-[70] rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm shadow-lg">
-          {toastMessage}
-        </div>
-      )}
     </div>
   );
 };
