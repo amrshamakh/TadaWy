@@ -121,8 +121,6 @@ namespace TadaWy.Infrastructure.service
             };
             var addressDto = await geocodingService.GetAddressAsync(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude);
 
-            if (addressDto is null)
-                throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
 
             var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
 

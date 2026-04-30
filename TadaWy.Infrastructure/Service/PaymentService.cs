@@ -13,6 +13,7 @@ using TadaWy.Domain.Enums;
 using TadaWy.Domain.Helpers;
 using TadaWy.Infrastructure.Presistence;
 using TadaWy.Domain.PaymobResponse;
+using TadaWy.Applicaation.DTO.WalletDtos;
 
 namespace TadaWy.Infrastructure.Service
 {
@@ -93,7 +94,10 @@ namespace TadaWy.Infrastructure.Service
         }
         private async Task AddToWallet(Payment payment)
         {
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(i => i.UserID == payment.DoctorId) ?? throw new Exception("doctor not found");
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(i => i.UserID == payment.DoctorId)
+                ?? throw new Exception("doctor not found");
+
             var wallet = await _context.DoctorWallets
                 .FirstOrDefaultAsync(x => x.DoctorId == doctor.Id);
 
@@ -102,25 +106,27 @@ namespace TadaWy.Infrastructure.Service
                 wallet = new DoctorWallet
                 {
                     DoctorId = doctor.Id,
-                    Balance = 0
+                    TotalBalance = 0,
+                    AvailableBalance = 0
                 };
                 _context.DoctorWallets.Add(wallet);
             }
 
-            wallet.Balance += payment.DoctorAmount;
+            var amount = payment.DoctorAmount;
 
-            var transaction = new WalletTransaction
+            // الفلوس تدخل إجمالي المحفظة فورًا
+            wallet.TotalBalance += amount;
+            wallet.UpdatedAt = DateTime.UtcNow;
+
+            _context.walletTransactions.Add(new WalletTransaction
             {
                 DoctorId = doctor.Id,
-                Amount = payment.DoctorAmount,
+                Amount = amount,
                 Type = TransactionType.Credit,
                 PaymentId = payment.Id,
-                Description = "Payment added to wallet"
-            };
-
-            _context.walletTransactions.Add(transaction);
+                Description = "Payment added to wallet (pending release)"
+            });
         }
-
         public async Task<string> GetAuthToken()  //send Api key(Scure) to paymob and recive token to use it to make orders
         {
             using var client = new HttpClient();
@@ -260,7 +266,6 @@ namespace TadaWy.Infrastructure.Service
 
         private async Task RevertWalletForRefund(Payment payment)
         {
-            // نفس فكرة AddToWallet بس بالعكس
             var doctor = await _context.Doctors
                 .FirstOrDefaultAsync(i => i.UserID == payment.DoctorId)
                 ?? throw new Exception("doctor not found");
@@ -271,20 +276,82 @@ namespace TadaWy.Infrastructure.Service
             if (wallet == null)
                 return;
 
-            wallet.Balance -= payment.DoctorAmount;
+            var amount = payment.DoctorAmount;
+            wallet.TotalBalance -= amount;
 
-            var transaction = new WalletTransaction
+            if (payment.IsReleasedToWallet)
+            {
+                wallet.AvailableBalance = Math.Max(0, wallet.AvailableBalance - amount);
+            }
+
+            wallet.UpdatedAt = DateTime.UtcNow;
+
+            _context.walletTransactions.Add(new WalletTransaction
             {
                 DoctorId = doctor.Id,
-                Amount = -payment.DoctorAmount,
+                Amount = -amount,
                 Type = TransactionType.Debit,
                 PaymentId = payment.Id,
                 Description = "Refund deducted from wallet"
-            };
-
-            _context.walletTransactions.Add(transaction);
+            });
         }
+        public async Task ReleaseDoctorBalancesAsync()
+        {
+            var now = DateTime.UtcNow;
+            var weekAgo = now.AddDays(-7);
 
+           
+            var payments = await _context.Payments
+                .Include(p => p.Appointment)
+                .Where(p => p.Status == PaymentStatus.Paid &&
+                            !p.IsReleasedToWallet &&
+                            p.Appointment.Date <= weekAgo &&
+                          
+                            (p.Appointment.Status == AppointmentStatus.Completed ||
+                             p.Appointment.Status == AppointmentStatus.Upcoming))
+                .ToListAsync();
+
+            if (!payments.Any())
+                return;
+
+            foreach (var payment in payments)
+            {
+                var doctor = await _context.Doctors
+                    .FirstOrDefaultAsync(d => d.UserID == payment.DoctorId)
+                    ?? throw new Exception("Doctor not found");
+
+                var wallet = await _context.DoctorWallets
+                    .FirstOrDefaultAsync(w => w.DoctorId == doctor.Id);
+
+                if (wallet == null)
+                {
+                    wallet = new DoctorWallet
+                    {
+                        DoctorId = doctor.Id,
+                        TotalBalance = 0,
+                        AvailableBalance = 0
+                    };
+                    _context.DoctorWallets.Add(wallet);
+                }
+
+                var amount = payment.DoctorAmount;
+
+                wallet.AvailableBalance += amount;
+                wallet.UpdatedAt = DateTime.UtcNow;
+                payment.IsReleasedToWallet = true;
+
+                _context.walletTransactions.Add(new WalletTransaction
+                {
+                    DoctorId = doctor.Id,
+                    Amount = amount,
+                    Type = TransactionType.Credit,
+                    PaymentId = payment.Id,
+                    Description = "Amount released to available balance after 7 days"
+                });
+            }
+
+            await _context.SaveChangesAsync();
+        }
 
     }
 }

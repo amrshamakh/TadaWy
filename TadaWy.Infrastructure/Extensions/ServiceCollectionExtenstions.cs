@@ -39,6 +39,7 @@ namespace TadaWy.Infrastructure.Extensions
             services.AddScoped<ISettingService, SettingService>();
             services.AddScoped<IChatAppService, ChatAppService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IWalletService, WalletService>();
         }
     }
 }

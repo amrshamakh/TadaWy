@@ -204,13 +204,12 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-//app.UseHttpsRedirection();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 app.UseStaticFiles();
-//app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -232,7 +231,14 @@ using (var scope = app.Services.CreateScope())
       "mark-missed-appointments",
       job => job.MarkMissedAppointmentsAsync(),
       Cron.Hourly()
-  );
+     );
+     recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+    recurringJobManager.AddOrUpdate<IPaymentService>(
+        "release-doctor-balances",
+        job => job.ReleaseDoctorBalancesAsync(),
+        Cron.Daily() 
+    );
 }
 RecurringJob.RemoveIfExists("expire-pending-appointment-payments");
 

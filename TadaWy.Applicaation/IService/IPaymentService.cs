@@ -1,4 +1,5 @@
 ﻿using TadaWy.Applicaation.DTO.PaymobDtos;
+using TadaWy.Applicaation.DTO.WalletDtos;
 using TadaWy.Domain.Entities;
 
 namespace TadaWy.Applicaation.IService
@@ -17,5 +18,9 @@ namespace TadaWy.Applicaation.IService
         bool IsValidHmac(PaymobCallbackDto callback);
 
         Task<bool> RefundAsync(int paymentId);
+
+        Task ReleaseDoctorBalancesAsync();
+
+      
     }
 }
