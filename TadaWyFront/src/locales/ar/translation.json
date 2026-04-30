@@ -442,9 +442,11 @@
     "allAppointments": "جميع المواعيد",
     "noCurrentAppointments": "لا توجد مواعيد حالية",
     "status": {
+      "completed": "مكتمل",
       "confirmed": "مؤكد",
       "pending": "قيد الانتظار",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "missed": "فائت"
     },
     "legend": {
       "today": "اليوم",

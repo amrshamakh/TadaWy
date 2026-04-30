@@ -433,9 +433,11 @@
     "allAppointments": "All Appointments",
     "noCurrentAppointments": "No current appointments",
     "status": {
+      "completed": "Completed",
       "confirmed": "Confirmed",
       "pending": "Pending",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "missed": "Missed"
     },
     "legend": {
       "today": "Today",
