@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Paperclip, Send, FileText } from 'lucide-react';
+import { Send, Paperclip, MoreVertical, Phone, Video, FileText, Check, CheckCheck, Loader2, X } from 'lucide-react';
 import { assets } from '../../assets/assets';
 
-const ChatArea = ({ activeChat, messages, onSendMessage }) => {
+const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingMessages, sending }) => {
   const { t, i18n } = useTranslation();
   const [inputText, setInputText] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -17,154 +18,192 @@ const ChatArea = ({ activeChat, messages, onSendMessage }) => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (inputText.trim()) {
-      onSendMessage(inputText);
+  const handleSend = () => {
+    if ((inputText.trim() || selectedFile) && !sending) {
+      onSendMessage(inputText, selectedFile);
       setInputText('');
+      setSelectedFile(null);
     }
-  };
-
-  const handleAttachmentClick = () => {
-    fileInputRef.current?.click();
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      onSendMessage('', { url, name: file.name, type: file.type });
+      setSelectedFile(file);
     }
+  };
+
+  const removeFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+    }
+  }
+
+  // Group messages by date
+  const groupMessages = () => {
+    const groups = {};
+    messages.forEach(msg => {
+      const dateStr = new Date(msg.createdAt).toLocaleDateString(i18n.language === 'ar' ? 'ar-EG' : 'en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric'
+      });
+      if (!groups[dateStr]) groups[dateStr] = [];
+      groups[dateStr].push(msg);
+    });
+    return groups;
+  };
+
+  const groupedMessages = groupMessages();
+
+  const isImage = (url) => {
+    if (!url) return false;
+    const cleanUrl = url.split('?')[0];
+    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(cleanUrl);
+  };
+
+  const getFileNameFromUrl = (url) => {
+    if (!url) return '';
+    const parts = url.split('/');
+    const lastPart = parts[parts.length - 1];
+    return lastPart.split('?')[0];
   };
 
   if (!activeChat) {
     return (
-      <div className="hidden md:flex flex-1 items-center justify-center bg-white dark:bg-[#0F172A] relative overflow-hidden">
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] dark:opacity-[0.05] pointer-events-none">
-          <img src={assets.logo} alt="TadaWy Logo" className="w-2/3 max-w-md grayscale" />
+      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#0F172A] p-8 text-center">
+        <div className="w-24 h-24 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mb-6">
+          <img src={assets.messagesIcon} className="w-12 h-12 opacity-50" style={{ filter: 'invert(52%) sepia(87%) saturate(2469%) hue-rotate(139deg) brightness(97%) contrast(85%)' }} alt="" />
         </div>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          {t('messages.title', 'Messages')}
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 max-w-sm">
+          {t('messages.selectChat', 'Select a chat to start messaging')}
+        </p>
       </div>
     );
   }
 
-  // Group messages by date
-  const groupedMessages = messages.reduce((acc, msg) => {
-    const date = msg.date;
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(msg);
-    return acc;
-  }, {});
-
-  const translateDate = (dateStr) => {
-    if (i18n.language === 'en') return dateStr;
-    // Basic formatting for Arabic if it's "October 25, 2023"
-    const map = {
-      'January': 'يناير', 'February': 'فبراير', 'March': 'مارس', 'April': 'أبريل',
-      'May': 'مايو', 'June': 'يونيو', 'July': 'يوليو', 'August': 'أغسطس',
-      'September': 'سبتمبر', 'October': 'أكتوبر', 'November': 'نوفمبر', 'December': 'ديسمبر'
-    };
-    let translated = dateStr;
-    Object.keys(map).forEach(en => {
-      if (translated.includes(en)) {
-        translated = translated.replace(en, map[en]);
-      }
-    });
-    return translated;
-  };
-
   return (
-    <div className="flex-1 flex flex-col h-full bg-[#f8fafc] dark:bg-[#0B1120]">
+    <div className="flex-1 flex flex-col h-full bg-white dark:bg-[#0F172A]">
       {/* Chat Header */}
-      <div className="flex items-center px-6 py-4 bg-white dark:bg-[#0F172A] border-b border-gray-100 dark:border-[#1E293B] shadow-sm z-10">
-        <div className="mx-4 shrink-0">
-          {activeChat.isDefaultAvatar ? (
-             <div className="w-12 h-12 rounded-full border-2 border-teal-500 overflow-hidden flex items-end justify-center bg-teal-50 dark:bg-teal-900/20">
-               <img src={activeChat.avatar} alt={activeChat.doctorName} className="w-10 h-10 mt-2" style={{ filter: 'invert(52%) sepia(87%) saturate(2469%) hue-rotate(139deg) brightness(97%) contrast(85%)' }} />
-             </div>
-          ) : (
-            <img 
-              src={activeChat.avatar} 
-              alt={activeChat.doctorName} 
-              className="w-12 h-12 rounded-full object-cover"
-            />
-          )}
+      <div className="px-6 py-4 border-b dark:border-[#1E293B] border-gray-100 flex items-center justify-between bg-white dark:bg-[#0F172A] z-10">
+        <div className="flex items-center">
+          <div className={`relative ${i18n.language === 'ar' ? 'ml-4' : 'mr-4'}`}>
+             {!activeChat.imageUrl ? (
+                 <div className="w-10 h-10 rounded-full border-2 border-teal-500 overflow-hidden flex items-end justify-center bg-teal-50 dark:bg-teal-900/20">
+                   <img src={assets.profileIcon} alt={activeChat.fullName} className="w-8 h-8 mt-2" style={{ filter: 'invert(52%) sepia(87%) saturate(2469%) hue-rotate(139deg) brightness(97%) contrast(85%)' }} />
+                 </div>
+              ) : (
+                <img 
+                  src={activeChat.imageUrl} 
+                  alt={activeChat.fullName} 
+                  className="w-10 h-10 rounded-full object-cover"
+                />
+              )}
+            <div className={`absolute bottom-0 ${i18n.language === 'ar' ? 'left-0' : 'right-0'} w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-[#0F172A] rounded-full`}></div>
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
+              {activeChat.fullName}
+            </h3>
+            <p className="text-xs text-teal-600 dark:text-teal-400 font-medium">
+              {activeChat.specializationName}
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white leading-tight">
-            {activeChat.doctorName}
-          </h2>
-          <p className="text-sm font-medium text-teal-500 uppercase tracking-wide">
-            {t(activeChat.specialtyKey)}
-          </p>
+        
+        <div className="flex items-center gap-2">
+          <button className="p-2 text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+            <Phone size={20} />
+          </button>
+          <button className="p-2 text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+            <Video size={20} />
+          </button>
+          <button className="p-2 text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors">
+            <MoreVertical size={20} />
+          </button>
         </div>
       </div>
 
-      {/* Messages List */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-[#1E293B]">
-        {Object.keys(groupedMessages).map((date) => (
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/30 dark:bg-transparent">
+        {loadingMessages ? (
+            <div className="flex items-center justify-center h-full">
+                <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
+            </div>
+        ) : Object.entries(groupedMessages).map(([date, group]) => (
           <div key={date} className="space-y-6">
-            <div className="flex justify-center mb-6">
-              <span className="px-4 py-1 bg-gray-200/50 dark:bg-[#1E293B] text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
-                {translateDate(date)}
+            <div className="flex justify-center">
+              <span className="px-3 py-1 bg-white dark:bg-[#1E293B] text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider rounded-full border border-gray-100 dark:border-[#1E293B] shadow-sm">
+                {date}
               </span>
             </div>
-
-            {groupedMessages[date].map((msg) => {
-              const isMe = msg.isSentByMe;
+            
+            {group.map((msg) => {
+              const isSentByMe = msg.senderUserId === currentUserId;
               return (
-                <div key={msg.id} className={`flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`}>
-                  <div className={`flex items-end gap-2 max-w-[85%] md:max-w-[70%]`}>
-                    {!isMe && (
-                       activeChat.isDefaultAvatar ? (
-                         <div className="w-8 h-8 shrink-0 rounded-full border border-teal-500 overflow-hidden flex items-end justify-center bg-teal-50 dark:bg-teal-900/20 mb-1">
-                           <img src={activeChat.avatar} className="w-6 h-6 mt-1" style={{ filter: 'invert(52%) sepia(87%) saturate(2469%) hue-rotate(139deg) brightness(97%) contrast(85%)' }} alt="" />
-                         </div>
-                       ) : (
-                         <img 
-                           src={activeChat.avatar} 
-                           alt={activeChat.doctorName} 
-                           className="w-8 h-8 rounded-full object-cover shrink-0 mb-1"
-                         />
-                       )
-                    )}
-                    
-                    <div className="flex flex-col">
-                      <div 
-                        className={`
-                          rounded-2xl shadow-sm text-sm overflow-hidden
-                          ${isMe 
-                            ? `bg-teal-500 text-white ${i18n.language === 'ar' ? 'rounded-tl-none' : 'rounded-tr-none'}` 
-                            : `bg-white dark:bg-[#1E293B] text-gray-800 dark:text-gray-200 border border-gray-100 dark:border-gray-800 ${i18n.language === 'ar' ? 'rounded-tr-none' : 'rounded-tl-none'}`
-                          }
-                          ${msg.text ? 'px-5 py-3' : 'p-2'}
-                        `}
-                      >
-                        {msg.attachment && msg.attachment.type && msg.attachment.type.startsWith('image/') ? (
-                          <img src={msg.attachment.url} alt="Attachment" className={`max-w-full md:max-w-[250px] rounded-lg ${msg.text ? 'mb-2 border border-black/10' : ''}`} />
-                        ) : msg.attachment ? (
-                          <div className={`flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 rounded-lg ${msg.text ? 'mb-2' : ''}`}>
-                            <div className={`p-2 rounded-full ${isMe ? 'bg-white/20 text-white' : 'bg-teal-500/10 text-teal-600 dark:text-teal-400'}`}>
-                              <FileText className="w-6 h-6" />
-                            </div>
-                            <span className="text-sm font-medium truncate max-w-[150px]">{msg.attachment.name}</span>
+                <div 
+                  key={msg.id} 
+                  className={`flex ${isSentByMe ? 'justify-end' : 'justify-start'} group`}
+                >
+                  <div className={`max-w-[75%] md:max-w-[65%] ${isSentByMe ? 'order-1' : 'order-2'}`}>
+                    <div className={`
+                      relative p-3 rounded-2xl shadow-sm text-sm
+                      ${isSentByMe 
+                        ? 'bg-teal-500 text-white rounded-br-none' 
+                        : 'bg-white dark:bg-[#1E293B] text-gray-800 dark:text-gray-100 rounded-bl-none border border-gray-100 dark:border-[#1E293B]'
+                      }
+                    `}>
+                      {msg.imageUrl && (
+                        <div className="mb-2 overflow-hidden rounded-lg">
+                          {isImage(msg.imageUrl) ? (
+                            <img 
+                              src={msg.imageUrl} 
+                              alt="attachment" 
+                              className="w-full max-h-60 object-cover cursor-pointer hover:opacity-95 transition-opacity"
+                              onClick={() => window.open(msg.imageUrl, '_blank')}
+                            />
+                          ) : (
+                            <a 
+                              href={msg.imageUrl} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className={`flex items-center gap-3 p-3 rounded-lg border transition-colors ${
+                                isSentByMe 
+                                  ? 'bg-white/10 border-white/20 hover:bg-white/20' 
+                                  : 'bg-gray-50 dark:bg-[#0F172A] border-gray-100 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800'
+                              }`}
+                            >
+                              <div className={`p-2 rounded-lg ${isSentByMe ? 'bg-white/20' : 'bg-teal-50 dark:bg-teal-900/20'}`}>
+                                <FileText className={isSentByMe ? 'text-white' : 'text-teal-600 dark:text-teal-400'} size={20} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`text-xs font-medium truncate ${isSentByMe ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                                  {getFileNameFromUrl(msg.imageUrl)}
+                                </p>
+                                <p className={`text-[10px] ${isSentByMe ? 'text-teal-50' : 'text-gray-500'}`}>
+                                  PDF / Document
+                                </p>
+                              </div>
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      
+                      <p className="leading-relaxed break-words whitespace-pre-wrap">{msg.content}</p>
+                      
+                      <div className={`flex items-center justify-end gap-1 mt-1 ${isSentByMe ? 'text-teal-50' : 'text-gray-400 dark:text-gray-500'}`}>
+                        <span className="text-[10px]">
+                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        {isSentByMe && (
+                          <div className="shrink-0">
+                            {msg.isSeen ? <CheckCheck size={12} /> : <Check size={12} />}
                           </div>
-                        ) : null}
-                        {msg.text && <p className="leading-relaxed">{msg.text}</p>}
-                      </div>
-
-                      {/* Time and Status */}
-                      <div className={`flex items-center mt-1 text-[11px] text-gray-400 ${isMe ? 'justify-end' : 'justify-start'}`}>
-                        {isMe && msg.status === 'seen' && (
-                          <span className={`text-teal-500 ${i18n.language === 'ar' ? 'ml-1' : 'mr-1'}`}>
-                            {t('messages.seen', 'Seen')} .
-                          </span>
                         )}
-                        {isMe && msg.status === 'sent' && (
-                          <span className={`text-gray-400 ${i18n.language === 'ar' ? 'ml-1' : 'mr-1'}`}>
-                            {t('messages.unseen', 'unSeen')} .
-                          </span>
-                        )}
-                        <span>{msg.time.replace('AM', t('common.am', 'AM')).replace('PM', t('common.pm', 'PM'))}</span>
                       </div>
                     </div>
                   </div>
@@ -177,49 +216,77 @@ const ChatArea = ({ activeChat, messages, onSendMessage }) => {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 bg-white dark:bg-[#0F172A] border-t border-gray-100 dark:border-[#1E293B]">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 flex items-center bg-gray-50 dark:bg-[#1E293B] rounded-full border border-gray-200 dark:border-gray-700 px-2 py-1">
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileChange} 
-                className="hidden" 
-                accept="image/*,.pdf,.doc,.docx"
-              />
-              <button 
-                type="button" 
-                onClick={handleAttachmentClick}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors shrink-0"
-              >
-                <Paperclip className="w-5 h-5" />
-              </button>
-              
-              <input
-                type="text"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder={t('messages.typeMessage', 'Type your message here...')}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 py-2 text-gray-900 dark:text-white placeholder:text-gray-400"
-              />
+      <div className="p-4 bg-white dark:bg-[#0F172A] border-t dark:border-[#1E293B] border-gray-100">
+        {selectedFile && (
+          <div className="mb-3 p-2 bg-gray-50 dark:bg-[#1E293B] rounded-lg flex items-center justify-between border border-gray-100 dark:border-gray-800 animate-in slide-in-from-bottom-2">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-teal-50 dark:bg-teal-900/20 rounded-md">
+                <Paperclip size={16} className="text-teal-600 dark:text-teal-400" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-gray-900 dark:text-white truncate max-w-[200px]">
+                    {selectedFile.name}
+                </p>
+                <p className="text-[10px] text-gray-500">
+                    {(selectedFile.size / 1024).toFixed(1)} KB
+                </p>
+              </div>
             </div>
-
             <button 
-              type="submit"
-              disabled={!inputText.trim()}
-              className="p-3 bg-teal-500 hover:bg-teal-600 text-white rounded-full transition-all disabled:opacity-50 disabled:cursor-not-allowed shrink-0 shadow-sm"
+                onClick={removeFile}
+                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors"
             >
-              <Send className={`w-5 h-5 ${i18n.language === 'ar' ? 'scale-x-[-1]' : ''} ${i18n.language === 'ar' ? '-mr-0.5' : 'ml-0.5'}`} />
+                <X size={14} className="text-gray-500" />
             </button>
           </div>
+        )}
+
+        <div className="flex items-end gap-3">
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="p-3 text-gray-400 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+          >
+            <Paperclip size={22} />
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            onChange={handleFileChange}
+          />
           
-          <div className="text-center mt-2">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              {t('messages.endToEnd', 'END-TO-END ENCRYPTED MEDICAL COMMUNICATION')}
-            </p>
+          <div className="flex-1 relative">
+            <textarea
+              rows="1"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
+              }}
+              placeholder={t('messages.typeMessage', 'Type your message here...')}
+              className="block w-full rounded-2xl border-0 py-3 px-4 bg-gray-50 dark:bg-[#1E293B] text-gray-900 dark:text-white ring-1 ring-inset ring-gray-200 dark:ring-gray-700 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-500 sm:text-sm transition-all resize-none max-h-32"
+            />
           </div>
-        </form>
+
+          <button
+            onClick={handleSend}
+            disabled={(!inputText.trim() && !selectedFile) || sending}
+            className={`p-3 rounded-xl bg-teal-500 text-white shadow-lg shadow-teal-500/20 hover:bg-teal-600 transition-all disabled:opacity-50 disabled:hover:bg-teal-500`}
+          >
+            {sending ? <Loader2 size={22} className="animate-spin" /> : <Send size={22} className={i18n.language === 'ar' ? 'rotate-180' : ''} />}
+          </button>
+        </div>
+        
+        <div className="mt-2 flex justify-center">
+          <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
+            <span className="w-4 h-[1px] bg-gray-200 dark:bg-gray-800"></span>
+            {t('messages.endToEnd', 'END-TO-END ENCRYPTED MEDICAL COMMUNICATION')}
+            <span className="w-4 h-[1px] bg-gray-200 dark:bg-gray-800"></span>
+          </p>
+        </div>
       </div>
     </div>
   );
