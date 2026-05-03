@@ -200,8 +200,14 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
                           {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                         {isSentByMe && (
-                          <div className="shrink-0">
-                            {msg.isSeen ? <CheckCheck size={12} /> : <Check size={12} />}
+                          <div className="shrink-0 mt-[1px]">
+                            {msg.isSeen ? (
+                              <CheckCheck size={14} className="text-blue-300" strokeWidth={2.5} />
+                            ) : msg.isDelivered ? (
+                              <CheckCheck size={14} className="text-teal-100" />
+                            ) : (
+                              <Check size={14} className="text-teal-100" />
+                            )}
                           </div>
                         )}
                       </div>

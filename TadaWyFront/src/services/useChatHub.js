@@ -18,6 +18,7 @@ export const useChatHub = () => {
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
         accessTokenFactory: () => token,
+        transport: signalR.HttpTransportType.LongPolling
       })
       .withAutomaticReconnect()
       .build();
@@ -46,7 +47,7 @@ export const useChatHub = () => {
   const sendMessageSignalR = useCallback(async (receiverUserId, content, imageUrl = null) => {
     if (connection) {
       try {
-        await connection.invoke("SendMessage", receiverUserId, content, imageUrl);
+        await connection.invoke("SendMessage", { receiverUserId, content, imageUrl });
       } catch (err) {
         console.error("SignalR Send Error: ", err);
         throw err;
