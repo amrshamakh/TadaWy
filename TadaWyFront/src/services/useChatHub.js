@@ -57,9 +57,22 @@ export const useChatHub = () => {
     }
   }, [connection]);
 
+  const markAsSeenSignalR = useCallback(async (otherUserId) => {
+    if (connection) {
+      try {
+        await connection.invoke("MarkAsSeen", otherUserId);
+      } catch (err) {
+        console.error("SignalR MarkAsSeen Error: ", err);
+        throw err;
+      }
+    } else {
+      console.error("SignalR: No connection established");
+    }
+  }, [connection]);
+
   const setOnMessageReceived = (callback) => {
     onMessageReceivedRef.current = callback;
   };
 
-  return { connection, sendMessageSignalR, setOnMessageReceived };
+  return { connection, sendMessageSignalR, markAsSeenSignalR, setOnMessageReceived };
 };

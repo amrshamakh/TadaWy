@@ -27,10 +27,3 @@ export const uploadChatImage = (file) => {
   });
 };
 
-/**
- * Mark all messages in a conversation as seen.
- * @param {string} otherUserId
- * @returns {Promise<void>}
- */
-export const markAsSeen = (otherUserId) =>
-  ApiClient.post(`/Chat/mark-as-seen?otherUserId=${otherUserId}`);

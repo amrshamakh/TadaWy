@@ -3,7 +3,7 @@ import ChatSidebar from './ChatSidebar';
 import ChatArea from './ChatArea';
 import { useTranslation } from 'react-i18next';
 import { TokenService } from '../../services/tokenService';
-import { getConversations, getChatHistory, uploadChatImage, markAsSeen } from '../../services/chatService';
+import { getConversations, getChatHistory, uploadChatImage } from '../../services/chatService';
 import { useChatHub } from '../../services/useChatHub';
 
 // Helper: decode JWT payload without any external library
@@ -27,7 +27,7 @@ function getCurrentUserId() {
 const Messages = () => {
   const { t } = useTranslation();
   const currentUserId = getCurrentUserId();
-  const { sendMessageSignalR, setOnMessageReceived } = useChatHub();
+  const { sendMessageSignalR, setOnMessageReceived, markAsSeenSignalR } = useChatHub();
 
   const [chats, setChats] = useState([]);
   const [activeChatUserId, setActiveChatUserId] = useState(null);
@@ -66,7 +66,7 @@ const Messages = () => {
         setMessages((prev) => [...prev, message]);
         // If we are in the chat, mark as seen
         if (message.senderUserId === activeChatUserIdRef.current) {
-            markAsSeen(message.senderUserId).catch(() => {});
+            markAsSeenSignalR(message.senderUserId).catch(() => {});
         }
       }
 
@@ -114,7 +114,7 @@ const Messages = () => {
       setLoadingMessages(true);
       const [history] = await Promise.all([
         getChatHistory(userId),
-        markAsSeen(userId).catch(() => {})
+        markAsSeenSignalR(userId).catch(() => {})
       ]);
       setMessages(Array.isArray(history) ? history : []);
     } catch (err) {
