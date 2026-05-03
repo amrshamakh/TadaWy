@@ -26,9 +26,33 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.HasIndex(d => d.UserID)
                    .IsUnique();
 
-            builder.Property(d => d.FirstName)
+            builder.Property(d => d.FirstNameEn)
                    .IsRequired()
                    .HasMaxLength(100);
+
+            builder.Property(d => d.FirstNameAr)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(d => d.LastNameEn)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(d => d.LastNameAr)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(d => d.BioEn)
+                   .HasMaxLength(1000);
+
+            builder.Property(d => d.BioAr)
+                   .HasMaxLength(1000);
+
+            builder.Property(d => d.AddressDescriptionEn)
+                   .HasMaxLength(500);
+
+            builder.Property(d => d.AddressDescriptionAr)
+                   .HasMaxLength(500);
 
             builder.Property(d => d.Status)
                    .IsRequired();

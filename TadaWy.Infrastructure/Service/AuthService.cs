@@ -143,13 +143,18 @@ namespace TadaWy.Infrastructure.service
           
             var doctor = new Doctor
             {
-                FirstName = authRegisterDoctorDTO.FirstName,
-                LastName = authRegisterDoctorDTO.LastName,
+                FirstNameEn = authRegisterDoctorDTO.FirstNameEn,
+                FirstNameAr = authRegisterDoctorDTO.FirstNameAr,
+                LastNameEn = authRegisterDoctorDTO.LastNameEn,
+                LastNameAr = authRegisterDoctorDTO.LastNameAr,
+                BioEn = authRegisterDoctorDTO.BioEn,
+                BioAr = authRegisterDoctorDTO.BioAr,
                 UserID = user.Id,
                 Status = Domain.Enums.DoctorStatus.Pending,
                 Location = new GeoLocation(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude),
                 Address = new Address(addressDto.Street ?? "UnKnown", addressDto.City ?? "UnKnown", addressDto.State ?? "UnKnown"),
-                AddressDescription = authRegisterDoctorDTO.AddressDescription,
+                AddressDescriptionEn = authRegisterDoctorDTO.AddressDescriptionEn,
+                AddressDescriptionAr = authRegisterDoctorDTO.AddressDescriptionAr,
                 SpecializationId = authRegisterDoctorDTO.SpecializationId,
                 CareerStartDate = authRegisterDoctorDTO.CareerStartDate,
                 VerificationDocumentPath = filePath,

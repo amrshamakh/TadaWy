@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using TadaWy.Applicaation.DTO.Common;
 using TadaWy.Applicaation.DTO.DoctorDTOs;
 using TadaWy.Applicaation.IService;
@@ -37,7 +38,7 @@ namespace TadaWy.Infrastructure.Service
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(d =>
-                    (d.FirstName + " " + d.LastName)
+                    (d.FirstNameEn + " " + d.LastNameEn + " " + d.FirstNameAr + " " + d.LastNameAr)
                     .ToLower()
                     .Contains(request.Search.ToLower()));
             }
@@ -60,13 +61,17 @@ namespace TadaWy.Infrastructure.Service
             {
                 d.Id,
                 d.UserID,
-                d.FirstName,
-                d.LastName,
+                d.FirstNameEn,
+                d.FirstNameAr,
+                d.LastNameEn,
+                d.LastNameAr,
                 d.ImageUrl,
-                SpecializationName = d.Specialization.Name,
+                SpecializationNameEn = d.Specialization.NameEn,
+                SpecializationNameAr = d.Specialization.NameAr,
                 d.Address.City,
                 d.Address.Street,
-                d.AddressDescription,
+                d.AddressDescriptionEn,
+                d.AddressDescriptionAr,
                 Rating = d.Reviews.Any()
                     ? d.Reviews.Average(r => r.Rating) : 0
             });
@@ -86,12 +91,16 @@ namespace TadaWy.Infrastructure.Service
                 {
                     Id = d.Id,
                     UserId = d.UserID,
-                    DoctorName = d.FirstName + " " + d.LastName,
+                    DoctorName = CultureInfo.CurrentUICulture.Name.StartsWith("ar") 
+                        ? d.FirstNameAr + " " + d.LastNameAr 
+                        : d.FirstNameEn + " " + d.LastNameEn,
                     Rate = Math.Round(d.Rating, 1),
-                    Specialization = d.SpecializationName,
+                    Specialization = CultureInfo.CurrentUICulture.Name.StartsWith("ar") 
+                        ? d.SpecializationNameAr 
+                        : d.SpecializationNameEn,
                     City = d.City,
                     Street = d.Street == "Unknown"
-                        ? d.AddressDescription
+                        ? (CultureInfo.CurrentUICulture.Name.StartsWith("ar") ? d.AddressDescriptionAr : d.AddressDescriptionEn)
                         : d.Street,
                     ImageUrl = d.ImageUrl
                 })
@@ -128,16 +137,20 @@ namespace TadaWy.Infrastructure.Service
             return new DoctorDetailsDto
             {
                 Id = doctor.Id,
-                Name = doctor.FirstName + " " + doctor.LastName,
-                Specialization = doctor.Specialization.Name,
+                NameEn = doctor.FirstNameEn + " " + doctor.LastNameEn,
+                NameAr = doctor.FirstNameAr + " " + doctor.LastNameAr,
+                SpecializationEn = doctor.Specialization.NameEn,
+                SpecializationAr = doctor.Specialization.NameAr,
                 Address = doctor.Address,
-                AddressDescription = doctor.AddressDescription ?? "",
+                AddressDescriptionEn = doctor.AddressDescriptionEn ?? "",
+                AddressDescriptionAr = doctor.AddressDescriptionAr ?? "",
                 PhoneNumber = doctor.PhoneNumber,
                 Rating = Math.Round(doctor.Rating, 1),
                 YearsOfExperience = yearsOfExperience,
                 ReviewsCount = doctor.Reviews.Count,
                 Price = doctor.Price,
-                About=doctor.Bio,
+                AboutEn = doctor.BioEn,
+                AboutAr = doctor.BioAr,
                 ImageUrl = doctor.ImageUrl,
 
                 AvailableDaysSlots = GenerateNextSevenDaysSlots(doctor),
@@ -242,14 +255,19 @@ namespace TadaWy.Infrastructure.Service
             return new DoctorProfileDto
             {
                 Id = doctor.Id,
-                FirstName = doctor.FirstName,
-                LastName = doctor.LastName,
+                FirstNameEn = doctor.FirstNameEn,
+                FirstNameAr = doctor.FirstNameAr,
+                LastNameEn = doctor.LastNameEn,
+                LastNameAr = doctor.LastNameAr,
                 Email = user.Email ?? "",
-                Specialization = doctor.Specialization.Name,
+                SpecializationEn = doctor.Specialization.NameEn,
+                SpecializationAr = doctor.Specialization.NameAr,
                 Address = doctor.Address,
-                AddressDescription = doctor.AddressDescription ?? "",
+                AddressDescriptionEn = doctor.AddressDescriptionEn ?? "",
+                AddressDescriptionAr = doctor.AddressDescriptionAr ?? "",
                 PhoneNumber = doctor.PhoneNumber,
-                Bio = doctor.Bio,
+                BioEn = doctor.BioEn,
+                BioAr = doctor.BioAr,
                 Price = doctor.Price,
                 ImageUrl = doctor.ImageUrl,
                 Rating = Math.Round(doctor.Rating, 1),
@@ -274,13 +292,17 @@ namespace TadaWy.Infrastructure.Service
                 throw new NotFoundException("User not found");
             user.PhoneNumber = updateDto.PhoneNumber;
             if (doctor == null) throw new NotFoundException("Doctor Not Found");
-            doctor.FirstName = updateDto.FirstName ?? doctor.FirstName;
-            doctor.LastName = updateDto.LastName ?? doctor.LastName;
+            doctor.FirstNameEn = updateDto.FirstNameEn ?? doctor.FirstNameEn;
+            doctor.FirstNameAr = updateDto.FirstNameAr ?? doctor.FirstNameAr;
+            doctor.LastNameEn = updateDto.LastNameEn ?? doctor.LastNameEn;
+            doctor.LastNameAr = updateDto.LastNameAr ?? doctor.LastNameAr;
             doctor.PhoneNumber = updateDto.PhoneNumber ?? doctor.PhoneNumber;
-            doctor.Bio = updateDto.Bio;
-            doctor.Price = updateDto.Price;
-            doctor.CareerStartDate = updateDto.CareerStartDate;
-            doctor.AddressDescription = updateDto.AddressDescription;
+            doctor.BioEn = updateDto.BioEn ?? doctor.BioEn;
+            doctor.BioAr = updateDto.BioAr ?? doctor.BioAr;
+            doctor.Price = updateDto.Price ?? doctor.Price;
+            doctor.CareerStartDate = updateDto.CareerStartDate ?? doctor.CareerStartDate;
+            doctor.AddressDescriptionEn = updateDto.AddressDescriptionEn ?? doctor.AddressDescriptionEn;
+            doctor.AddressDescriptionAr = updateDto.AddressDescriptionAr ?? doctor.AddressDescriptionAr;
             await _context.SaveChangesAsync();
         }
 
@@ -515,10 +537,17 @@ namespace TadaWy.Infrastructure.Service
             await _context.SaveChangesAsync();
 
             // Notify Doctor
-            await _notificationService.SendNotificationAsync(userId, "Appointment Cancelled", $"You have cancelled the appointment on {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
+            await _notificationService.SendNotificationAsync(userId, "Appointment Cancelled", "إلغاء الموعد", $"You have cancelled the appointment on {appointment.Date:f}.", $"لقد قمت بإلغاء الموعد في {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
 
             // Notify Patient
-            await _notificationService.SendNotificationAsync(appointment.PatientId, "Appointment Cancelled by Doctor", $"Dr. {appointment.Doctor.FirstName} {appointment.Doctor.LastName} has cancelled your appointment on {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
+            await _notificationService.SendNotificationAsync(
+                appointment.PatientId, 
+                "Appointment Cancelled by Doctor", 
+                "إلغاء الموعد من قبل الطبيب", 
+                $"Dr. {appointment.Doctor.FirstNameEn} {appointment.Doctor.LastNameEn} has cancelled your appointment on {appointment.Date:f}.", 
+                $"لقد قام دكتور {appointment.Doctor.FirstNameAr} {appointment.Doctor.LastNameAr} بإلغاء موعدك في {appointment.Date:f}.", 
+                NotificationType.AppointmentCancelled, 
+                appointment.Id);
 
             return true;
         }
@@ -606,7 +635,9 @@ namespace TadaWy.Infrastructure.Service
             await _notificationService.SendNotificationAsync(
                 appointment.PatientId,
                 "Appointment Confirmed",
-                $"Dr. {appointment.Doctor.FirstName} {appointment.Doctor.LastName} has confirmed your appointment on {appointment.Date:f}.",
+                "تأكيد الموعد",
+                $"Dr. {appointment.Doctor.FirstNameEn} {appointment.Doctor.LastNameEn} has confirmed your appointment on {appointment.Date:f}.",
+                $"لقد قام دكتور {appointment.Doctor.FirstNameAr} {appointment.Doctor.LastNameAr} بتأكيد موعدك في {appointment.Date:f}.",
                 NotificationType.AppointmentBooked, // Using Booked type for positive confirmation
                 appointment.Id);
 

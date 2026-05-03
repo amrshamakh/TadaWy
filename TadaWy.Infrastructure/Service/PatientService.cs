@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using TadaWy.Applicaation.DTO.AppointmentDTOs;
 using TadaWy.Applicaation.DTO.LookUpDTOs;
 using TadaWy.Applicaation.DTO.PatientDTOs;
@@ -26,6 +27,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<PatientDetailsForDoctorDto> GetPatientDetailsForDoctorAsync(int patientId)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             var patient = await _context.Patients
                 .Include(p => p.PatientAllergies).ThenInclude(pa => pa.Allergy)
                 .Include(p => p.PatientChronicDiseases).ThenInclude(pc => pc.ChronicDisease)
@@ -47,8 +49,8 @@ namespace TadaWy.Infrastructure.Service
                 Gender = patient.Gendre.ToString(),
                 Age = age,
                 BloodType = patient.BloodType,
-                Allergies = patient.PatientAllergies.Select(a => a.Allergy.Name).ToList(),
-                ChronicDiseases = patient.PatientChronicDiseases.Select(d => d.ChronicDisease.Name).ToList()
+                Allergies = patient.PatientAllergies.Select(a => isArabic ? a.Allergy.NameAr : a.Allergy.NameEn).ToList(),
+                ChronicDiseases = patient.PatientChronicDiseases.Select(d => isArabic ? d.ChronicDisease.NameAr : d.ChronicDisease.NameEn).ToList()
             };
         }
 
@@ -99,6 +101,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<List<ChronicDiseaseDto>> GetPatientChronicDiseasesAsync(string userId)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             var patient = await _context.Patients
                 .Include(p => p.PatientChronicDiseases)
                 .ThenInclude(pc => pc.ChronicDisease)
@@ -110,7 +113,7 @@ namespace TadaWy.Infrastructure.Service
             return patient.PatientChronicDiseases.Select(pc => new ChronicDiseaseDto
             {
                 Id = pc.ChronicDiseaseId,
-                Name = pc.ChronicDisease.Name
+                Name = isArabic ? pc.ChronicDisease.NameAr : pc.ChronicDisease.NameEn
             }).ToList();
         }
 
@@ -153,6 +156,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<List<AllergyDto>> GetPatientAllergiesAsync(string userId)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             var patient = await _context.Patients
                 .Include(p => p.PatientAllergies)
                 .ThenInclude(pa => pa.Allergy)
@@ -164,7 +168,7 @@ namespace TadaWy.Infrastructure.Service
             return patient.PatientAllergies.Select(pa => new AllergyDto
             {
                 Id = pa.AllergyId,
-                Name = pa.Allergy.Name
+                Name = isArabic ? pa.Allergy.NameAr : pa.Allergy.NameEn
             }).ToList();
         }
 
@@ -262,6 +266,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, string patientId)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             return await _context.Appointments
                 .Where(a => a.PatientId == patientId &&
                             a.Date.Date == date.Date)
@@ -269,8 +274,8 @@ namespace TadaWy.Infrastructure.Service
                 {
                     Id = a.Id,
                     DoctorId = a.Doctor.Id,
-                    DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
-                    Specialty = a.Doctor.Specialization.Name,
+                    DoctorName = isArabic ? a.Doctor.FirstNameAr + " " + a.Doctor.LastNameAr : a.Doctor.FirstNameEn + " " + a.Doctor.LastNameEn,
+                    Specialty = isArabic ? a.Doctor.Specialization.NameAr : a.Doctor.Specialization.NameEn,
                     Date = a.Date,
                     Status = a.Status,
                     IsPaid = a.Payment != null ? a.Payment.Status : PaymentStatus.Pending
@@ -314,17 +319,33 @@ namespace TadaWy.Infrastructure.Service
             await _context.SaveChangesAsync();
 
             // Notify Patient
-            await _notificationService.SendNotificationAsync(patientId, "Appointment Cancelled", $"Your appointment with Dr. {appointment.Doctor.FirstName} {appointment.Doctor.LastName} on {appointment.Date:f} has been cancelled.", NotificationType.AppointmentCancelled, appointment.Id);
+            await _notificationService.SendNotificationAsync(
+                patientId, 
+                "Appointment Cancelled", 
+                "تم إلغاء الموعد",
+                $"Your appointment with Dr. {appointment.Doctor.FirstNameEn} {appointment.Doctor.LastNameEn} on {appointment.Date:f} has been cancelled.", 
+                $"تم إلغاء موعدك مع دكتور {appointment.Doctor.FirstNameAr} {appointment.Doctor.LastNameAr} في {appointment.Date:f}.",
+                NotificationType.AppointmentCancelled, 
+                appointment.Id);
 
             // Notify Doctor
             var patient = await _context.Patients.FirstOrDefaultAsync(p => p.UserID == patientId);
             string patientName = patient != null ? $"{patient.FirstName} {patient.LastName}" : "A patient";
-            await _notificationService.SendNotificationAsync(appointment.Doctor.UserID, "Appointment Cancelled by Patient", $"{patientName} has cancelled their appointment on {appointment.Date:f}.", NotificationType.AppointmentCancelled, appointment.Id);
+            string patientNameAr = patient != null ? $"{patient.FirstName} {patient.LastName}" : "مريض";
+            await _notificationService.SendNotificationAsync(
+                appointment.Doctor.UserID, 
+                "Appointment Cancelled by Patient", 
+                "إلغاء الموعد من قبل المريض",
+                $"{patientName} has cancelled their appointment on {appointment.Date:f}.", 
+                $"لقد قام {patientNameAr} بإلغاء الموعد في {appointment.Date:f}.",
+                NotificationType.AppointmentCancelled, 
+                appointment.Id);
 
             return true;
         }
         public async Task<List<AppointmentDto>> GetPatientAppointmentsAsync(string patientId, AppointmentStatus status)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             var query = _context.Appointments
                 .Where(a => a.PatientId == patientId);
 
@@ -335,8 +356,8 @@ namespace TadaWy.Infrastructure.Service
                 .Select(a => new AppointmentDto
                 {
                     Id = a.Id,
-                    DoctorName = a.Doctor.FirstName + " " + a.Doctor.LastName,
-                    Specialty = a.Doctor.Specialization.Name,
+                    DoctorName = isArabic ? a.Doctor.FirstNameAr + " " + a.Doctor.LastNameAr : a.Doctor.FirstNameEn + " " + a.Doctor.LastNameEn,
+                    Specialty = isArabic ? a.Doctor.Specialization.NameAr : a.Doctor.Specialization.NameEn,
                     DoctorId=a.Doctor.Id,
                     Date = a.Date,
                     Status = a.Status,
@@ -347,6 +368,7 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<ReceiptDTo> GetReceipt(int appointmentId)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             var appointment = await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
@@ -366,11 +388,11 @@ namespace TadaWy.Infrastructure.Service
                 PatientName = patient.FirstName + " " + patient.LastName,
                 PatientEmail =user.Email,
 
-                DoctorName = appointment.Doctor.FirstName + " " + appointment.Doctor.LastName,
-                Specialty = appointment.Doctor.Specialization.Name,
+                DoctorName = isArabic ? appointment.Doctor.FirstNameAr + " " + appointment.Doctor.LastNameAr : appointment.Doctor.FirstNameEn + " " + appointment.Doctor.LastNameEn,
+                Specialty = isArabic ? appointment.Doctor.Specialization.NameAr : appointment.Doctor.Specialization.NameEn,
 
                 DoctorLocation = appointment.Doctor.Address,
-                DoctorLocationDetails = appointment.Doctor.AddressDescription??"",
+                DoctorLocationDetails = (isArabic ? appointment.Doctor.AddressDescriptionAr : appointment.Doctor.AddressDescriptionEn)??"",
                 PhoneNumber = appointment.Doctor.PhoneNumber,
 
                 Date = appointment.Date,

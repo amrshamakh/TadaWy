@@ -37,14 +37,19 @@ namespace TadaWy.Infrastructure.Service
             foreach (var app in app12h)
             {
                 bool alreadySent = await _context.Notifications.AnyAsync(n => 
-                    n.AppointmentId == app.Id && n.Type == NotificationType.AppointmentReminder12h);
+                    n.AppointmentId == app.Id && (n.Type == NotificationType.AppointmentReminder12h));
 
                 if (!alreadySent)
                 {
+                    var settings = await _context.UserSettings.FirstOrDefaultAsync(s => s.UserId == app.PatientId);
+                    var isArabic = settings?.Language == "ar";
+
                     await _notificationService.SendNotificationAsync(
                         app.PatientId,
-                        "Upcoming Appointment Reminder",
-                        $"You have an appointment with Dr. {app.Doctor.FirstName} {app.Doctor.LastName} in about 12 hours ({app.Date:t}).",
+                        isArabic ? "تذكير بموعد قادم" : "Upcoming Appointment Reminder",
+                        isArabic ? "تذكير بموعد قادم" : "Upcoming Appointment Reminder",
+                        isArabic ? $"لديك موعد مع دكتور {app.Doctor.FirstNameAr} {app.Doctor.LastNameAr} خلال 12 ساعة تقريباً ({app.Date:t})." : $"You have an appointment with Dr. {app.Doctor.FirstNameEn} {app.Doctor.LastNameEn} in about 12 hours ({app.Date:t}).",
+                        isArabic ? $"لديك موعد مع دكتور {app.Doctor.FirstNameAr} {app.Doctor.LastNameAr} خلال 12 ساعة تقريباً ({app.Date:t})." : $"You have an appointment with Dr. {app.Doctor.FirstNameEn} {app.Doctor.LastNameEn} in about 12 hours ({app.Date:t}).",
                         NotificationType.AppointmentReminder12h,
                         app.Id
                     );
@@ -63,14 +68,19 @@ namespace TadaWy.Infrastructure.Service
             foreach (var app in app2h)
             {
                 bool alreadySent = await _context.Notifications.AnyAsync(n => 
-                    n.AppointmentId == app.Id && n.Type == NotificationType.AppointmentReminder2h);
+                    n.AppointmentId == app.Id && (n.Type == NotificationType.AppointmentReminder2h));
 
                 if (!alreadySent)
                 {
+                    var settings = await _context.UserSettings.FirstOrDefaultAsync(s => s.UserId == app.PatientId);
+                    var isArabic = settings?.Language == "ar";
+
                     await _notificationService.SendNotificationAsync(
                         app.PatientId,
-                        "Appointment Starting Soon",
-                        $"Your appointment with Dr. {app.Doctor.FirstName} {app.Doctor.LastName} starts in less than 2 hours at {app.Date:t}!",
+                        isArabic ? "الموعد سيبدأ قريباً" : "Appointment Starting Soon",
+                        isArabic ? "الموعد سيبدأ قريباً" : "Appointment Starting Soon",
+                        isArabic ? $"موعدك مع دكتور {app.Doctor.FirstNameAr} {app.Doctor.LastNameAr} سيبدأ خلال أقل من ساعتين في {app.Date:t}!" : $"Your appointment with Dr. {app.Doctor.FirstNameEn} {app.Doctor.LastNameEn} starts in less than 2 hours at {app.Date:t}!",
+                        isArabic ? $"موعدك مع دكتور {app.Doctor.FirstNameAr} {app.Doctor.LastNameAr} سيبدأ خلال أقل من ساعتين في {app.Date:t}!" : $"Your appointment with Dr. {app.Doctor.FirstNameEn} {app.Doctor.LastNameEn} starts in less than 2 hours at {app.Date:t}!",
                         NotificationType.AppointmentReminder2h,
                         app.Id
                     );

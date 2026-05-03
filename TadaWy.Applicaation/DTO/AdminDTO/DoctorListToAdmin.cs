@@ -10,7 +10,8 @@ namespace TadaWy.Applicaation.DTO.AdminDTO
     public class DoctorListToAdmin
     {
         public int Id { get; set; }
-        public string DoctorName { get; set; } = default!;
+        public string DoctorNameEn { get; set; } = default!;
+        public string DoctorNameAr { get; set; } = default!;
 
         public double? Rating { get; set; }
         public DateTime CreatedAt { get; set; }

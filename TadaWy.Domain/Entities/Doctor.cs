@@ -15,11 +15,14 @@ namespace TadaWy.Domain.Entities
         public int Id { get; set; }
         public string UserID { get; set; } = default!;
 
-        public string FirstName { get; set; } = default!;
-        public string LastName { get; set; } = default!;
+        public string FirstNameEn { get; set; } = default!;
+        public string FirstNameAr { get; set; } = default!;
+        public string LastNameEn { get; set; } = default!;
+        public string LastNameAr { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public string? ImageUrl { get; set; }
-        public string? Bio { get; set; }
+        public string? BioEn { get; set; }
+        public string? BioAr { get; set; }
         public decimal? Price { get; set; }
         public int? AppointmentDurationMinutes { get; set; }
         public DateTime? CareerStartDate { get; set; }
@@ -36,7 +39,8 @@ namespace TadaWy.Domain.Entities
 
         public Address Address { get; set; } = default!;
         public GeoLocation Location { get; set; }
-        public string? AddressDescription { get; set; }
+        public string? AddressDescriptionEn { get; set; }
+        public string? AddressDescriptionAr { get; set; }
 
         public double Rating { get; set; }
 

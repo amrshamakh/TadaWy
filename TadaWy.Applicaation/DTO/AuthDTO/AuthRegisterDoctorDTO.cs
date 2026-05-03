@@ -24,10 +24,15 @@ namespace TadaWy.Applicaation.DTO.AuthDTO
         public int SpecializationId { get; set; }
         public DateTime CareerStartDate { get; set; }
       
-        public string? AddressDescription { get; set; }
+        public string? AddressDescriptionEn { get; set; }
+        public string? AddressDescriptionAr { get; set; }
 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string FirstNameEn { get; set; }
+        public string FirstNameAr { get; set; }
+        public string LastNameEn { get; set; }
+        public string LastNameAr { get; set; }
+        public string? BioEn { get; set; }
+        public string? BioAr { get; set; }
         public Stream FileStream { get; set; }
         public string FileName { get; set; }
         public string PhoneNumber { get; set; }
