@@ -12,13 +12,16 @@ export const useChatHub = () => {
 
   useEffect(() => {
     const token = TokenService.getToken() || localStorage.getItem("userToken");
+    const language = localStorage.getItem("i18nextLng") || localStorage.getItem("language") || "en";
+    const acceptLanguage = language.startsWith("ar") ? "ar-EG" : "en-US";
     
     if (!token) return;
 
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL, {
         accessTokenFactory: () => token,
-        transport: signalR.HttpTransportType.LongPolling
+        transport: signalR.HttpTransportType.LongPolling,
+        headers: { "Accept-Language": acceptLanguage }
       })
       .withAutomaticReconnect()
       .build();
