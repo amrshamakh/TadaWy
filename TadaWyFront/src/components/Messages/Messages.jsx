@@ -27,7 +27,13 @@ function getCurrentUserId() {
 const Messages = () => {
   const { t } = useTranslation();
   const currentUserId = getCurrentUserId();
-  const { sendMessageSignalR, setOnMessageReceived, markAsSeenSignalR } = useChatHub();
+  const { 
+    sendMessageSignalR, 
+    setOnMessageReceived, 
+    markAsSeenSignalR,
+    setOnMessagesSeen,
+    setOnUnreadCountUpdated
+  } = useChatHub();
 
   const [chats, setChats] = useState([]);
   const [activeChatUserId, setActiveChatUserId] = useState(null);
@@ -57,6 +63,44 @@ const Messages = () => {
     };
     fetchConversations();
   }, []);
+
+  // Listen for UnreadCountUpdated
+  useEffect(() => {
+    if (setOnUnreadCountUpdated) {
+      setOnUnreadCountUpdated((payload) => {
+        const fromUser = payload.fromUserId || payload.FromUserId;
+        const count = payload.unreadCount !== undefined ? payload.unreadCount : payload.UnreadCount;
+        setChats((prev) =>
+          prev.map((c) =>
+            c.userId === fromUser ? { ...c, unreadCount: count } : c
+          )
+        );
+      });
+    }
+  }, [setOnUnreadCountUpdated]);
+
+  // Listen for MessagesSeen
+  useEffect(() => {
+    if (setOnMessagesSeen) {
+      setOnMessagesSeen((payload) => {
+        const seenBy = payload.seenByUserId || payload.SeenByUserId;
+        
+        if (seenBy === activeChatUserIdRef.current) {
+          setMessages((prev) =>
+            prev.map((m) =>
+              (m.receiverUserId === seenBy) ? { ...m, isSeen: true } : m
+            )
+          );
+        }
+
+        setChats((prevChats) =>
+          prevChats.map((c) =>
+            c.userId === seenBy ? { ...c, isSeen: true } : c
+          )
+        );
+      });
+    }
+  }, [setOnMessagesSeen]);
 
   // Handle incoming messages from SignalR
   useEffect(() => {

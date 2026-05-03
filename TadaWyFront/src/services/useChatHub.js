@@ -9,6 +9,8 @@ export const useChatHub = () => {
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const onMessageReceivedRef = useRef(null);
+  const onUnreadCountUpdatedRef = useRef(null);
+  const onMessagesSeenRef = useRef(null);
 
   useEffect(() => {
     const token = TokenService.getToken() || localStorage.getItem("userToken");
@@ -35,6 +37,18 @@ export const useChatHub = () => {
         newConnection.on("ReceiveMessage", (message) => {
           if (onMessageReceivedRef.current) {
             onMessageReceivedRef.current(message);
+          }
+        });
+
+        newConnection.on("UnreadCountUpdated", (data) => {
+          if (onUnreadCountUpdatedRef.current) {
+            onUnreadCountUpdatedRef.current(data);
+          }
+        });
+
+        newConnection.on("MessagesSeen", (data) => {
+          if (onMessagesSeenRef.current) {
+            onMessagesSeenRef.current(data);
           }
         });
       })
@@ -77,5 +91,20 @@ export const useChatHub = () => {
     onMessageReceivedRef.current = callback;
   };
 
-  return { connection, sendMessageSignalR, markAsSeenSignalR, setOnMessageReceived };
+  const setOnUnreadCountUpdated = (callback) => {
+    onUnreadCountUpdatedRef.current = callback;
+  };
+
+  const setOnMessagesSeen = (callback) => {
+    onMessagesSeenRef.current = callback;
+  };
+
+  return { 
+    connection, 
+    sendMessageSignalR, 
+    markAsSeenSignalR, 
+    setOnMessageReceived,
+    setOnUnreadCountUpdated,
+    setOnMessagesSeen
+  };
 };
