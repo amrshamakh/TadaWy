@@ -68,16 +68,10 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
 
   if (!activeChat) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 dark:bg-[#0F172A] p-8 text-center">
-        <div className="w-24 h-24 bg-teal-50 dark:bg-teal-900/20 rounded-full flex items-center justify-center mb-6">
-          <img src={assets.messagesIcon} className="w-12 h-12 opacity-50" style={{ filter: 'invert(52%) sepia(87%) saturate(2469%) hue-rotate(139deg) brightness(97%) contrast(85%)' }} alt="" />
+      <div className="hidden md:flex flex-1 items-center justify-center bg-white dark:bg-[#0F172A] relative overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] dark:opacity-[0.05] pointer-events-none">
+          <img src={assets.logo} alt="TadaWy Logo" className="w-2/3 max-w-md grayscale" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-          {t('messages.title', 'Messages')}
-        </h3>
-        <p className="text-gray-500 dark:text-gray-400 max-w-sm">
-          {t('messages.selectChat', 'Select a chat to start messaging')}
-        </p>
       </div>
     );
   }
