@@ -1,15 +1,55 @@
+import { useState, useEffect } from "react";
 import AppearanceSettings from "../components/settings/AppearanceSettings";
 import LanguageSettings from "../components/settings/LanguageSettings";
 import NotificationSettings from "../components/settings/NotificationSettings";
 import AccountInfo from "../components/settings/AccountInfo";
 import DangerZone from "../components/settings/DangerZone";
 import { useTranslation } from 'react-i18next';
+import { getSettings, updateSettings } from "../services/settingService";
+import { toast } from "react-toastify";
 
 const Settings = () => {
   const { t } = useTranslation();
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      setLoading(true);
+      const response = await getSettings();
+      setSettings(response);
+    } catch (error) {
+      console.error("Failed to fetch settings:", error);
+      toast.error(t('error.failedToLoadSettings') || "Failed to load settings.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateSetting = async (key, value) => {
+    const previousSettings = settings;
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+    try {
+      await updateSettings({
+        theme: newSettings.theme || 'light',
+        language: newSettings.language || 'en',
+        emailNotifications: newSettings.emailNotifications ?? true,
+        applicationNotifications: newSettings.applicationNotifications ?? true,
+      });
+    } catch (error) {
+      console.error("Failed to update setting:", error);
+      toast.error(t('error.failedToUpdateSettings') || "Failed to update settings.");
+      setSettings(previousSettings);
+    }
+  };
 
   return (
-    <div className=" space-y-6 ">
+    <div className="space-y-6">
       <div>
         <h1 className="dark:text-white text-2xl font-bold">
           {t('settings.title')}
@@ -19,13 +59,21 @@ const Settings = () => {
         </p>
       </div>
 
-      <AppearanceSettings />
-      <LanguageSettings />
-      <NotificationSettings />
-      <AccountInfo />
-      <DangerZone />
+      {loading || !settings ? (
+        <div className="flex justify-center items-center py-10">
+          <p className="text-gray-500 dark:text-gray-400">Loading settings...</p>
+        </div>
+      ) : (
+        <>
+          <AppearanceSettings settings={settings} onUpdate={handleUpdateSetting} />
+          <LanguageSettings settings={settings} onUpdate={handleUpdateSetting} />
+          <NotificationSettings settings={settings} onUpdate={handleUpdateSetting} />
+          <AccountInfo settings={settings} />
+          <DangerZone />
+        </>
+      )}
     </div>
   );
 };
 
-export default Settings;
+export default Settings;
