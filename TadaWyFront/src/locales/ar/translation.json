@@ -29,6 +29,8 @@
       "subtitle": "إدارة تفضيلات الإشعارات",
       "appointmentReminders": "تذكيرات المواعيد",
       "appointmentDescription": "احصل على إشعارات قبل مواعيدك",
+      "applicationNotifications": "إشعارات التطبيق",
+      "applicationDescription": "تلقي الإشعارات داخل التطبيق",
       "emailNotifications": "إشعارات البريد الإلكتروني",
       "emailDescription": "تلقي التحديثات عبر البريد الإلكتروني",
       "marketingUpdates": "التحديثات التسويقية",

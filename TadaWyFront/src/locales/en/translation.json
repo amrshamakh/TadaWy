@@ -29,6 +29,8 @@
       "subtitle": "Manage your notification preferences",
       "appointmentReminders": "Appointment Reminders",
       "appointmentDescription": "Get notified before your appointments",
+      "applicationNotifications": "Application Notifications",
+      "applicationDescription": "Receive notifications within the application",
       "emailNotifications": "Email Notifications",
       "emailDescription": "Receive updates via email",
       "marketingUpdates": "Marketing Updates",
