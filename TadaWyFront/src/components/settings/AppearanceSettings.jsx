@@ -69,4 +69,4 @@ const AppearanceSettings = ({ settings, onUpdate }) => {
   );
 };
 
-export default AppearanceSettings;
+export default AppearanceSettings;

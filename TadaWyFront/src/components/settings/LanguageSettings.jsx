@@ -88,4 +88,4 @@ const LanguageSettings = ({ settings, onUpdate }) => {
   );
 };
 
-export default LanguageSettings;
+export default LanguageSettings;

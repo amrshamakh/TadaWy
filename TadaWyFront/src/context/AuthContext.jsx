@@ -15,6 +15,8 @@ function decodeToken(token) {
   }
 }
 
+import { revokeToken } from '../services/authService';
+
 // Extract role from JWT claims (handles Microsoft-style long claim URIs)
 function getRoleFromClaims(claims) {
   const roleEntry = Object.entries(claims).find(([k]) =>
@@ -85,11 +87,20 @@ export function AuthProvider({ children }) {
     await fetchUser();
   };
 
-  const logout = () => {
-    TokenService.removeToken();
-    localStorage.removeItem("userToken");
-    setUser(null);
-    setRole(null);
+  const logout = async () => {
+    try {
+      const token = TokenService.getToken() || localStorage.getItem("userToken");
+      if (token) {
+        await revokeToken(token);
+      }
+    } catch (err) {
+      console.error("Failed to revoke token", err);
+    } finally {
+      TokenService.removeToken();
+      localStorage.removeItem("userToken");
+      setUser(null);
+      setRole(null);
+    }
   };
 
   return (
