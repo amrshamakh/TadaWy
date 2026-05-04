@@ -201,7 +201,43 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                 <MdOutlineLanguage size={20} className="text-teal-500" />
                 <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
               </button>
-              <span className="text-lg font-medium dark:text-white">ADMIN</span>
+
+              {/* Admin Profile Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setOpen(!open)}
+                  className="flex items-center gap-2 p-2 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg"
+                >
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-black dark:text-white">
+                    <FiUser size={20} />
+                  </div>
+                  <span className="text-sm font-medium dark:text-white">{displayEmail || "Admin"}</span>
+                </button>
+
+                {open && (
+                  <div className="absolute right-0 top-12 w-64 bg-white dark:bg-[#1e293b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                    {/* Header */}
+                    <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                      <p className="text-sm font-medium dark:text-white">Admin</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{displayEmail}</p>
+                    </div>
+
+                     {/* Sign Out */}
+                    <button
+                      onClick={() => {
+                        logout();
+                        goTo("/");
+                      }}
+                      className="flex gap-3 items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                      {t("nav.signOut")}
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
