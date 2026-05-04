@@ -29,6 +29,8 @@
       "subtitle": "إدارة تفضيلات الإشعارات",
       "appointmentReminders": "تذكيرات المواعيد",
       "appointmentDescription": "احصل على إشعارات قبل مواعيدك",
+      "applicationNotifications": "إشعارات التطبيق",
+      "applicationDescription": "تلقي الإشعارات داخل التطبيق",
       "emailNotifications": "إشعارات البريد الإلكتروني",
       "emailDescription": "تلقي التحديثات عبر البريد الإلكتروني",
       "marketingUpdates": "التحديثات التسويقية",
@@ -40,7 +42,10 @@
       "signOut": "تسجيل الخروج",
       "signOutDescription": "تسجيل الخروج من حسابك",
       "deleteAccount": "حذف الحساب",
-      "deleteAccountDescription": "إزالة حسابك نهائياً"
+      "deleteAccountDescription": "إزالة حسابك نهائياً",
+      "deleteAccountConfirm": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteSuccess": "تم حذف الحساب بنجاح.",
+      "deleteError": "فشل في حذف الحساب."
     }
   },
   "profile": {
@@ -173,10 +178,11 @@
     "close": "إغلاق",
     "search": "بحث",
     "add": "إضافة",
-
     "adding": "جارٍ الإضافة…",
-    "backToHome": "العودة للرئيسية"
-
+    "backToHome": "العودة للرئيسية",
+    "am": "ص",
+    "pm": "م",
+    "reviews": "التقييمات"
   },
   "hero": {
     "badge": "صحتك، ببساطة",
@@ -679,11 +685,7 @@
     "closeAria": "إغلاق الشات الطبي",
     "openAria": "فتح الشات الطبي"
   },
-  "common": {
-    "am": "ص",
-    "pm": "م",
-    "reviews": "التقييمات"
-  },
+
   "changePassword": {
     "title": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",

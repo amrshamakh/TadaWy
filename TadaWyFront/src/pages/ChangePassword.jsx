@@ -2,6 +2,8 @@ import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { changePassword } from "../services/settingService";
+import { toast } from "react-toastify";
 
 const ChangePassword = () => {
   const { t } = useTranslation();
@@ -10,21 +12,31 @@ const ChangePassword = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.newPassword !== formData.confirmPassword) {
-      alert(t("changePassword.errors.passwordMismatch"));
+      toast.error(t("changePassword.errors.passwordMismatch") || "Passwords do not match.");
       return;
     }
-    console.log("Changing password", formData);
-    alert(t("changePassword.success"));
-    navigate(-1);
+    
+    try {
+      setLoading(true);
+      await changePassword(formData);
+      toast.success(t("changePassword.success") || "Password changed successfully.");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error changing password:", error);
+      toast.error(error.response?.data?.messege || t("changePassword.errors.failedToChange") || "Failed to change password.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -96,9 +108,10 @@ const ChangePassword = () => {
           {/* Submit Button */}
           <button
             type="submit"
+            disabled={loading}
             className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
           >
-            {t("changePassword.confirm")}
+            {loading ? t("changePassword.loading") || "Loading..." : t("changePassword.confirm")}
           </button>
         </form>
       </div>

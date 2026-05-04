@@ -2,7 +2,7 @@ import { MdOutlineLanguage } from "react-icons/md";
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
 
-const LanguageSettings = () => {
+const LanguageSettings = ({ settings, onUpdate }) => {
   const { t, i18n } = useTranslation();
 
   const languages = [
@@ -21,6 +21,10 @@ const LanguageSettings = () => {
     } else {
       document.documentElement.setAttribute('dir', 'ltr');
       document.documentElement.setAttribute('lang', 'en');
+    }
+
+    if (onUpdate) {
+      onUpdate('language', languageCode);
     }
   };
 

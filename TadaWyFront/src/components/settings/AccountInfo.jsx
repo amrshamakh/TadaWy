@@ -2,7 +2,7 @@ import { LuShield } from "react-icons/lu";
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 
-const AccountInfo = () => {
+const AccountInfo = ({ settings }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -25,14 +25,14 @@ const AccountInfo = () => {
           <span className="text-[#64748B] dark:text-gray-400">
             {t('settings.accountInfo.email')}
           </span>
-          <span className="dark:text-white">omaralsmnaji@igh.com</span>
+          <span className="dark:text-white">{settings?.email || "N/A"}</span>
         </div>
 
         <div className="flex justify-between text-sm border-b border-[#E2E8F0] dark:border-[#334155] pb-4">
           <span className="text-[#64748B] dark:text-gray-400">
             {t('settings.accountInfo.accountId')}
           </span>
-          <span className="dark:text-white">1</span>
+          <span className="dark:text-white truncate max-w-[150px] sm:max-w-xs">{settings?.id || "N/A"}</span>
         </div>
 
         <button 

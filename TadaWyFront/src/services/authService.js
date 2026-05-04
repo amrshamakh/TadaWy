@@ -22,3 +22,9 @@ export const resetPassword = ({ email, newPassword, confirmPassword, token }) =>
     confirmPassword,
     token,
   });
+
+/**
+ * Revoke the user's refresh token
+ */
+export const revokeToken = (token) =>
+  ApiClient.post("/Auth/RevokeToken", { token });

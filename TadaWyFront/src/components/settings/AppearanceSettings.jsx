@@ -5,9 +5,16 @@ import { LuSunMedium } from "react-icons/lu";
 import { FaRegMoon } from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
 
-const AppearanceSettings = () => {
+const AppearanceSettings = ({ settings, onUpdate }) => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useTranslation();
+
+  const handleToggle = () => {
+    toggleDarkMode();
+    if (onUpdate) {
+      onUpdate("theme", !isDarkMode ? "dark" : "light");
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm min-h-40">
@@ -42,7 +49,7 @@ const AppearanceSettings = () => {
           <div className="flex items-center justify-start lg:justify-end gap-3">
             <LuSunMedium className="dark:text-white w-5 h-5" alt="Light mode" />
             <div className="[&_button]:bg-teal-500 [&_button:hover]:bg-teal-600">
-              <Toggle checked={isDarkMode} onToggle={toggleDarkMode} />
+              <Toggle checked={isDarkMode} onToggle={handleToggle} />
             </div>
             <FaRegMoon className="dark:text-white w-5 h-5" alt="Dark mode" />
           </div>
