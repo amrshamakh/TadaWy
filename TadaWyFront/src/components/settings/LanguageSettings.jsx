@@ -10,11 +10,19 @@ const LanguageSettings = ({ settings, onUpdate }) => {
     { code: 'ar', name: 'Arabic', nativeName: 'العربية' }
   ];
 
-  const changeLanguage = (languageCode) => {
+  // Sync language from API on settings load
+  useEffect(() => {
+    if (!settings?.language) return;
+    const apiLang = settings.language;
+    if (apiLang !== i18n.language) {
+      applyLanguage(apiLang);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings?.language]);
+
+  const applyLanguage = (languageCode) => {
     i18n.changeLanguage(languageCode);
     localStorage.setItem('language', languageCode);
-    
-    // Update document direction and language attribute
     if (languageCode === 'ar') {
       document.documentElement.setAttribute('dir', 'rtl');
       document.documentElement.setAttribute('lang', 'ar');
@@ -22,13 +30,12 @@ const LanguageSettings = ({ settings, onUpdate }) => {
       document.documentElement.setAttribute('dir', 'ltr');
       document.documentElement.setAttribute('lang', 'en');
     }
-
-    if (onUpdate) {
-      onUpdate('language', languageCode);
-    }
   };
 
-  // Document direction is handled Globally in App.jsx
+  const handleLanguageChange = (languageCode) => {
+    applyLanguage(languageCode);
+    onUpdate?.('language', languageCode);
+  };
 
   return (
     <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm min-h-40">
@@ -51,7 +58,7 @@ const LanguageSettings = ({ settings, onUpdate }) => {
         <div className="relative w-64">
           <select 
             value={i18n.language}
-            onChange={(e) => changeLanguage(e.target.value)}
+            onChange={(e) => handleLanguageChange(e.target.value)}
             className="w-full px-3 py-2 dark:text-white text-sm bg-[#F8FAFC] dark:bg-[#3341554D] border border-white dark:border-[#334155] rounded-lg outline-0 appearance-none pe-10 cursor-pointer"
           >
             {languages.map((lang) => (

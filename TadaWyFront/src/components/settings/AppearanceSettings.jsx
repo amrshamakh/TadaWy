@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Toggle from "./Toggle";
 import { useTheme } from "../../context/themeContext";
 import { LuSunMedium } from "react-icons/lu";
@@ -9,11 +9,21 @@ const AppearanceSettings = ({ settings, onUpdate }) => {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const { t } = useTranslation();
 
-  const handleToggle = () => {
-    toggleDarkMode();
-    if (onUpdate) {
-      onUpdate("theme", !isDarkMode ? "dark" : "light");
+  // Sync theme from API on settings load
+  useEffect(() => {
+    if (!settings) return;
+    const apiWantsDark = settings.theme === "dark";
+    if (apiWantsDark !== isDarkMode) {
+      toggleDarkMode();
     }
+  // Only run when settings first loads, not on every isDarkMode change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings?.theme]);
+
+  const handleToggle = () => {
+    const newTheme = isDarkMode ? "light" : "dark";
+    toggleDarkMode();
+    onUpdate?.("theme", newTheme);
   };
 
   return (

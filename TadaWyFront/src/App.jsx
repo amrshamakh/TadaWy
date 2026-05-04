@@ -19,6 +19,7 @@ import ApplicationPending from "./pages/ApplicationPending";
 import Booking from "./pages/Booking";
 import AdminLayout from "./admin/AdminLayout";
 import AdminDoctors from "./admin/AdminDoctors";
+import AdminSettings from "./admin/AdminSettings";
 import MedicalChecksChat from "./components/checksChat/checksChat";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
@@ -61,7 +62,7 @@ const App = () => {
         {/* Admin routes */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDoctors />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<AdminSettings />} />
         </Route>
         {/* Doctor routes */}
         <Route path="/doctor" element={<DoctorLayout />}>

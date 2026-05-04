@@ -39,7 +39,7 @@ const Settings = () => {
         theme: newSettings.theme || 'light',
         language: newSettings.language || 'en',
         emailNotifications: newSettings.emailNotifications ?? true,
-        applicationNotifications: newSettings.applicationNotifications ?? true
+        applicationNotifications: newSettings.applicationNotifications ?? true,
       });
     } catch (error) {
       console.error("Failed to update setting:", error);
@@ -49,7 +49,7 @@ const Settings = () => {
   };
 
   return (
-    <div className=" space-y-6 ">
+    <div className="space-y-6">
       <div>
         <h1 className="dark:text-white text-2xl font-bold">
           {t('settings.title')}
@@ -68,7 +68,6 @@ const Settings = () => {
           <AppearanceSettings settings={settings} onUpdate={handleUpdateSetting} />
           <LanguageSettings settings={settings} onUpdate={handleUpdateSetting} />
           <NotificationSettings settings={settings} onUpdate={handleUpdateSetting} />
-          
           <AccountInfo settings={settings} />
           <DangerZone />
         </>
@@ -77,4 +76,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Settings;
