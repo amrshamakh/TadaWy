@@ -42,7 +42,10 @@
       "signOut": "Sign Out",
       "signOutDescription": "Sign out of your account",
       "deleteAccount": "Delete Account",
-      "deleteAccountDescription": "Permanently remove your account"
+      "deleteAccountDescription": "Permanently remove your account",
+      "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+      "deleteSuccess": "Account deleted successfully.",
+      "deleteError": "Failed to delete account."
     }
   },
   "profile": {
@@ -176,7 +179,10 @@
     "search": "Search",
     "add": "Add",
     "adding": "Adding…",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "am": "AM",
+    "pm": "PM",
+    "reviews": "Reviews"
   },
   "hero": {
     "badge": "Your Health, Simplified",
@@ -671,11 +677,7 @@
     "closeAria": "Close Medical Chat",
     "openAria": "Open Medical Chat"
   },
-  "common": {
-    "am": "AM",
-    "pm": "PM",
-    "reviews": "Reviews"
-  },
+
   "changePassword": {
     "title": "Change your Password",
     "currentPassword": "Current password",

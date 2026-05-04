@@ -2,15 +2,69 @@ import { LuLogOut } from "react-icons/lu";
 import { useTranslation } from 'react-i18next';
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { deleteAccount } from "../../services/settingService";
+import { toast } from "react-toastify";
+import { useState } from "react";
 
 const DangerZone = () => {
   const { t } = useTranslation();
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  const executeDeleteAccount = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteAccount();
+      toast.success(t('settings.dangerZone.deleteSuccess') || "Account deleted successfully.");
+      logout();
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+      toast.error(error.response?.data?.messege || t('settings.dangerZone.deleteError') || "Failed to delete account.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    toast(
+      ({ closeToast }) => (
+        <div className="flex flex-col gap-3">
+          <p className="m-0 text-sm font-medium text-gray-900 dark:text-gray-500">
+            {t('settings.dangerZone.deleteAccountConfirm') || "Are you sure you want to delete your account? This action cannot be undone."}
+          </p>
+          <div className="flex justify-end gap-2 mt-2">
+            <button
+              onClick={closeToast}
+              className="px-3 py-1.5 text-xs font-medium rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-colors"
+            >
+              {t('common.cancel') || "Cancel"}
+            </button>
+            <button
+              onClick={() => {
+                closeToast();
+                executeDeleteAccount();
+              }}
+              className="px-3 py-1.5 text-xs font-medium rounded bg-[#EF4444] text-white hover:bg-red-700 transition-colors"
+            >
+              {t('settings.dangerZone.deleteAccount') || "Delete"}
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        autoClose: false,
+        closeOnClick: false,
+        draggable: false,
+        position: "top-center"
+      }
+    );
   };
 
   return (
@@ -34,7 +88,7 @@ const DangerZone = () => {
               {t('settings.dangerZone.signOutDescription')}
             </p>
           </div>
-          <button 
+          <button
             onClick={handleLogout}
             className="mt-2 sm:mt-0 flex items-center justify-center gap-2 bg-red-500 dark:bg-red-600 text-white rounded-lg text-sm px-3 py-2 sm:px-4 sm:py-2 w-full sm:w-auto hover:bg-red-600 dark:hover:bg-red-700"
           >
@@ -52,8 +106,12 @@ const DangerZone = () => {
               {t('settings.dangerZone.deleteAccountDescription')}
             </p>
           </div>
-          <button className="mt-2 sm:mt-0 px-3 py-2 sm:px-4 sm:py-2 border border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 rounded-lg text-sm w-full sm:w-auto hover:bg-red-50 dark:hover:bg-red-950">
-            {t('settings.dangerZone.deleteAccount')}
+          <button
+            onClick={handleDeleteAccount}
+            disabled={isDeleting}
+            className="mt-2 sm:mt-0 px-3 py-2 sm:px-4 sm:py-2 border border-red-500 dark:border-red-600 text-red-500 dark:text-red-400 rounded-lg text-sm w-full sm:w-auto hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50"
+          >
+            {isDeleting ? "..." : t('settings.dangerZone.deleteAccount')}
           </button>
         </div>
       </div>

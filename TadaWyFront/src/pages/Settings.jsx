@@ -21,7 +21,6 @@ const Settings = () => {
     try {
       setLoading(true);
       const response = await getSettings();
-      // response is directly the data object from ApiClient
       setSettings(response);
     } catch (error) {
       console.error("Failed to fetch settings:", error);
@@ -32,10 +31,9 @@ const Settings = () => {
   };
 
   const handleUpdateSetting = async (key, value) => {
+    const previousSettings = settings;
     const newSettings = { ...settings, [key]: value };
-    // Optimistic update
     setSettings(newSettings);
-    
     try {
       await updateSettings({
         theme: newSettings.theme || 'light',
@@ -43,12 +41,10 @@ const Settings = () => {
         emailNotifications: newSettings.emailNotifications ?? true,
         applicationNotifications: newSettings.applicationNotifications ?? true
       });
-      // Removing success toast as requested
     } catch (error) {
       console.error("Failed to update setting:", error);
       toast.error(t('error.failedToUpdateSettings') || "Failed to update settings.");
-      // Revert on failure
-      setSettings(settings);
+      setSettings(previousSettings);
     }
   };
 
@@ -81,4 +77,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default Settings;

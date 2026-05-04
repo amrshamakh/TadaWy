@@ -8,3 +8,6 @@ export const updateSettings = (data) =>
 
 export const changePassword = (data) =>
   ApiClient.put("/Setting/change-password", data);
+
+export const deleteAccount = () =>
+  ApiClient.delete("/Setting/DeleteAccount");
