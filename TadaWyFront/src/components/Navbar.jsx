@@ -42,8 +42,13 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     setNotifOpen(false);
     navigate(path);
   };
-  const displayName = user ? `${user.firstName || ""} ${user.lastName || ""}`.trim():"";
-  const displayEmail = user ? user.email :"";
+  const isRtl = i18n.language === "ar";
+  const localizedFirstName = isRtl ? (user?.firstNameAr || user?.firstName) : (user?.firstNameEn || user?.firstName);
+  const localizedLastName = isRtl ? (user?.lastNameAr || user?.lastName) : (user?.lastNameEn || user?.lastName);
+  const displayName = user 
+    ? `${localizedFirstName || ""} ${localizedLastName || ""}`.trim() 
+    : (userDisplayName || "");
+  const displayEmail = user ? user.email : (userEmail || "");
   const profilePath = isDoctor ? "/doctor" : "/profile";
   const roleHomePath = userRole === "admin" ? "/admin" : userRole === "doctor" ? "/doctor" : userRole === "patient" ? "/discover" : "/";
 
