@@ -1,12 +1,9 @@
-import { useState, useEffect, useRef } from "react";
 import {
   MapPin,
   Crosshair,
   Upload,
   FileText,
-  Image as ImageIcon,
   ChevronDown,
-  Plus,
   X,
   Search
 } from "lucide-react";
@@ -19,10 +16,9 @@ import {
   useMap,
 } from "react-leaflet";
 import L from "leaflet";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { getAllSpecializations } from "../modules/doctor/api/lookupApi";
-import { registerDoctor } from "../modules/doctor/api/registerDoctorApi";
+import { useDoctorApplication } from "../hooks/useDoctorApplication";
 
 /* Fix Leaflet marker icon */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -41,158 +37,36 @@ const FlyTo = ({ position }) => {
 
 const DoctorApplication = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const LOCATION_STORAGE_KEY = "doctor_location";
-
-  const storedLocation = JSON.parse(
-    localStorage.getItem(LOCATION_STORAGE_KEY) || "{}",
-  );
-
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phoneNumber: "",
-    location: storedLocation?.location || "",
-    fullLocation: storedLocation?.fullLocation || "",
-    latitude: storedLocation?.latitude || null,
-    longitude: storedLocation?.longitude || null,
-    addressDetails: "",
-    specializationId: "",
-    specializationName: "",
-    careerStartDate: "",
-    cv: null,
-  });
-
-  const [specializations, setSpecializations] = useState([]);
-  const [loadingSpecs, setLoadingSpecs] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showSpecs, setShowSpecs] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const specRef = useRef(null);
-
-  const [showMap, setShowMap] = useState(false);
-  const [position, setPosition] = useState(
-    storedLocation?.latitude && storedLocation?.longitude
-      ? [storedLocation.latitude, storedLocation.longitude]
-      : [30.0444, 31.2357],
-  );
-
-  useEffect(() => {
-    const fetchSpecs = async () => {
-      setLoadingSpecs(true);
-      try {
-        const data = await getAllSpecializations();
-        setSpecializations(data || []);
-      } catch (err) {
-        console.error("Failed to fetch specializations:", err);
-      } finally {
-        setLoadingSpecs(false);
-      }
-    };
-    fetchSpecs();
-  }, []);
-
-  // Close specialization dropdown on click outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (specRef.current && !specRef.current.contains(event.target)) {
-        setShowSpecs(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleFileChange = (field, file) => {
-    setFormData((prev) => ({ ...prev, [field]: file }));
-  };
-
-  const reverseGeocode = async (lat, lng) => {
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
-        { headers: { "User-Agent": "tadawy-app" } },
-      );
-      const result = await res.json();
-      const city = result.address.city || result.address.town || result.address.village || "";
-      const locationData = {
-        location: city,
-        fullLocation: result.display_name,
-        latitude: lat,
-        longitude: lng,
-      };
-      localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(locationData));
-      setFormData((prev) => ({
-        ...prev,
-        location: city,
-        fullLocation: result.display_name,
-        latitude: lat,
-        longitude: lng,
-      }));
-    } catch (error) {
-      console.error("Geocoding error:", error);
-    }
-  };
+  const {
+    formData,
+    loadingSpecs,
+    searchTerm,
+    setSearchTerm,
+    showSpecs,
+    setShowSpecs,
+    isSubmitting,
+    showMap,
+    setShowMap,
+    position,
+    specRef,
+    handleChange,
+    handleFileChange,
+    getCurrentLocation,
+    handleSubmit,
+    filteredSpecs,
+    handleMapClick,
+    setFormData
+  } = useDoctorApplication();
 
   function LocationPicker() {
     useMapEvents({
       click(e) {
         const { lat, lng } = e.latlng;
-        setPosition([lat, lng]);
-        reverseGeocode(lat, lng);
-        setShowMap(false);
+        handleMapClick(lat, lng);
       },
     });
     return <Marker position={position} />;
   }
-
-  const getCurrentLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setPosition([lat, lng]);
-        await reverseGeocode(lat, lng);
-        setShowMap(false);
-      },
-      () => alert("Location permission denied"),
-    );
-  };
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    if (!formData.specializationId) {
-      alert("Please select a specialization");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      await registerDoctor(formData);
-      navigate("/application-pending");
-    } catch (err) {
-      console.error("Application failed:", err);
-      alert("Submission failed. Please check your data and try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const filteredSpecs = specializations.filter(s => 
-    s.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-linear-to-b from-white from-1% via-teal-200 to-white to-80% dark:from-[#0b2a3a] dark:via-[#0f5a57] dark:to-[#202326] flex items-center justify-center p-4 py-8">
@@ -214,30 +88,61 @@ const DoctorApplication = () => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* English Names */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('profile.personalInfo.firstName', 'First Name')}
+                {t('auth.doctor.firstNameEn', 'First Name (EN)')}
               </label>
               <input
                 type="text"
-                value={formData.firstName}
-                onChange={(e) => handleChange("firstName", e.target.value)}
-                placeholder="John"
+                value={formData.firstNameEn}
+                onChange={(e) => handleChange("firstNameEn", e.target.value)}
+                placeholder="Mariam"
                 className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
                 required
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('profile.personalInfo.lastName', 'Last Name')}
+                {t('auth.doctor.lastNameEn', 'Last Name (EN)')}
               </label>
               <input
                 type="text"
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
-                placeholder="Doe"
+                value={formData.lastNameEn}
+                onChange={(e) => handleChange("lastNameEn", e.target.value)}
+                placeholder="Ehab"
                 className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Arabic Names */}
+          <div className="grid grid-cols-2 gap-4" dir="rtl">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-right">
+                {t('auth.doctor.firstNameAr', 'الاسم الأول (AR)')}
+              </label>
+              <input
+                type="text"
+                value={formData.firstNameAr}
+                onChange={(e) => handleChange("firstNameAr", e.target.value)}
+                placeholder="مريم"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition text-right"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-right">
+                {t('auth.doctor.lastNameAr', 'اسم العائلة (AR)')}
+              </label>
+              <input
+                type="text"
+                value={formData.lastNameAr}
+                onChange={(e) => handleChange("lastNameAr", e.target.value)}
+                placeholder="ايهاب"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition text-right"
                 required
               />
             </div>
@@ -330,18 +235,62 @@ const DoctorApplication = () => {
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('auth.doctor.addressDetails', 'Address Description')}
-            </label>
-            <input
-              type="text"
-              value={formData.addressDetails}
-              onChange={(e) => handleChange("addressDetails", e.target.value)}
-              placeholder={t('auth.doctor.addressPlaceholder', 'Building number, street name, floor, etc.')}
-              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-              required
-            />
+          {/* Address Descriptions */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('auth.doctor.addressDescriptionEn', 'Address Description (EN)')}
+              </label>
+              <input
+                type="text"
+                value={formData.addressDescriptionEn}
+                onChange={(e) => handleChange("addressDescriptionEn", e.target.value)}
+                placeholder="street15"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                required
+              />
+            </div>
+            <div dir="rtl">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-right">
+                {t('auth.doctor.addressDescriptionAr', 'وصف العنوان (AR)')}
+              </label>
+              <input
+                type="text"
+                value={formData.addressDescriptionAr}
+                onChange={(e) => handleChange("addressDescriptionAr", e.target.value)}
+                placeholder="شارع 15"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition text-right"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Bios */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('auth.doctor.bioEn', 'Bio (EN)')}
+              </label>
+              <textarea
+                value={formData.bioEn}
+                onChange={(e) => handleChange("bioEn", e.target.value)}
+                placeholder="surgey doctor"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition min-h-[80px]"
+                required
+              />
+            </div>
+            <div dir="rtl">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 text-right">
+                {t('auth.doctor.bioAr', 'النبذة التعريفية (AR)')}
+              </label>
+              <textarea
+                value={formData.bioAr}
+                onChange={(e) => handleChange("bioAr", e.target.value)}
+                placeholder="دكتور جراحه"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 transition text-right min-h-[80px]"
+                required
+              />
+            </div>
           </div>
 
 

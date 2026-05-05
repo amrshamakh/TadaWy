@@ -5,20 +5,25 @@ export function registerDoctor(data) {
   
   // Basic fields
   formData.append("Email", data.email);
-  formData.append("Password", data.password);
+  formData.append("password", data.password);
   formData.append("ConfirmPassword", data.confirmPassword);
-  formData.append("FirstName", data.firstName);
-  formData.append("LastName", data.lastName);
+  formData.append("FirstNameEn", data.firstNameEn);
+  formData.append("LastNameEn", data.lastNameEn);
+  formData.append("FirstNameAr", data.firstNameAr);
+  formData.append("LastNameAr", data.lastNameAr);
   formData.append("PhoneNumber", data.phoneNumber);
   
-  // Location
-  formData.append("AddressDescription", data.addressDetails || "");
-  formData.append("Latitude", String(data.latitude));
-  formData.append("Longitude", String(data.longitude));
-  
   // Professional
+  formData.append("BioEn", data.bioEn || "");
+  formData.append("BioAr", data.bioAr || "");
   formData.append("SpecializationId", String(data.specializationId));
   formData.append("CareerStartDate", data.careerStartDate);
+
+  // Location
+  formData.append("AddressDescriptionEn", data.addressDescriptionEn || "");
+  formData.append("AddressDescriptionAr", data.addressDescriptionAr || "");
+  formData.append("Latitude", String(data.latitude));
+  formData.append("Longitude", String(data.longitude));
   
   // Files — must be a real File object
   if (data.cv) {
