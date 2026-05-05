@@ -3,7 +3,8 @@ import "./Booking.css";
 import { useTranslation } from "react-i18next";
 
 export default function DoctorCard({ doctor }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
   if (!doctor) return null;
 
   return (
@@ -18,14 +19,20 @@ export default function DoctorCard({ doctor }) {
         </div>
         <div className="booking-doctor-main">
           <h2 className="booking-doctor-name">
-            {doctor.name || doctor.doctorName || doctor.doctor || (doctor.id ? t(`discover.clinicsData.${doctor.id}.doctor`) : "")}
+            {isAr 
+              ? (doctor.nameAr || doctor.name || doctor.doctorNameAr || doctor.doctorName || doctor.doctor)
+              : (doctor.nameEn || doctor.name || doctor.doctorNameEn || doctor.doctorName || doctor.doctor)
+            }
           </h2>
 
           <div className="booking-doctor-tags">
             <div className="booking-doctor-tag">
               <span className="booking-doctor-tag-label">{t("booking.doctorCard.specialization")}:</span>
               <span className="booking-doctor-tag-value">
-                {doctor.specialization || doctor.specialty || (doctor.id ? t(`discover.clinicsData.${doctor.id}.specialty`) : "")}
+                {isAr
+                  ? (doctor.specializationAr || doctor.specialtyAr || doctor.specialization || doctor.specialty)
+                  : (doctor.specializationEn || doctor.specialtyEn || doctor.specialization || doctor.specialty)
+                }
               </span>
             </div>
 
@@ -56,10 +63,12 @@ export default function DoctorCard({ doctor }) {
       <div className="booking-doctor-about">
         <h3 className="booking-section-title">{t("booking.doctorCard.about")}</h3>
         <p className="booking-about-desc">
-          {doctor.about || t("booking.doctorCard.aboutPlaceholder")}
+          {isAr
+            ? (doctor.aboutAr || doctor.bioAr || doctor.bio || doctor.about || t("booking.doctorCard.aboutPlaceholder"))
+            : (doctor.aboutEn || doctor.bioEn || doctor.bio || doctor.about || t("booking.doctorCard.aboutPlaceholder"))
+          }
         </p>
       </div>
     </section>
   );
 }
-
