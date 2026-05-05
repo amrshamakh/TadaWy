@@ -412,6 +412,7 @@
     "cvUploaded": "السيرة الذاتية المرفوعة",
     "emailAddress": "البريد الإلكتروني",
     "specialization": "التخصص",
+    "bio": "النبذة التعريفية",
     "banReason": "سبب الحظر",
     "noBanReason": "لم يتم إدخال سبب",
     "banReasonPrompt": "اكتب سبب حظر هذا الطبيب",

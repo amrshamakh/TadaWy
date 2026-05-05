@@ -410,6 +410,7 @@
       "cvUploaded": "CV Uploaded",
       "emailAddress": "Email Address",
       "specialization": "Specialization",
+      "bio": "Doctor Bio",
       "banReason": "Ban Reason",
       "noBanReason": "No reason provided",
       "banReasonPrompt": "Write the reason for banning this doctor",
