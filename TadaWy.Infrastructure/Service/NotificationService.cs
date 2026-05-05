@@ -89,5 +89,13 @@ namespace TadaWy.Infrastructure.Service
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task MarkAllAsReadAsync(string userId)
+        {
+            await _context.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .ExecuteUpdateAsync(n => n
+                    .SetProperty(x => x.IsRead, true));
+        }
     }
 }
