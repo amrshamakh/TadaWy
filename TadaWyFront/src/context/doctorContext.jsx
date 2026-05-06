@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useRef } from "react";
 import AdminApi from "../modules/admin/api/adminApi";
 import { toast } from 'react-toastify';
+import { useTranslation } from "react-i18next";
 
 const DoctorsContext = createContext(null);
 
@@ -23,6 +24,8 @@ export function DoctorsProvider({ children }) {
   const [specializations, setSpecializations] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { i18n } = useTranslation();
+  const lastLanguage = useRef(i18n.language);
 
   const mapDoctor = useCallback((d, specs = specializations) => {
     if (!d) return null;
@@ -48,6 +51,8 @@ export function DoctorsProvider({ children }) {
       status: STATUS_MAP[d.status ?? d.Status] || "Pending",
       createdAt: (d.createdAt || d.CreatedAt) ? new Date(d.createdAt || d.CreatedAt).toLocaleDateString() : "00/00/0000",
       specialization: spec ? (spec.name || spec.Name) : "—",
+      specializationEn: spec ? (spec.nameEn || spec.NameEn || spec.name || spec.Name) : "",
+      specializationAr: spec ? (spec.nameAr || spec.NameAr || spec.name || spec.Name) : "",
       clinicLocation
     };
   }, [specializations]);
@@ -67,8 +72,9 @@ export function DoctorsProvider({ children }) {
     setLoading(true);
     try {
       let currentSpecs = specializations;
-      if (currentSpecs.length === 0) {
+      if (currentSpecs.length === 0 || lastLanguage.current !== i18n.language) {
           currentSpecs = await fetchSpecializations();
+          lastLanguage.current = i18n.language;
       }
 
       const apiParams = {

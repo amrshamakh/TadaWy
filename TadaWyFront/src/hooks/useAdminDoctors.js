@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDoctors } from "../context/doctorContext";
+import { useTranslation } from "react-i18next";
 
 export const useAdminDoctors = (itemsPerPage = 6) => {
   const [filter, setFilter] = useState("Approved");
@@ -7,6 +8,7 @@ export const useAdminDoctors = (itemsPerPage = 6) => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const { doctors, totalCount, fetchDoctors, loading, updateStatus, banDoctor, unbanDoctor } = useDoctors();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     fetchDoctors({
@@ -15,7 +17,7 @@ export const useAdminDoctors = (itemsPerPage = 6) => {
       PageNumber: currentPage,
       PageSize: itemsPerPage
     });
-  }, [filter, search, currentPage]);
+  }, [filter, search, currentPage, i18n.language]);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
 

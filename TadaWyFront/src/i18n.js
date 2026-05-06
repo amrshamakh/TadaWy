@@ -9,7 +9,9 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    lng: localStorage.getItem("language") || undefined,
+    detection: {
+      caches: [] // Do not cache in localStorage
+    },
     resources: {
       en: {
         translation: enTranslation

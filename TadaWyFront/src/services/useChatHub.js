@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import * as signalR from "@microsoft/signalr";
 import { TokenService } from "./tokenService";
 import { ENV } from "../config/env";
+import i18n from "../i18n";
 
 const HUB_URL = ENV.API_URL.replace("/api", "") + "/chatHub";
 
@@ -14,7 +15,7 @@ export const useChatHub = () => {
 
   useEffect(() => {
     const token = TokenService.getToken() || localStorage.getItem("userToken");
-    const language = localStorage.getItem("i18nextLng") || localStorage.getItem("language") || "en";
+    const language = i18n.language || "en";
     const acceptLanguage = language.startsWith("ar") ? "ar-EG" : "en-US";
     
     if (!token) return;

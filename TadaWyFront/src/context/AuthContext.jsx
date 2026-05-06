@@ -59,28 +59,27 @@ export function AuthProvider({ children }) {
         profileData = await getPatientProfile();
       }
 
-      if (profileData) {
-        // Fetch and apply settings
-        try {
-          const settings = await getSettings();
-          if (settings) {
-            // Apply theme
-            if (settings.theme) {
-              setDarkMode(settings.theme === 'dark');
-            }
-            // Apply language
-            if (settings.language && i18n.language !== settings.language) {
-              i18n.changeLanguage(settings.language);
-              localStorage.setItem("language", settings.language);
-              // Also update document attributes
-              document.documentElement.setAttribute('dir', settings.language === 'ar' ? 'rtl' : 'ltr');
-              document.documentElement.setAttribute('lang', settings.language);
-            }
+      // Fetch and apply settings for all roles
+      try {
+        const settings = await getSettings();
+        if (settings) {
+          // Apply theme
+          if (settings.theme) {
+            setDarkMode(settings.theme === 'dark');
           }
-        } catch (settingsErr) {
-          console.error("Failed to fetch settings on login", settingsErr);
+          // Apply language
+          if (settings.language && i18n.language !== settings.language) {
+            i18n.changeLanguage(settings.language);
+            // Also update document attributes
+            document.documentElement.setAttribute('dir', settings.language === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', settings.language);
+          }
         }
+      } catch (settingsErr) {
+        console.error("Failed to fetch settings on login", settingsErr);
+      }
 
+      if (profileData) {
         // Normalize keys for Navbar (supports both camelCase and PascalCase from API)
         const normalizedUser = {
           ...profileData,

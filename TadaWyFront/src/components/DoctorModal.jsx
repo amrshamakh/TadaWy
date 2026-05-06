@@ -109,7 +109,7 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.clinicLocation")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-              {doctor?.clinicLocation || "—"}
+              {doctor?.clinicLocation || summaryDoctor?.clinicLocation || "—"}
             </div>
           </div>
 
@@ -127,7 +127,7 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.clinicDetails") || "Clinic Details"}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-              {localize(doctor, "addressDescription") || doctor?.clinicDetails || "—"}
+              {localize(doctor || summaryDoctor, "addressDescription") || "—"}
             </div>
           </div>
 

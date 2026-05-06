@@ -58,7 +58,6 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     
     // Update UI immediately
     i18n.changeLanguage(nextLang);
-    localStorage.setItem("language", nextLang);
     
     if (nextLang === 'ar') {
       document.documentElement.setAttribute('dir', 'rtl');
@@ -72,7 +71,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     if (isLoggedIn) {
       try {
         const response = await getSettings();
-        const currentSettings = response.data;
+        const currentSettings = response;
         await updateSettings({
           ...currentSettings,
           language: nextLang
