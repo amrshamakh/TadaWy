@@ -11,11 +11,18 @@ public class ChronicDiseaseConfiguration
 
         builder.HasKey(cd => cd.Id);
 
-        builder.Property(cd => cd.Name)
+        builder.Property(cd => cd.NameEn)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.HasIndex(cd => cd.Name)
+        builder.Property(cd => cd.NameAr)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasIndex(cd => cd.NameEn)
+            .IsUnique();
+
+        builder.HasIndex(cd => cd.NameAr)
             .IsUnique();
     }
 }

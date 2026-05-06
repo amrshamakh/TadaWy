@@ -3,29 +3,43 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 import { cancelAppointment, getAppointmentReceipt } from "../../modules/patient/api/patientAppointmentsApi";
-import ReceiptModal from "./ReceiptModal";
+import BookingReceiptModal from "../Booking/payments/BookingReceiptModal";
 import ReviewModal from "./ReviewModal";
+import html2canvas from "html2canvas";
+import { useRef } from "react";
 
 export default function AppointmentCard({ id, clinic, doctor, specialty, date, time, rawDate, status, paid, doctorId, onCancel }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [isFetchingReceipt, setIsFetchingReceipt] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
+  const receiptRef = useRef(null);
 
   const isPending = status === "pending";
   const isCancelled = status === "cancelled";
-  const isConfirmed = status === "confirmed";
+  const isConfirmed = status === "completed";
+  const isMissed = status === "missed";
   
   const isPastAppointment = rawDate && new Date(rawDate) < new Date();
 
-  const statusLabel = isPending ? t("calendar.status.pending") : isCancelled ? t("calendar.status.cancelled") : t("calendar.status.confirmed");
+  const statusLabel = isPending 
+    ? t("calendar.status.pending") 
+    : isCancelled 
+      ? t("calendar.status.cancelled") 
+      : isMissed
+        ? t("calendar.status.missed")
+        : t("calendar.status.confirmed");
+
   const statusPillClass = isPending
-    ? "text-[#00BBA7] border-[#00BBA7] bg-transparent"
-    : isCancelled
-      ? "text-[#DC2626] border-[#DC2626] bg-transparent"
-      : "text-[#64748B] border-[#64748B] bg-transparent";
+    ? "text-yellow-600 border-yellow-600 bg-transparent"
+    : isCancelled || isMissed
+      ? "text-red-600 border-red-600 bg-transparent"
+      : isConfirmed
+        ? "text-emerald-600 border-emerald-600 bg-transparent"
+        : "text-[#64748B] border-[#64748B] bg-transparent";
 
   const executeCancel = async () => {
     try {
@@ -86,6 +100,27 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
       toast.error("Failed to fetch receipt details.");
     } finally {
       setIsFetchingReceipt(false);
+    }
+  };
+
+  const handlePrintReceipt = async () => {
+    if (!receiptRef.current || isPrinting) return;
+    try {
+      setIsPrinting(true);
+      const canvas = await html2canvas(receiptRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      const link = document.createElement("a");
+      link.download = `receipt-${id}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch (error) {
+      console.error("Failed to export receipt image", error);
+      toast.error("Failed to print receipt");
+    } finally {
+      setIsPrinting(false);
     }
   };
 
@@ -156,7 +191,29 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
         )}
       </div>
 
-      {receipt && <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />}
+      {receipt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <BookingReceiptModal
+            receiptRef={receiptRef}
+            receiptNumber={`RX-${id}`}
+            patientName={receipt.patientName || receipt.PatientName}
+            patientEmail={receipt.patientEmail || receipt.PatientEmail}
+            doctor={{
+              name: receipt.doctorName || receipt.DoctorName,
+              specialization: receipt.specialty || receipt.Specialty,
+              address: receipt.doctorLocation || receipt.DoctorLocation,
+              phoneNumber: receipt.phoneNumber || receipt.PhoneNumber,
+              addressDescription: receipt.doctorLocationDetails || receipt.DoctorLocationDetails
+            }}
+            appointmentDateValue={new Date(receipt.date || receipt.Date).toLocaleString(i18n.language)}
+            appointmentCost={receipt.price || receipt.Price}
+            isPrinting={isPrinting}
+            onPrintReceipt={handlePrintReceipt}
+            onDone={() => setReceipt(null)}
+            isOnline={(receipt.paymentMethod || receipt.PaymentMethod)?.toLowerCase() === "online"}
+          />
+        </div>
+      )}
       {showReviewModal && <ReviewModal doctorId={doctorId} onClose={() => setShowReviewModal(false)} />}
     </>
   );

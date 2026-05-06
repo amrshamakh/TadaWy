@@ -9,7 +9,8 @@ namespace TadaWy.Domain.Entities
     public class Specialization
     {
         public int Id { get; set; }
-        public string Name { get; set; } = default!;
+        public string NameEn { get; set; } = default!;
+        public string NameAr { get; set; } = default!;
         public ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
     }
 }

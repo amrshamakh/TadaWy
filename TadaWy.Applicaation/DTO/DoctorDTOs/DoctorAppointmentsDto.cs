@@ -14,6 +14,7 @@ namespace TadaWy.Applicaation.DTO.DoctorDTOs
     public class AppointmentListItemDto
     {
         public int Id { get; set; }
+        public int PatientId { get; set; }
         public string PatientName { get; set; } = string.Empty;
         public string PatientPhone { get; set; } = string.Empty;
         public PaymentMethod PaymentMethod { get; set; }

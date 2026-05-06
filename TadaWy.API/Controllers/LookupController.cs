@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TadaWy.Applicaation.IService;
 
 namespace TadaWy.API.Controllers
@@ -16,9 +16,9 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpPost("chronic-diseases")]
-        public async Task<IActionResult> AddChronicDisease([FromQuery] string name)
+        public async Task<IActionResult> AddChronicDisease([FromQuery] string nameEn, [FromQuery] string nameAr)
         {
-            await _lookupService.AddChronicDiseaseAsync(name);
+            await _lookupService.AddChronicDiseaseAsync(nameEn, nameAr);
             return Ok(new { message = "Chronic disease added to the list" });
         }
 
@@ -30,9 +30,9 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpPost("specializations")]
-        public async Task<IActionResult> AddSpecialization([FromQuery] string name)
+        public async Task<IActionResult> AddSpecialization([FromQuery] string nameEn, [FromQuery] string nameAr)
         {
-            await _lookupService.AddSpecializationAsync(name);
+            await _lookupService.AddSpecializationAsync(nameEn, nameAr);
             return Ok(new { message = "Specialization added to master list" });
         }
 
@@ -44,9 +44,9 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpPost("allergies")]
-        public async Task<IActionResult> AddAllergy([FromQuery] string name)
+        public async Task<IActionResult> AddAllergy([FromQuery] string nameEn, [FromQuery] string nameAr)
         {
-            await _lookupService.AddAllergyAsync(name);
+            await _lookupService.AddAllergyAsync(nameEn, nameAr);
             return Ok(new { message = "Allergy added to the list" });
         }
     }

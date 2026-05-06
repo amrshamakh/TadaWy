@@ -29,6 +29,8 @@
       "subtitle": "Manage your notification preferences",
       "appointmentReminders": "Appointment Reminders",
       "appointmentDescription": "Get notified before your appointments",
+      "applicationNotifications": "Application Notifications",
+      "applicationDescription": "Receive notifications within the application",
       "emailNotifications": "Email Notifications",
       "emailDescription": "Receive updates via email",
       "marketingUpdates": "Marketing Updates",
@@ -40,7 +42,10 @@
       "signOut": "Sign Out",
       "signOutDescription": "Sign out of your account",
       "deleteAccount": "Delete Account",
-      "deleteAccountDescription": "Permanently remove your account"
+      "deleteAccountDescription": "Permanently remove your account",
+      "deleteAccountConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+      "deleteSuccess": "Account deleted successfully.",
+      "deleteError": "Failed to delete account."
     }
   },
   "profile": {
@@ -175,7 +180,10 @@
     "search": "Search",
     "add": "Add",
     "adding": "Adding…",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "am": "AM",
+    "pm": "PM",
+    "reviews": "Reviews"
   },
   "hero": {
     "badge": "Your Health, Simplified",
@@ -434,9 +442,11 @@
     "allAppointments": "All Appointments",
     "noCurrentAppointments": "No current appointments",
     "status": {
+      "completed": "Completed",
       "confirmed": "Confirmed",
-      "pending": "Pending",
-      "cancelled": "Cancelled"
+      "pending": "Upcoming",
+      "cancelled": "Cancelled",
+      "missed": "Missed"
     },
     "legend": {
       "today": "Today",
@@ -497,15 +507,16 @@
       "cancel": "Cancel",
       "phone": "Phone Number:",
       "payment": "Payment:",
-      "details": "Appointment Details",
       "allPayments": "All Payments",
       "paidOnline": "Paid Online",
       "payAtClinic": "Pay at Clinic",
       "stats": {
         "all": "All Appointments",
         "confirmed": "Confirmed",
-        "pending": "Pending",
+        "upcoming": "Upcoming",
+        "pending": "Upcoming",
         "cancelled": "Cancelled",
+        "missed": "Missed",
         "today": "Today"
       },
       "confirm": "Confirm",
@@ -667,13 +678,7 @@
     "closeAria": "Close Medical Chat",
     "openAria": "Open Medical Chat"
   },
-  "common": {
-    "am": "AM",
-    "pm": "PM",
-    "reviews": "Reviews",
-    "years": "Years",
-    "none": "None"
-  },
+
   "changePassword": {
     "title": "Change your Password",
     "currentPassword": "Current password",

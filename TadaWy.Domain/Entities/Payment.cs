@@ -23,5 +23,7 @@ namespace TadaWy.Domain.Entities
 
         public int AppointmentId { get; set; }
         public Appointment Appointment { get; set; }
+
+        public bool IsReleasedToWallet { get; set; } =false;
     }
 }

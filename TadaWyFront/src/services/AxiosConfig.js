@@ -25,7 +25,11 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = TokenService.getToken();
+    const language = localStorage.getItem("i18nextLng") || localStorage.getItem("language") || "en";
+    const acceptLanguage = language.startsWith("ar") ? "ar-EG" : "en-US";
+    
     config.headers = config.headers || {};
+    config.headers["Accept-Language"] = acceptLanguage;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

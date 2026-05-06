@@ -33,5 +33,17 @@ namespace TadaWy.API.Controllers
             await _notificationService.MarkAsReadAsync(id);
             return Ok(new { message = "Notification marked as read" });
         }
+        [HttpPatch("allread")]
+        public async Task<IActionResult> MarkAllAsRead()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _notificationService.MarkAllAsReadAsync(userId);
+
+            return Ok(new { message = "All notifications marked as read" });
+        }
     }
 }

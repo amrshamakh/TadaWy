@@ -24,11 +24,19 @@ namespace TadaWy.Applicaation.DTO.AuthDTO.Validators
                 .GreaterThan(0)
                 .WithMessage("Specialization is required.");
 
-            RuleFor(x => x.FirstName)
+            RuleFor(x => x.FirstNameEn)
                 .NotEmpty()
                 .MaximumLength(100);
 
-            RuleFor(x => x.LastName)
+            RuleFor(x => x.FirstNameAr)
+                .NotEmpty()
+                .MaximumLength(100);
+
+            RuleFor(x => x.LastNameEn)
+                .NotEmpty()
+                .MaximumLength(100);
+
+            RuleFor(x => x.LastNameAr)
                 .NotEmpty()
                 .MaximumLength(100);
 

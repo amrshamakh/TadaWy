@@ -24,14 +24,16 @@ export default function DoctorAppointments() {
     setLoading(true);
     try {
       const response = await getDoctorAppointments();
-      setAppointments(response.appointments || []);
-      
+      const appointmentList = response.appointments || [];
+      setAppointments(appointmentList);
+
       // Map API counts to stats row format
       setStats([
-        { label: "all", value: response.totalAppointments || 0, color: "text-gray-800" },
-        { label: "confirmed", value: response.confirmedCount || 0, color: "text-teal-500" },
-        { label: "pending", value: response.pendingCount || 0, color: "text-orange-400" },
-        { label: "cancelled", value: response.cancelledCount || 0, color: "text-red-400" },
+        { label: "all", value: response.totalAppointments || 0 },
+        { label: "confirmed", value: response.confirmedCount || 0 },
+        { label: "upcoming", value: response.pendingCount || 0 },
+        { label: "missed", value: response.missedCount || appointmentList.filter(a => a.status === 3).length },
+        { label: "cancelled", value: response.cancelledCount || 0 },
       ]);
     } catch (error) {
       console.error("Failed to fetch appointments:", error);

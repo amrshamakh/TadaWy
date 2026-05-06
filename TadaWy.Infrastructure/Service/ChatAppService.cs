@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -70,7 +71,7 @@ namespace TadaWy.Infrastructure.Service
                 ReceiverUserId = dto.ReceiverUserId,
                 Content = dto.Content,
                 ImageUrl = imageUrl,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 IsSeen = false
             };
 
@@ -86,7 +87,9 @@ namespace TadaWy.Infrastructure.Service
                 await _notificationService.SendNotificationAsync(
                     dto.ReceiverUserId,
                     "New Messages",
+                    "رسائل جديدة",
                     $"You have {totalUnread} new messages.",
+                    $"لديك {totalUnread} رسائل جديدة.",
                     NotificationType.ChatMessage
                 );
             }
@@ -94,13 +97,19 @@ namespace TadaWy.Infrastructure.Service
             {
                 // Receiver is likely a Patient, sender is a Doctor
                 var doctorSender = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == senderUserId);
-                var senderName = doctorSender != null ? $"Dr. {doctorSender.FirstName} {doctorSender.LastName}" : "New Message";
-                var preview = !string.IsNullOrEmpty(message.Content) ? message.Content : "Sent an image";
+                
+                var senderNameEn = doctorSender != null ? $"Dr. {doctorSender.FirstNameEn} {doctorSender.LastNameEn}" : "New Message";
+                var senderNameAr = doctorSender != null ? $"د. {doctorSender.FirstNameAr} {doctorSender.LastNameAr}" : "رسالة جديدة";
+                
+                var previewEn = !string.IsNullOrEmpty(message.Content) ? message.Content : "Sent an image";
+                var previewAr = !string.IsNullOrEmpty(message.Content) ? message.Content : "أرسل صورة";
 
                 await _notificationService.SendNotificationAsync(
                     dto.ReceiverUserId,
-                    senderName,
-                    preview,
+                    senderNameEn,
+                    senderNameAr,
+                    previewEn,
+                    previewAr,
                     NotificationType.ChatMessage
                 );
             }
@@ -166,6 +175,7 @@ namespace TadaWy.Infrastructure.Service
         /////////////////////////////////////
         public async Task<List<ConversationDto>> GetConversationsAsync(string userId, string? search)
         {
+            var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             // Check if user is Patient or Doctor
             var patient = await _context.Patients
                 .FirstOrDefaultAsync(p => p.UserID == userId);
@@ -209,7 +219,9 @@ namespace TadaWy.Infrastructure.Service
 
                 foreach (var doc in doctors)
                 {
-                    var fullName = $"{doc.FirstName} {doc.LastName}";
+                    var fullNameEn = $"{doc.FirstNameEn} {doc.LastNameEn}";
+                    var fullNameAr = $"{doc.FirstNameAr} {doc.LastNameAr}";
+                    var fullName = isArabic ? fullNameAr : fullNameEn;
 
                     if (!string.IsNullOrEmpty(search) &&
                         !fullName.ToLower().Contains(search.ToLower()))
@@ -233,8 +245,8 @@ namespace TadaWy.Infrastructure.Service
                         UserId = doc.UserID,
                         FullName = fullName,
                         ImageUrl = doc.ImageUrl,
-                        SpecializationName = doc.Specialization.Name,
-                        LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? "Image" : null),
+                        SpecializationName = isArabic ? doc.Specialization.NameAr : doc.Specialization.NameEn,
+                        LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? (isArabic ? "صورة" : "Image") : null),
                         LastMessageDate = lastMessage?.CreatedAt,
                         IsSeen = lastMessage?.IsSeen ?? true,
                         UnreadCount = unreadCount
@@ -299,7 +311,7 @@ namespace TadaWy.Infrastructure.Service
                         FullName = fullName,
                         ImageUrl = null,
                         SpecializationName = null,
-                        LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? "Image" : null),
+                        LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? (isArabic ? "صورة" : "Image") : null),
                         LastMessageDate = lastMessage?.CreatedAt,
                         IsSeen = lastMessage?.IsSeen ?? true,
                         UnreadCount = unreadCount

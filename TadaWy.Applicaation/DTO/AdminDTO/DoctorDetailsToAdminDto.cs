@@ -13,9 +13,10 @@ namespace TadaWy.Applicaation.DTO.AdminDTO
     {
         public int Id { get; set; }
       
-        public string DoctorName { get; set; }
+        public string DoctorNameEn { get; set; } = default!;
+        public string DoctorNameAr { get; set; } = default!;
 
-        public string Email { get; set; }
+        public string Email { get; set; } = default!;
         public string PhoneNumber { get; set; } = default!;
         public DoctorStatus Status { get; set; } = DoctorStatus.Pending;
 
@@ -26,7 +27,8 @@ namespace TadaWy.Applicaation.DTO.AdminDTO
         public string? BannedReason { get; set; }
 
         public Address Address { get; set; } = default!;
-        public string? AddressDescription { get; set; }
+        public string? AddressDescriptionEn { get; set; }
+        public string? AddressDescriptionAr { get; set; }
 
         public string VerificationDocumentPath { get; set; } = default!;
     }

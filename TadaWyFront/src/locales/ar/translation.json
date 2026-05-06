@@ -29,6 +29,8 @@
       "subtitle": "إدارة تفضيلات الإشعارات",
       "appointmentReminders": "تذكيرات المواعيد",
       "appointmentDescription": "احصل على إشعارات قبل مواعيدك",
+      "applicationNotifications": "إشعارات التطبيق",
+      "applicationDescription": "تلقي الإشعارات داخل التطبيق",
       "emailNotifications": "إشعارات البريد الإلكتروني",
       "emailDescription": "تلقي التحديثات عبر البريد الإلكتروني",
       "marketingUpdates": "التحديثات التسويقية",
@@ -40,7 +42,10 @@
       "signOut": "تسجيل الخروج",
       "signOutDescription": "تسجيل الخروج من حسابك",
       "deleteAccount": "حذف الحساب",
-      "deleteAccountDescription": "إزالة حسابك نهائياً"
+      "deleteAccountDescription": "إزالة حسابك نهائياً",
+      "deleteAccountConfirm": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteSuccess": "تم حذف الحساب بنجاح.",
+      "deleteError": "فشل في حذف الحساب."
     }
   },
   "profile": {
@@ -174,10 +179,11 @@
     "close": "إغلاق",
     "search": "بحث",
     "add": "إضافة",
-
     "adding": "جارٍ الإضافة…",
-    "backToHome": "العودة للرئيسية"
-
+    "backToHome": "العودة للرئيسية",
+    "am": "ص",
+    "pm": "م",
+    "reviews": "التقييمات"
   },
   "hero": {
     "badge": "صحتك، ببساطة",
@@ -443,9 +449,11 @@
     "allAppointments": "جميع المواعيد",
     "noCurrentAppointments": "لا توجد مواعيد حالية",
     "status": {
+      "completed": "مكتمل",
       "confirmed": "مؤكد",
-      "pending": "قيد الانتظار",
-      "cancelled": "ملغى"
+      "pending": "القادمة",
+      "cancelled": "ملغى",
+      "missed": "فائت"
     },
     "legend": {
       "today": "اليوم",
@@ -511,12 +519,14 @@
       "paidOnline": "دفع أونلاين",
       "payAtClinic": "دفع في العيادة",
       "stats": {
-        "all": "جميع المواعيد",
-        "confirmed": "تم التأكيد",
-        "pending": "قيد الانتظار",
-        "cancelled": "ملغاة",
-        "today": "اليوم"
-      },
+      "all": "جميع المواعيد",
+      "confirmed": "تم التأكيد",
+      "upcoming": "القادمة",
+      "pending": "القادمة",
+      "cancelled": "ملغاة",
+      "missed": "فائتة",
+      "today": "اليوم"
+    },
       "confirm": "تأكيد",
       "details": "التفاصيل",
       "totalAppts": "مواعيد",
@@ -676,13 +686,7 @@
     "closeAria": "إغلاق الشات الطبي",
     "openAria": "فتح الشات الطبي"
   },
-  "common": {
-    "am": "ص",
-    "pm": "م",
-    "reviews": "التقييمات",
-    "years": "سنة",
-    "none": "لا يوجد"
-  },
+
   "changePassword": {
     "title": "تغيير كلمة المرور",
     "currentPassword": "كلمة المرور الحالية",

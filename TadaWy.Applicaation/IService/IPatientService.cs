@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AppointmentDTOs;
 using TadaWy.Applicaation.DTO.LookUpDTOs;
 using TadaWy.Applicaation.DTO.PatientDTOs;
+using TadaWy.Applicaation.DTO.DoctorDTOs;
 using TadaWy.Domain.Enums;
 
 namespace TadaWy.Applicaation.IService
 {
     public interface IPatientService
     {
-
+        Task<PatientDetailsForDoctorDto> GetPatientDetailsForDoctorAsync(int patientId);
         Task<List<CalendarDayDto>> GetCalendarAsync(int month, int year, string patientId);
 
         Task<List<AppointmentDto>> GetAppointmentsByDateAsync(DateTime date, string patientId);

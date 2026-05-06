@@ -187,7 +187,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("UserId", "CreatedAt");
 
-                    b.ToTable("AiBrainScans", (string)null);
+                    b.ToTable("AiBrainScans");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Allergy", b =>
@@ -198,14 +198,22 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("NameEn")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("NameAr")
+                        .IsUnique();
+
+                    b.HasIndex("NameEn")
                         .IsUnique();
 
                     b.ToTable("Allergies", (string)null);
@@ -243,7 +251,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("PatientId1");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.ChronicDisease", b =>
@@ -254,14 +262,22 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("NameAr")
+                        .IsUnique();
+
+                    b.HasIndex("NameEn")
                         .IsUnique();
 
                     b.ToTable("ChronicDiseases", (string)null);
@@ -275,8 +291,13 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AddressDescription")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("AddressDescriptionAr")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("AddressDescriptionEn")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<int?>("AppointmentDurationMinutes")
                         .HasColumnType("int");
@@ -287,8 +308,13 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<string>("BannedReason")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("BioAr")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("BioEn")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<DateTime?>("CareerStartDate")
                         .HasColumnType("datetime2");
@@ -296,7 +322,12 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FirstNameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FirstNameEn")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -304,9 +335,15 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("LastNameAr")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LastNameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -344,7 +381,7 @@ namespace TadaWy.Infrastructure.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Doctors", (string)null);
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.DoctorReview", b =>
@@ -374,7 +411,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("DoctorReviews", (string)null);
+                    b.ToTable("DoctorReviews");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.DoctorSchedule", b =>
@@ -398,7 +435,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("DoctorId", "DayOfWeek");
 
-                    b.ToTable("DoctorSchedules", (string)null);
+                    b.ToTable("DoctorSchedules");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.DoctorTimeSlot", b =>
@@ -422,7 +459,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("DoctorScheduleId");
 
-                    b.ToTable("DoctorTimeSlots", (string)null);
+                    b.ToTable("DoctorTimeSlots");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.DoctorWallet", b =>
@@ -433,18 +470,21 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Balance")
+                    b.Property<decimal>("AvailableBalance")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("TotalBalance")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.ToTable("DoctorWallets", (string)null);
+                    b.ToTable("DoctorWallets");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Identity.ApplicationUser", b =>
@@ -554,7 +594,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("SenderUserId", "ReceiverUserId", "CreatedAt");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Notification", b =>
@@ -574,11 +614,19 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("MessageAr")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
+                    b.Property<string>("MessageEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleEn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -595,7 +643,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Patient", b =>
@@ -634,7 +682,7 @@ namespace TadaWy.Infrastructure.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.PatientAllergy", b =>
@@ -699,6 +747,9 @@ namespace TadaWy.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsReleasedToWallet")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Method")
                         .HasColumnType("int");
 
@@ -718,7 +769,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasIndex("ExternalOrderId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Specialization", b =>
@@ -729,14 +780,22 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameEn")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("NameAr")
+                        .IsUnique();
+
+                    b.HasIndex("NameEn")
                         .IsUnique();
 
                     b.ToTable("Specializations", (string)null);
@@ -750,7 +809,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("AppointmentReminders")
+                    b.Property<bool>("ApplicationNotifications")
                         .HasColumnType("bit");
 
                     b.Property<bool>("EmailNotifications")
@@ -759,9 +818,6 @@ namespace TadaWy.Infrastructure.Migrations
                     b.Property<string>("Language")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("NewBookingAlerts")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Theme")
                         .IsRequired()
@@ -776,7 +832,7 @@ namespace TadaWy.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserSettings", (string)null);
+                    b.ToTable("UserSettings");
                 });
 
             modelBuilder.Entity("TadaWy.Domain.Entities.WalletTransaction", b =>
@@ -811,7 +867,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("walletTransactions", (string)null);
+                    b.ToTable("walletTransactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -896,7 +952,7 @@ namespace TadaWy.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("TadaWy.Domain.Entities.Doctor.Address#TadaWy.Domain.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("TadaWy.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<int>("DoctorId")
                                 .HasColumnType("int");
@@ -918,13 +974,13 @@ namespace TadaWy.Infrastructure.Migrations
 
                             b1.HasKey("DoctorId");
 
-                            b1.ToTable("Doctors", (string)null);
+                            b1.ToTable("Doctors");
 
                             b1.WithOwner()
                                 .HasForeignKey("DoctorId");
                         });
 
-                    b.OwnsOne("TadaWy.Domain.Entities.Doctor.Location#TadaWy.Domain.ValueObjects.GeoLocation", "Location", b1 =>
+                    b.OwnsOne("TadaWy.Domain.ValueObjects.GeoLocation", "Location", b1 =>
                         {
                             b1.Property<int>("DoctorId")
                                 .HasColumnType("int");
@@ -939,7 +995,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                             b1.HasKey("DoctorId");
 
-                            b1.ToTable("Doctors", (string)null);
+                            b1.ToTable("Doctors");
 
                             b1.WithOwner()
                                 .HasForeignKey("DoctorId");
@@ -997,7 +1053,7 @@ namespace TadaWy.Infrastructure.Migrations
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Identity.ApplicationUser", b =>
                 {
-                    b.OwnsMany("TadaWy.Domain.Entities.Identity.ApplicationUser.RefreshTokens#TadaWy.Domain.Entities.AuthModels.RefreshToken", "RefreshTokens", b1 =>
+                    b.OwnsMany("TadaWy.Domain.Entities.AuthModels.RefreshToken", "RefreshTokens", b1 =>
                         {
                             b1.Property<string>("ApplicationUserId")
                                 .HasColumnType("nvarchar(450)");
@@ -1023,7 +1079,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                             b1.HasKey("ApplicationUserId", "Id");
 
-                            b1.ToTable("RefreshToken", (string)null);
+                            b1.ToTable("RefreshToken");
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
@@ -1051,7 +1107,7 @@ namespace TadaWy.Infrastructure.Migrations
 
             modelBuilder.Entity("TadaWy.Domain.Entities.Patient", b =>
                 {
-                    b.OwnsOne("TadaWy.Domain.Entities.Patient.Address#TadaWy.Domain.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("TadaWy.Domain.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<int>("PatientId")
                                 .HasColumnType("int");
@@ -1073,13 +1129,13 @@ namespace TadaWy.Infrastructure.Migrations
 
                             b1.HasKey("PatientId");
 
-                            b1.ToTable("Patients", (string)null);
+                            b1.ToTable("Patients");
 
                             b1.WithOwner()
                                 .HasForeignKey("PatientId");
                         });
 
-                    b.OwnsOne("TadaWy.Domain.Entities.Patient.Location#TadaWy.Domain.ValueObjects.GeoLocation", "Location", b1 =>
+                    b.OwnsOne("TadaWy.Domain.ValueObjects.GeoLocation", "Location", b1 =>
                         {
                             b1.Property<int>("PatientId")
                                 .HasColumnType("int");
@@ -1092,7 +1148,7 @@ namespace TadaWy.Infrastructure.Migrations
 
                             b1.HasKey("PatientId");
 
-                            b1.ToTable("Patients", (string)null);
+                            b1.ToTable("Patients");
 
                             b1.WithOwner()
                                 .HasForeignKey("PatientId");

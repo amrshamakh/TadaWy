@@ -74,7 +74,7 @@ namespace TadaWy.Infrastructure.service
             var token = await _userManager.GeneratePasswordResetTokenAsync(result);
             var encodedToken = WebUtility.UrlEncode(token);
 
-            var resetLink = $"https://TadaWy/reset-password?email={Email}&token={encodedToken}";
+            var resetLink = $"http://localhost:5173/reset-password?email={Email}&token={encodedToken}";
 
             BackgroundJob.Enqueue<IEmailService>(x =>
       x.SendEmail(result.Email, "ResetPassword", $"Reset your password from here: {resetLink}"));
@@ -121,8 +121,6 @@ namespace TadaWy.Infrastructure.service
             };
             var addressDto = await geocodingService.GetAddressAsync(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude);
 
-            if (addressDto is null)
-                throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
 
             var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
 
@@ -145,13 +143,18 @@ namespace TadaWy.Infrastructure.service
           
             var doctor = new Doctor
             {
-                FirstName = authRegisterDoctorDTO.FirstName,
-                LastName = authRegisterDoctorDTO.LastName,
+                FirstNameEn = authRegisterDoctorDTO.FirstNameEn,
+                FirstNameAr = authRegisterDoctorDTO.FirstNameAr,
+                LastNameEn = authRegisterDoctorDTO.LastNameEn,
+                LastNameAr = authRegisterDoctorDTO.LastNameAr,
+                BioEn = authRegisterDoctorDTO.BioEn,
+                BioAr = authRegisterDoctorDTO.BioAr,
                 UserID = user.Id,
                 Status = Domain.Enums.DoctorStatus.Pending,
                 Location = new GeoLocation(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude),
                 Address = new Address(addressDto.Street ?? "UnKnown", addressDto.City ?? "UnKnown", addressDto.State ?? "UnKnown"),
-                AddressDescription = authRegisterDoctorDTO.AddressDescription,
+                AddressDescriptionEn = authRegisterDoctorDTO.AddressDescriptionEn,
+                AddressDescriptionAr = authRegisterDoctorDTO.AddressDescriptionAr,
                 SpecializationId = authRegisterDoctorDTO.SpecializationId,
                 CareerStartDate = authRegisterDoctorDTO.CareerStartDate,
                 VerificationDocumentPath = filePath,

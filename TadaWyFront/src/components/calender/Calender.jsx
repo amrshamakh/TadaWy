@@ -3,6 +3,7 @@ import { Calendar as CalendarIcon, Clock, User } from "lucide-react";
 import CalendarGrid from "./CalendarGrid";
 import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
+import "../Booking/Booking.css";
 import infoIcon from "../../assets/info.svg";
 import {
   getAppointmentsByStatus,
@@ -12,8 +13,9 @@ import {
 
 const STATUS_TO_API = {
   pending: 0,
-  confirmed: 1,
+  completed: 1,
   cancelled: 2,
+  missed: 3,
 };
 
 function formatSelectedDate(selectedDate, language) {
@@ -169,21 +171,24 @@ export default function Calender() {
   }, [appointmentsForSelectedDay, i18n.language]);
 
   const statusTabs = [
-    { key: "confirmed", label: t("calendar.status.confirmed") },
-    { key: "cancelled", label: t("calendar.status.cancelled") },
     { key: "pending", label: t("calendar.status.pending") },
+    { key: "completed", label: t("calendar.status.confirmed") },
+    { key: "missed", label: t("calendar.status.missed") },
+    { key: "cancelled", label: t("calendar.status.cancelled") },
   ];
 
   const getStatusTabClass = (statusKey) => {
     const base =
       "px-6 py-2 text-sm font-medium border-r border-gray-200 dark:border-[#334155] last:border-r-0 transition-colors";
     if (activeStatus !== statusKey) {
-      if (statusKey === "cancelled") return `${base} text-red-600 dark:text-red-400 bg-white dark:bg-[#0F172A]`;
-      if (statusKey === "pending") return `${base} text-[#00AFA0] dark:text-[#5EEAD4] bg-white dark:bg-[#0F172A]`;
+      if (statusKey === "cancelled" || statusKey === "missed") return `${base} text-red-600 dark:text-red-400 bg-white dark:bg-[#0F172A]`;
+      if (statusKey === "pending") return `${base} text-yellow-600 dark:text-yellow-400 bg-white dark:bg-[#0F172A]`;
+      if (statusKey === "completed") return `${base} text-emerald-600 dark:text-emerald-400 bg-white dark:bg-[#0F172A]`;
       return `${base} text-[#64748B] dark:text-[#94A3B8] bg-white dark:bg-[#0F172A]`;
     }
-    if (statusKey === "confirmed") return `${base} text-white bg-[#64748B] dark:bg-[#475569]`;
-    if (statusKey === "cancelled") return `${base} text-white bg-[#FF001A]`;
+    if (statusKey === "completed") return `${base} text-white bg-emerald-500`;
+    if (statusKey === "cancelled" || statusKey === "missed") return `${base} text-white bg-red-500`;
+    if (statusKey === "pending") return `${base} text-white bg-yellow-500`;
     return `${base} text-white bg-[#00BBA7]`;
   };
 

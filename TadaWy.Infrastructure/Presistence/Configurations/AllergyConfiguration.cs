@@ -11,11 +11,18 @@ public class AllergyConfiguration
 
         builder.HasKey(a => a.Id);
 
-        builder.Property(a => a.Name)
+        builder.Property(a => a.NameEn)
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.HasIndex(a => a.Name)
+        builder.Property(a => a.NameAr)
+            .IsRequired()
+            .HasMaxLength(150);
+
+        builder.HasIndex(a => a.NameEn)
+            .IsUnique();
+
+        builder.HasIndex(a => a.NameAr)
             .IsUnique();
     }
 }

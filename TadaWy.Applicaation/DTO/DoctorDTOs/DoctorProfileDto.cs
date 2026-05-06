@@ -11,17 +11,22 @@ namespace TadaWy.Applicaation.DTO.DoctorDTOs
     {
         public int Id { get; set; }
 
-        public string FirstName { get; set; } = default!;
-        public string LastName { get; set; } = default!;
+        public string FirstNameEn { get; set; } = default!;
+        public string FirstNameAr { get; set; } = default!;
+        public string LastNameEn { get; set; } = default!;
+        public string LastNameAr { get; set; } = default!;
         public string Email { get; set; } = default!;
         public string PhoneNumber { get; set; }= default!;
-        public string Specialization { get; set; } = default!;
+        public string SpecializationEn { get; set; } = default!;
+        public string SpecializationAr { get; set; } = default!;
 
         public Address Address { get; set; } = default!;
 
-        public string AddressDescription { get; set; } = default!;
+        public string AddressDescriptionEn { get; set; } = default!;
+        public string AddressDescriptionAr { get; set; } = default!;
 
-        public string? Bio { get; set; }
+        public string? BioEn { get; set; }
+        public string? BioAr { get; set; }
 
         public decimal? Price { get; set; }
 

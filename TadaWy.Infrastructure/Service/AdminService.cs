@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -43,16 +43,19 @@ namespace TadaWy.Infrastructure.Service
             
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                var search = request.Search.Trim();
+                var search = request.Search.Trim().ToLower();
                 query = query.Where(d =>
-                    d.FirstName.Contains(search) ||
-                    d.LastName.Contains(search));
+                    d.FirstNameEn.ToLower().Contains(search) ||
+                    d.LastNameEn.ToLower().Contains(search) ||
+                    d.FirstNameAr.Contains(search) ||
+                    d.LastNameAr.Contains(search));
             }
 
             var projected = query.Select(d => new DoctorListToAdmin
             {
                 Id = d.Id,
-                DoctorName = d.FirstName + " " + d.LastName,
+                DoctorNameEn = d.FirstNameEn + " " + d.LastNameEn,
+                DoctorNameAr = d.FirstNameAr + " " + d.LastNameAr,
                 SpecializationId = d.SpecializationId,
                 Status = d.Status,
                 CreatedAt = d.CreatedAt,
@@ -89,13 +92,15 @@ namespace TadaWy.Infrastructure.Service
             return new DoctorDetailsToAdminDto
             {
                 Rating = doctor.Rating,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                DoctorName = doctor.FirstName + " " + doctor.LastName,
+                Email = user.Email ?? "",
+                PhoneNumber = user.PhoneNumber ?? "",
+                DoctorNameEn = doctor.FirstNameEn + " " + doctor.LastNameEn,
+                DoctorNameAr = doctor.FirstNameAr + " " + doctor.LastNameAr,
                 Status = doctor.Status,
                 SpecializationId = doctor.SpecializationId,
                 Address = doctor.Address,
-                AddressDescription = doctor.AddressDescription,
+                AddressDescriptionEn = doctor.AddressDescriptionEn,
+                AddressDescriptionAr = doctor.AddressDescriptionAr,
                 Id = doctor.Id,
                 VerificationDocumentPath = doctor.VerificationDocumentPath,
                 RejectionReason = doctor.RejectionReason,

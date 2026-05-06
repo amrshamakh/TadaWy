@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
@@ -7,6 +7,8 @@ import { assets } from "../../assets/assets";
 
 const DoctorLayout = () => {
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+  const isMessagesPage = location.pathname === '/doctor/messages';
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [doctorHeader, setDoctorHeader] = useState(() => {
     try {
@@ -21,6 +23,7 @@ const DoctorLayout = () => {
     () => [
       { to: "appointments", icon: assets.homeIcon, label: t("doctorDashboard.appointments.title"), end: false },
       { to: "", icon: assets.calenderIcon, label: t("doctorDashboard.schedule.title"), end: true },
+      { to: "messages", icon: assets.messagesIcon, label: t("nav.messages", "Messages"), end: false },
       { to: "profile", icon: assets.profileIcon, label: t("doctorDashboard.profile.title"), end: false },
       { to: "settings", icon: assets.settingIcon, label: t("nav.settings"), end: false },
     ],
@@ -64,14 +67,14 @@ const DoctorLayout = () => {
         />
 
         <div
-          className="
-            flex-1 overflow-y-auto transition-all duration-300
+          className={`
+            flex-1 overflow-hidden transition-all duration-300
             dark:bg-[#0F172A]
-            p-4 sm:p-6
+            ${isMessagesPage ? '' : 'p-4 sm:p-6 overflow-y-auto'}
             flex flex-col
-          "
+          `}
         >
-          <div className="w-full flex flex-col flex-1">
+          <div className={`w-full flex flex-col flex-1 ${isMessagesPage ? 'h-full overflow-hidden' : ''}`}>
             <Outlet />
           </div>
         </div>

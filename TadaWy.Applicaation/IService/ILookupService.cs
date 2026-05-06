@@ -5,12 +5,12 @@ namespace TadaWy.Applicaation.IService
     public interface ILookupService
     {
         Task<List<ChronicDiseaseDto>> GetChronicDiseasesAsync();
-        Task AddChronicDiseaseAsync(string name);
+        Task AddChronicDiseaseAsync(string nameEn, string nameAr);
 
         Task<List<SpecializationDto>> GetSpecializationsAsync();
-        Task AddSpecializationAsync(string name);
+        Task AddSpecializationAsync(string nameEn, string nameAr);
 
         Task<List<AllergyDto>> GetAllergiesAsync();
-        Task AddAllergyAsync(string name);
+        Task AddAllergyAsync(string nameEn, string nameAr);
     }
 }

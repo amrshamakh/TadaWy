@@ -12,8 +12,6 @@ namespace TadaWy.Applicaation.DTO.SettingDtos
         public string? Language { get; set; }
 
         public bool? EmailNotifications { get; set; }
-
-        public bool? AppointmentReminders { get; set; }
-        public bool? NewBookingAlerts { get; set; }
+        public bool? ApplicationNotifications { get; set; }
     }
 }

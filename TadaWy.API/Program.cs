@@ -20,11 +20,14 @@ using TadaWy.Infrastructure.Service;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddCors(options =>
 {
 
@@ -183,6 +186,19 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+var supportedCultures = new[]
+{
+    new CultureInfo("en-US"),
+    new CultureInfo("ar-EG"),
+};
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
+
 //role ,admin seeding
 using (var scope = app.Services.CreateScope())
 {
@@ -204,13 +220,12 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-//app.UseHttpsRedirection();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 app.UseStaticFiles();
-//app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");
 app.UseAuthentication();
 app.UseAuthorization();
@@ -232,7 +247,14 @@ using (var scope = app.Services.CreateScope())
       "mark-missed-appointments",
       job => job.MarkMissedAppointmentsAsync(),
       Cron.Hourly()
-  );
+     );
+     recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+
+    recurringJobManager.AddOrUpdate<IPaymentService>(
+        "release-doctor-balances",
+        job => job.ReleaseDoctorBalancesAsync(),
+        Cron.Daily() 
+    );
 }
 RecurringJob.RemoveIfExists("expire-pending-appointment-payments");
 

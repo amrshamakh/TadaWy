@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Toggle from "./Toggle";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { useTranslation } from 'react-i18next';
 
-const NotificationRow = ({ title, description, enabled: initialEnabled }) => {
-  const [enabled, setEnabled] = useState(initialEnabled || false);
-
+const NotificationRow = ({ title, description, enabled, onToggle }) => {
   return (
     <div className="flex items-center justify-between py-4 border-b border-[#E2E8F0] dark:border-[#334155] last:border-none">
       <div className="flex-1">
@@ -17,13 +15,13 @@ const NotificationRow = ({ title, description, enabled: initialEnabled }) => {
         </p>
       </div>
       <div className="ms-4">
-        <Toggle checked={enabled} onToggle={() => setEnabled(!enabled)} />
+        <Toggle checked={enabled} onToggle={onToggle} />
       </div>
     </div>
   );
 };
 
-const NotificationSettings = () => {
+const NotificationSettings = ({ settings, onUpdate }) => {
   const { t } = useTranslation();
 
   return (
@@ -42,19 +40,16 @@ const NotificationSettings = () => {
 
       <div className="px-4 sm:px-6 pb-6">
         <NotificationRow
-          title={t('settings.notifications.appointmentReminders')}
-          description={t('settings.notifications.appointmentDescription')}
-          enabled={true}
+          title={t('settings.notifications.applicationNotifications') || "Application Notifications"}
+          description={t('settings.notifications.applicationDescription') || "Receive notifications within the application"}
+          enabled={settings.applicationNotifications}
+          onToggle={() => onUpdate("applicationNotifications", !settings.applicationNotifications)}
         />
         <NotificationRow
           title={t('settings.notifications.emailNotifications')}
           description={t('settings.notifications.emailDescription')}
-          enabled={true}
-        />
-        <NotificationRow
-          title={t('settings.notifications.marketingUpdates')}
-          description={t('settings.notifications.marketingDescription')}
-          enabled={false}
+          enabled={settings.emailNotifications}
+          onToggle={() => onUpdate("emailNotifications", !settings.emailNotifications)}
         />
       </div>
     </div>

@@ -11,11 +11,18 @@ public class SpecializationConfiguration
 
         builder.HasKey(s => s.Id);
 
-        builder.Property(s => s.Name)
+        builder.Property(s => s.NameEn)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.HasIndex(s => s.Name)
+        builder.Property(s => s.NameAr)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasIndex(s => s.NameEn)
+            .IsUnique();
+
+        builder.HasIndex(s => s.NameAr)
             .IsUnique();
     }
 }

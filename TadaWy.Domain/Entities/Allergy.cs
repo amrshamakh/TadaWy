@@ -10,7 +10,8 @@ namespace TadaWy.Domain.Entities
     {
       
             public int Id { get; set; }
-            public string Name { get; set; } = default!;
+            public string NameEn { get; set; } = default!;
+            public string NameAr { get; set; } = default!;
 
             public ICollection<PatientAllergy> PatientAllergies { get; set; }
                 = new List<PatientAllergy>();

@@ -1,17 +1,10 @@
-import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
+import { useForgotPassword } from "../hooks/useForgotPassword";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
-  const [email, setEmail] = useState("");
-  const [toastMessage, setToastMessage] = useState("");
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setToastMessage(t("forgotPassword.sentSuccess"));
-    setTimeout(() => setToastMessage(""), 2600);
-  };
+  const { email, setEmail, loading, handleSubmit } = useForgotPassword();
 
   return (
     <div className="min-h-screen bg-linear-to-b from-1% from-white via-teal-200 to-white to-95% dark:from-[#0b2a3a] dark:via-[#0f5a57] dark:to-[#0b2a3a] dark:to-99% flex items-center justify-center p-4">
@@ -41,23 +34,19 @@ const ForgotPassword = () => {
               placeholder={t("forgotPassword.emailPlaceholder")}
               className="w-full px-4 py-3 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
               required
+              disabled={loading}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-teal-500 hover:bg-teal-600 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+            disabled={loading}
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
           >
-            {t("forgotPassword.sendButton")}
+            {loading ? t("forgotPassword.sending") || "Sending…" : t("forgotPassword.sendButton")}
           </button>
         </form>
-
       </div>
-      {toastMessage && (
-        <div className="fixed top-4 right-4 z-[70] rounded-lg bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-2 text-sm shadow-lg">
-          {toastMessage}
-        </div>
-      )}
     </div>
   );
 };

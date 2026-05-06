@@ -11,8 +11,9 @@ namespace TadaWy.Applicaation.IService
 {
     public interface INotificationService
     {
-        Task SendNotificationAsync(string userId, string title, string message, NotificationType type, int? appointmentId = null);
+        Task SendNotificationAsync(string userId, string titleEn, string titleAr, string messageEn, string messageAr, NotificationType type, int? appointmentId = null);
         Task<List<NotificationDto>> GetUserNotificationsAsync(string userId);
         Task MarkAsReadAsync(int notificationId);
+        Task MarkAllAsReadAsync(string userId);
     }
 }
