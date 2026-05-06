@@ -59,6 +59,9 @@ export default function Sidebar({ isOpen, onClose, menuItems }) {
         />
       )}
 
+      {/* Spacer for desktop to keep layout from shifting since the sidebar will be fixed */}
+      <div className={`hidden lg:block transition-all duration-300 ease-in-out shrink-0 ${isOpen ? "w-64" : "w-0"}`} />
+
       <div
         className={`
           bg-white dark:bg-[#0F172A] 
@@ -70,9 +73,10 @@ export default function Sidebar({ isOpen, onClose, menuItems }) {
           
           transition-all duration-300 ease-in-out
           overflow-y-auto overflow-x-hidden
-          fixed top-16 bottom-0 left-0 z-30
-          ${isOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"}
-          lg:static lg:translate-x-0
+          fixed top-16 bottom-0 z-30
+          ${i18n.language === "ar" ? "right-0" : "left-0"}
+          ${isOpen ? "translate-x-0 w-64" : (i18n.language === "ar" ? "translate-x-full w-64" : "-translate-x-full w-64")}
+          lg:translate-x-0
           ${isOpen ? "lg:w-64" : "lg:w-0"}
         `}
       >

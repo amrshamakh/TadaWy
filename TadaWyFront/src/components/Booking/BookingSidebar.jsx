@@ -19,7 +19,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isAr = i18n.language === "ar";
-  
+
   const availability = useMemo(() => {
     return doctor?.availableDaysSlots || [];
   }, [doctor]);
@@ -55,10 +55,10 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     if (!availability[selectedDayIndex]) return [];
     return availability[selectedDayIndex].slots.map(slot => {
       const start = new Date(slot.startTime);
-      return start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", { 
-        hour: '2-digit', 
+      return start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", {
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: true 
+        hour12: true
       });
     });
   }, [availability, selectedDayIndex, isAr]);
@@ -77,8 +77,8 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
 
   // handleNext: Move focus forward. Slide carousel forward if focus goes out of view.
   const handleNext = () => {
-    if (selectedDayIndex < availability.length - 1) {
-      const nextIndex = selectedDayIndex + 1;
+    const nextIndex = selectedDayIndex + 1;
+    if (nextIndex < availability.length) {
       setSelectedDayIndex(nextIndex);
       setSelectedTime(null);
       if (nextIndex >= startIndex + visibleDaysCount) {
@@ -117,16 +117,16 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   );
 
   const handlePaymentSelection = async (method) => {
-    setActiveModal(null); 
+    setActiveModal(null);
 
     let isoDate = new Date().toISOString();
     if (availability[selectedDayIndex]) {
       const selectedSlot = availability[selectedDayIndex].slots.find(slot => {
         const start = new Date(slot.startTime);
-        const formattedStart = start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", { 
-          hour: '2-digit', 
+        const formattedStart = start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", {
+          hour: '2-digit',
           minute: '2-digit',
-          hour12: true 
+          hour12: true
         });
         return formattedStart === selectedTime;
       });
@@ -194,7 +194,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
       if (!wrapperRef.current || !sidebarRef.current) return;
       const wrapperRect = wrapperRef.current.getBoundingClientRect();
       const sidebar = sidebarRef.current;
-      
+
       if (wrapperRect.top <= 96) {
         sidebar.style.position = 'fixed';
         sidebar.style.top = '96px';
@@ -251,10 +251,10 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                       const date = new Date(item.date);
                       const dayName = date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { weekday: 'short' });
                       const datePill = `${date.getDate()} ${date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { month: "short" })}`;
-                      
+
                       return (
                         <button
-                          key={item.date}
+                          key={`${item.date}-${index}`}
                           type="button"
                           className={`booking-date-pill ${selectedDayIndex === index ? "booking-date-pill-selected" : ""}`}
                           onClick={() => { setSelectedDayIndex(index); setSelectedTime(null); }}
@@ -266,7 +266,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                     })}
                   </div>
 
-                  <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex === availability.length - 1}>
+                  <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex + 1 >= availability.length && startIndex + visibleDaysCount >= availability.length}>
                     <ArrowRight size={20} />
                   </button>
                 </div>
