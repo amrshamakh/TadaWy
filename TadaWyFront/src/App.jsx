@@ -26,6 +26,8 @@ import DoctorProfile from "./components/doctor/DoctorProfile";
 import DoctorAppointments from "./components/doctor/appointments/DoctorAppointments";
 import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 
+import DoctorPayout from "./components/doctor/payout/DoctorPayout";
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import Messages from "./components/Messages/Messages";
 
@@ -69,6 +71,7 @@ const App = () => {
           <Route index element={<DoctorSchedule />} />
           <Route path="appointments" element={<DoctorAppointments />} />
           <Route path="schedule" element={<DoctorSchedule />} />
+          <Route path="payout" element={<DoctorPayout />} />
           <Route path="profile" element={<DoctorProfile />} />
           <Route path="messages" element={<Messages />} />
           <Route path="settings" element={<Settings />} />

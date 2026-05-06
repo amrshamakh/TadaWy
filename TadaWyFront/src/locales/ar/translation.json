@@ -565,6 +565,35 @@
         "wed": "الأربعاء",
         "thu": "الخميس"
       }
+    },
+    "payout": {
+      "title": "المدفوعات والأرباح",
+      "sidebarLabel": "الفيزا والمدفوعات",
+      "subtitle": "إدارة إيراداتك وطرق السحب الخاصة بك",
+      "currency": "ج.م",
+      "cards": {
+        "totalBalance": "إجمالي الرصيد",
+        "availableBalance": "الرصيد المتاح",
+        "onlineEarnings": "أرباح المرضى أونلاين",
+        "vsLastMonth": "+12% مقارنة بالشهر الماضي",
+        "thisMonth": "هذا الشهر"
+      },
+      "payoutMethod": {
+        "title": "طريقة السحب",
+        "placeholder": "أدخل المبلغ",
+        "edit": "تعديل",
+        "withdrawBtn": "سحب الأموال",
+        "withdrawTo": "سحب إلى بطاقة VISA الخاصة بك"
+      },
+      "recentPayments": {
+        "title": "أحدث المدفوعات أونلاين",
+        "viewAll": "عرض جميع المعاملات",
+        "columns": {
+          "date": "التاريخ",
+          "patientName": "اسم المريض",
+          "amount": "المبلغ"
+        }
+      }
     }
   },
   "booking": {

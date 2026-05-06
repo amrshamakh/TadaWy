@@ -557,6 +557,35 @@
         "wed": "Wednesday",
         "thu": "Thursday"
       }
+    },
+    "payout": {
+      "title": "Payments & Earnings",
+      "sidebarLabel": "Visa & Payout",
+      "subtitle": "Manage your revenue and withdrawal methods",
+      "currency": "L.E.",
+      "cards": {
+        "totalBalance": "TOTAL BALANCE",
+        "availableBalance": "Available balance",
+        "onlineEarnings": "ONLINE PATIENT EARNINGS",
+        "vsLastMonth": "+12% vs last month",
+        "thisMonth": "This Month"
+      },
+      "payoutMethod": {
+        "title": "Payout Method",
+        "placeholder": "Enter an Amount",
+        "edit": "Edit",
+        "withdrawBtn": "Withdraw Funds",
+        "withdrawTo": "Withdraw to your VISA Card"
+      },
+      "recentPayments": {
+        "title": "Recent Online Payments",
+        "viewAll": "View All Transactions",
+        "columns": {
+          "date": "DATE",
+          "patientName": "PATIENT NAME",
+          "amount": "AMOUNT"
+        }
+      }
     }
   },
   "booking": {

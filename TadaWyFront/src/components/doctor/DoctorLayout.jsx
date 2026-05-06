@@ -5,6 +5,8 @@ import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { assets } from "../../assets/assets";
 
+import { CreditCard } from "lucide-react";
+
 const DoctorLayout = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -24,6 +26,7 @@ const DoctorLayout = () => {
       { to: "appointments", icon: assets.homeIcon, label: t("doctorDashboard.appointments.title"), end: false },
       { to: "", icon: assets.calenderIcon, label: t("doctorDashboard.schedule.title"), end: true },
       { to: "messages", icon: assets.messagesIcon, label: t("nav.messages", "Messages"), end: false },
+      { to: "payout", icon: CreditCard, label: t("doctorDashboard.payout.sidebarLabel", "Visa & Payout"), end: false },
       { to: "profile", icon: assets.profileIcon, label: t("doctorDashboard.profile.title"), end: false },
       { to: "settings", icon: assets.settingIcon, label: t("nav.settings"), end: false },
     ],

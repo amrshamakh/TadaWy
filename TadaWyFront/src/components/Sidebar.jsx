@@ -1,11 +1,11 @@
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import AuthRequiredModal from "./AuthRequiredModal";
 
-const Item = ({ to, icon, label, end, currentPath, onClick }) => {
+const Item = ({ to, icon: Icon, label, end, currentPath, onClick }) => {
   // If this item is 'Home' (/discover) and we are on '/booking', keep it active
   const isBookingAndHome = to === "/discover" && currentPath?.startsWith("/booking");
 
@@ -18,12 +18,23 @@ const Item = ({ to, icon, label, end, currentPath, onClick }) => {
         `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
         ${isActive || isBookingAndHome
           ? "bg-teal-500 text-white"
-          : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#334155]"
+          : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
         }`
       }
     >
-      <img src={icon} alt={label} className="w-5 h-5 shrink-0" />
-      <span>{label}</span>
+      {({ isActive }) => (
+        <>
+          {Icon && (typeof Icon === 'string' ? (
+            <img src={Icon} alt={label} className="w-5 h-5 shrink-0" />
+          ) : (
+            <Icon 
+              className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-[#64748B] dark:text-slate-400'}`} 
+              strokeWidth={1.66667}
+            />
+          ))}
+          <span>{label}</span>
+        </>
+      )}
     </NavLink>
   );
 };
