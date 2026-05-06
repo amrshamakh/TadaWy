@@ -9,8 +9,10 @@ import { useAuth } from "../context/AuthContext";
 import { getSettings, updateSettings } from "../services/settingService";
 
 import NotificationDropdown from "./NotificationDropdown";
+import { useNotifications } from "../context/NotificationContext";
 
 export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) {
+  const { unreadCount } = useNotifications();
   const [open, setOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -116,7 +118,11 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                   className="hidden md:flex p-2 text-black dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg relative cursor-pointer"
                 >
                   <IoMdNotificationsOutline size={24} />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-[#0F172A]">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
                 </button>
                 <NotificationDropdown isOpen={notifOpen} onClose={() => setNotifOpen(false)} />
               </div>

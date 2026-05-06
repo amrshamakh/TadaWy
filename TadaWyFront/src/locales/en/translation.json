@@ -162,6 +162,7 @@
     "profile": "Profile",
     "settings": "Settings",
     "notifications": "Notifications",
+    "noNotifications": "No new notifications",
     "markAllRead": "Mark all as read",
     "clickToReview": "Click to Review",
     "clickForDetails": "Click for Details",

@@ -17,5 +17,9 @@ class ApiClient {
     const res = await axiosInstance.delete(url, config);
     return res.data;
   }
+  async patch(url, data, config = {}) {
+    const res = await axiosInstance.patch(url, data, config);
+    return res.data;
+  }
 }
 export default new ApiClient();

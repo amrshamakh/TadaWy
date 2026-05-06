@@ -3,10 +3,12 @@ import * as signalR from "@microsoft/signalr";
 import { TokenService } from "./tokenService";
 import { ENV } from "../config/env";
 import i18n from "../i18n";
+import { useAuth } from "../context/AuthContext";
 
 const HUB_URL = ENV.API_URL.replace("/api", "") + "/chatHub";
 
 export const useChatHub = () => {
+  const { user } = useAuth();
   const [connection, setConnection] = useState(null);
   const [messages, setMessages] = useState([]);
   const onMessageReceivedRef = useRef(null);
@@ -60,7 +62,7 @@ export const useChatHub = () => {
         newConnection.stop();
       }
     };
-  }, []);
+  }, [user, i18n.language]);
 
   const sendMessageSignalR = useCallback(async (receiverUserId, content, imageUrl = null) => {
     if (connection) {
