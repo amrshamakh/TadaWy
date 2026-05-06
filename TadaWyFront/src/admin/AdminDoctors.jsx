@@ -1,46 +1,35 @@
-import { useEffect, useMemo, useState } from "react";
 import Pagination from "../components/Pagination";
 import DoctorModal from "../components/DoctorModal";
 import DoctorCard from "../components/AdminDoctorCard";
-import { useDoctors } from "../context/doctorContext";
 import { useTranslation } from "react-i18next";
 import { assets } from "../assets/assets";
-
+import { useAdminDoctors } from "../hooks/useAdminDoctors";
 
 const AdminDoctors = () => {
- 
   const { t } = useTranslation();
-  const [filter, setFilter] = useState("Approved");
-  const [search, setSearch] = useState("");
-  const [selectedDoctor, setSelectedDoctor] = useState(null);
-  const { doctors, totalCount, fetchDoctors, loading, updateStatus, banDoctor, unbanDoctor } = useDoctors();
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 6;
+  const {
+    filter,
+    search,
+    selectedDoctor,
+    setSelectedDoctor,
+    doctors,
+    loading,
+    currentPage,
+    totalPages,
+    handlePageChange,
+    handleFilterChange,
+    handleSearchChange,
+    updateStatus,
+    banDoctor,
+    unbanDoctor
+  } = useAdminDoctors();
 
-  useEffect(() => {
-    fetchDoctors({
-      Status: filter,
-      Search: search,
-      PageNumber: currentPage,
-      PageSize: ITEMS_PER_PAGE
-    });
-  }, [filter, search, currentPage]);
-
-  const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
-  const paginated = doctors; // Since API already does pagination
-  
   const filterOptions = [
     { value: "Approved", label: t("admin.doctors.approvedFilter") },
     { value: "Rejected", label: t("admin.doctors.rejectedFilter") },
     { value: "Pending",  label: t("admin.doctors.pendingFilter") },
     { value: "Banned",   label: t("admin.doctors.bannedFilter") },
   ];
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-  
 
   return (
     <div className="flex flex-col flex-1 h-full" >
@@ -50,7 +39,7 @@ const AdminDoctors = () => {
         type="text"
         placeholder={t("admin.doctors.searchPlaceholder")}
         value={search}
-        onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+        onChange={(e) => handleSearchChange(e.target.value)}
         className="w-full border dark:text-white border-white dark:border-[#334155] rounded-lg px-4 py-2.5 text-sm mb-6 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-100 dark:bg-[#3341554D] placeholder-gray-400 dark:placeholder-gray-500 transition-all font-medium"
       />
 
@@ -64,7 +53,7 @@ const AdminDoctors = () => {
               name="filter"
               value={item.value}
               checked={filter === item.value}
-              onChange={() => { setFilter(item.value); setCurrentPage(1); }}
+              onChange={() => handleFilterChange(item.value)}
               className="accent-teal-600 w-4 h-4 cursor-pointer"
             />
           </label>
@@ -78,8 +67,8 @@ const AdminDoctors = () => {
             <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-500/20 border-t-teal-500"></div>
             <p className="text-gray-500 dark:text-gray-400 animate-pulse">{t("admin.doctors.loading", "Loading...")}</p>
           </div>
-        ) : paginated.length > 0 ? (
-          paginated.map((doctor) => (
+        ) : doctors.length > 0 ? (
+          doctors.map((doctor) => (
             <DoctorCard key={doctor.id} doctor={doctor} onClick={setSelectedDoctor} />
           ))
         ) : (

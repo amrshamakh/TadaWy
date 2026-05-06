@@ -84,8 +84,12 @@ export function AuthProvider({ children }) {
         // Normalize keys for Navbar (supports both camelCase and PascalCase from API)
         const normalizedUser = {
           ...profileData,
-          firstName: profileData.firstName || profileData.FirstName || "",
-          lastName: profileData.lastName || profileData.LastName || "",
+          firstName: profileData.firstName || profileData.FirstName || profileData.firstNameEn || profileData.FirstNameEn || "",
+          lastName: profileData.lastName || profileData.LastName || profileData.lastNameEn || profileData.LastNameEn || "",
+          firstNameEn: profileData.firstNameEn || profileData.FirstNameEn || "",
+          firstNameAr: profileData.firstNameAr || profileData.FirstNameAr || "",
+          lastNameEn: profileData.lastNameEn || profileData.LastNameEn || "",
+          lastNameAr: profileData.lastNameAr || profileData.LastNameAr || "",
           email: profileData.email || profileData.Email || claims.email || "",
           role: userRole
         };

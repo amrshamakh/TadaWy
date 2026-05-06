@@ -3,7 +3,8 @@ import "./Booking.css";
 import { useTranslation } from "react-i18next";
 
 export default function LocationCard({ doctor }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
   if (!doctor) return null;
 
   return (
@@ -18,7 +19,10 @@ export default function LocationCard({ doctor }) {
         </p>
       </div>
       <p className="booking-location-desc">
-        {doctor.addressDescription || doctor.location_description || t("booking.locationCard.locationDetailsPlaceholder")}
+        {isAr 
+          ? (doctor.addressDescriptionAr || doctor.addressDescription || doctor.location_description || t("booking.locationCard.locationDetailsPlaceholder"))
+          : (doctor.addressDescriptionEn || doctor.addressDescription || doctor.location_description || t("booking.locationCard.locationDetailsPlaceholder"))
+        }
       </p>
     </section>
   );
