@@ -6,6 +6,7 @@ import { MdOutlineLanguage } from "react-icons/md";
 import { FiUser, FiMenu } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { getSettings, updateSettings } from "../services/settingService";
 
 import NotificationDropdown from "./NotificationDropdown";
 
@@ -47,10 +48,34 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
   const profilePath = isDoctor ? "/doctor" : "/profile";
   const roleHomePath = userRole === "admin" ? "/admin" : userRole === "doctor" ? "/doctor" : userRole === "patient" ? "/discover" : "/";
 
-  const toggleLanguage = () => {
+  const toggleLanguage = async () => {
     const nextLang = i18n.language === "ar" ? "en" : "ar";
+    
+    // Update UI immediately
     i18n.changeLanguage(nextLang);
     localStorage.setItem("language", nextLang);
+    
+    if (nextLang === 'ar') {
+      document.documentElement.setAttribute('dir', 'rtl');
+      document.documentElement.setAttribute('lang', 'ar');
+    } else {
+      document.documentElement.setAttribute('dir', 'ltr');
+      document.documentElement.setAttribute('lang', 'en');
+    }
+
+    // Sync with backend if user is logged in
+    if (isLoggedIn) {
+      try {
+        const response = await getSettings();
+        const currentSettings = response.data;
+        await updateSettings({
+          ...currentSettings,
+          language: nextLang
+        });
+      } catch (error) {
+        console.error("Failed to update language setting", error);
+      }
+    }
   };
 
   return (

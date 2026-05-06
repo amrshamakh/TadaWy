@@ -25,7 +25,7 @@ function getCurrentUserId() {
 }
 
 const Messages = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const currentUserId = getCurrentUserId();
   const { 
     sendMessageSignalR, 
@@ -62,7 +62,7 @@ const Messages = () => {
       }
     };
     fetchConversations();
-  }, []);
+  }, [i18n.language]);
 
   // Listen for UnreadCountUpdated
   useEffect(() => {
