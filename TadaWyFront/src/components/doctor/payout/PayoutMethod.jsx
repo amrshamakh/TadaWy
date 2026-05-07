@@ -1,12 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { Edit2, Banknote, Save } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
+import { withdrawFunds } from '../../../services/doctorWalletService';
 
-export default function PayoutMethod() {
+export default function PayoutMethod({ onWithdrawSuccess }) {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === 'ar';
   const [amount, setAmount] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const inputRef = useRef(null);
 
   const handleEditToggle = () => {
@@ -15,6 +18,50 @@ export default function PayoutMethod() {
       setTimeout(() => inputRef.current?.focus(), 10);
     } else {
       setIsEditing(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    const numAmount = parseFloat(amount);
+    if (!numAmount || numAmount <= 0) {
+      toast.error(t("doctorDashboard.payout.errors.invalidAmount", "Please enter a valid amount."));
+      return;
+    }
+
+    try {
+      setIsWithdrawing(true);
+      await withdrawFunds(numAmount);
+      toast.success(t("doctorDashboard.payout.success.withdraw", "Withdrawal request submitted successfully."));
+      setAmount('');
+      if (onWithdrawSuccess) onWithdrawSuccess();
+    } catch (error) {
+      console.error("Withdrawal error:", error);
+      
+      const status = error.response?.status;
+      const backendMessage = typeof error.response?.data === 'string' 
+        ? error.response.data 
+        : error.response?.data?.message || error.response?.data?.error;
+
+      let message = "";
+
+      // Map specific issues to localized common errors
+      if (backendMessage?.toLowerCase().includes("insufficient")) {
+        message = t("common.errors.insufficientBalance");
+      } else if (status === 401) {
+        message = t("common.errors.unauthorized");
+      } else if (status === 403) {
+        message = t("common.errors.forbidden");
+      } else if (status === 400) {
+        message = backendMessage || t("common.errors.badRequest");
+      } else if (status >= 500) {
+        message = t("common.errors.serverError");
+      } else {
+        message = backendMessage || error.message || t("doctorDashboard.payout.errors.withdrawFailed");
+      }
+      
+      toast.error(message);
+    } finally {
+      setIsWithdrawing(false);
     }
   };
 
@@ -69,9 +116,17 @@ export default function PayoutMethod() {
 
         {/* Right Button Section */}
         <div className="w-full md:w-2/5 flex flex-col items-center gap-3">
-          <button className="w-full bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed">
-            <Banknote className="w-5 h-5" />
-            <span>{t("doctorDashboard.payout.payoutMethod.withdrawBtn", "Withdraw Funds")}</span>
+          <button 
+            disabled={isWithdrawing || !amount}
+            onClick={handleWithdraw}
+            className="w-full bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isWithdrawing ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : (
+              <Banknote className="w-5 h-5" />
+            )}
+            <span>{isWithdrawing ? t("common.processing", "Processing...") : t("doctorDashboard.payout.payoutMethod.withdrawBtn", "Withdraw Funds")}</span>
           </button>
           <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
             {t("doctorDashboard.payout.payoutMethod.withdrawTo", "Withdraw to your VISA Card")}
