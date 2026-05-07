@@ -71,7 +71,7 @@ namespace TadaWy.Infrastructure.Service
                 ReceiverUserId = dto.ReceiverUserId,
                 Content = dto.Content,
                 ImageUrl = imageUrl,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 IsSeen = false
             };
 
