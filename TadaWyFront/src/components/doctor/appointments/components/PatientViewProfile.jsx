@@ -1,27 +1,33 @@
 import { X, AlertCircle, Activity } from "lucide-react";
 import { assets } from "@/assets/assets";
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
+import { getPatientProfile } from "@/services/doctorService";
 
 export default function PatientViewProfile({ appointment, onClose }) {
   const { t, i18n } = useTranslation();
   const isAr = i18n.language === "ar";
+  const [patientData, setPatientData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      if (!appointment?.patientId) return;
+      try {
+        setLoading(true);
+        const data = await getPatientProfile(appointment.patientId);
+        setPatientData(data);
+      } catch (error) {
+        console.error("Failed to fetch patient profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPatientData();
+  }, [appointment]);
 
   if (!appointment) return null;
-
-  // Mock data as requested to see the look and feel
-  const mockAllergies = ["Penicillin", "Peanuts", "Dust"];
-  const mockChronicDiseases = ["Hypertension", "Diabetes Type 2"];
-
-  const patientData = {
-    fullName: appointment.patientName || "John Doe",
-    email: appointment.patientEmail || "patient@example.com",
-    phone: appointment.patientPhone || "01128067848",
-    gender: appointment.gender || (isAr ? "ذكر" : "Male"),
-    age: appointment.age || 28,
-    bloodType: appointment.bloodType || "O+",
-    allergies: appointment.allergies?.length > 0 ? appointment.allergies : mockAllergies,
-    chronicDiseases: appointment.chronicDiseases?.length > 0 ? appointment.chronicDiseases : mockChronicDiseases,
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-sm" dir={isAr ? "rtl" : "ltr"}>
@@ -41,97 +47,108 @@ export default function PatientViewProfile({ appointment, onClose }) {
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 grid grid-cols-2 gap-x-8 gap-y-5">
-          <div className="col-span-2 sm:col-span-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t("profile.personalInfo.fullName", "Full Name")}
-            </label>
-            <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
-              {patientData.fullName}
+        <div className="p-6 relative min-h-[300px]">
+          {loading ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-[#0F172A]/50 z-10">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-teal-500"></div>
             </div>
-          </div>
+          ) : patientData ? (
+            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+              <div className="col-span-2 sm:col-span-1">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  {t("profile.personalInfo.fullName", "Full Name")}
+                </label>
+                <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+                  {patientData.fullName}
+                </div>
+              </div>
 
-          <div className="col-span-2 sm:col-span-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t("profile.personalInfo.age", "Age")}
-            </label>
-            <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
-              {patientData.age} {t("common.years", "Years")}
+              <div className="col-span-2 sm:col-span-1">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  {t("profile.personalInfo.age", "Age")}
+                </label>
+                <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+                  {patientData.age} {t("common.years", "Years")}
+                </div>
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  {t("profile.personalInfo.phoneNumber", "Phone Number")}
+                </label>
+                <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+                  {patientData.phone}
+                </div>
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  {t("profile.personalInfo.gender", "Gender")}
+                </label>
+                <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+                  {patientData.gender}
+                </div>
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  {t("profile.personalInfo.email", "Email Address")}
+                </label>
+                <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold truncate" title={patientData.email}>
+                  {patientData.email}
+                </div>
+              </div>
+
+              <div className="col-span-2 sm:col-span-1">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  {t("profile.medicalInfo.bloodType", "Blood Type")}
+                </label>
+                <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+                  {patientData.bloodType || (isAr ? "غير محدد" : "N/A")}
+                </div>
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                  {t("profile.medicalInfo.allergies", "Allergies")}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {patientData.allergies?.length > 0 ? (
+                    patientData.allergies.map((allergy, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-xs font-semibold">
+                        <AlertCircle size={14} />
+                        {allergy}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400 text-xs">{t("common.none", "None")}</span>
+                  )}
+                </div>
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                  {t("profile.medicalInfo.chronicDiseases", "Chronic Diseases")}
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {patientData.chronicDiseases?.length > 0 ? (
+                    patientData.chronicDiseases.map((disease, idx) => (
+                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/30 text-xs font-semibold">
+                        <Activity size={14} />
+                        {disease}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-gray-400 text-xs">{t("common.none", "None")}</span>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t("profile.personalInfo.phoneNumber", "Phone Number")}
-            </label>
-            <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
-              {patientData.phone}
+          ) : (
+            <div className="text-center py-10 text-gray-500">
+              {t("common.errors.failedToLoad", "Failed to load patient data.")}
             </div>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t("profile.personalInfo.gender", "Gender")}
-            </label>
-            <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
-              {patientData.gender}
-            </div>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t("profile.personalInfo.email", "Email Address")}
-            </label>
-            <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold truncate" title={patientData.email}>
-              {patientData.email}
-            </div>
-          </div>
-
-          <div className="col-span-2 sm:col-span-1">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-              {t("profile.medicalInfo.bloodType", "Blood Type")}
-            </label>
-            <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
-              {patientData.bloodType}
-            </div>
-          </div>
-
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              {t("profile.medicalInfo.allergies", "Allergies")}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {patientData.allergies.length > 0 ? (
-                patientData.allergies.map((allergy, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/30 text-xs font-semibold">
-                    <AlertCircle size={14} />
-                    {allergy}
-                  </span>
-                ))
-              ) : (
-                <span className="text-gray-400 text-xs">{t("common.none", "None")}</span>
-              )}
-            </div>
-          </div>
-
-          <div className="col-span-2">
-            <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-              {t("profile.medicalInfo.chronicDiseases", "Chronic Diseases")}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {patientData.chronicDiseases.length > 0 ? (
-                patientData.chronicDiseases.map((disease, idx) => (
-                  <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/30 text-xs font-semibold">
-                    <Activity size={14} />
-                    {disease}
-                  </span>
-                ))
-              ) : (
-                <span className="text-gray-400 text-xs">{t("common.none", "None")}</span>
-              )}
-            </div>
-          </div>
-
+          )}
         </div>
 
       </div>
