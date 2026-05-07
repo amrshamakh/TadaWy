@@ -70,9 +70,13 @@ const Messages = () => {
       setOnUnreadCountUpdated((payload) => {
         const fromUser = payload.fromUserId || payload.FromUserId;
         const count = payload.unreadCount !== undefined ? payload.unreadCount : payload.UnreadCount;
+        
+        // If we are currently chatting with this user, ignore the increment/update from server
+        const finalCount = fromUser === activeChatUserIdRef.current ? 0 : count;
+
         setChats((prev) =>
           prev.map((c) =>
-            c.userId === fromUser ? { ...c, unreadCount: count } : c
+            c.userId === fromUser ? { ...c, unreadCount: finalCount } : c
           )
         );
       });
