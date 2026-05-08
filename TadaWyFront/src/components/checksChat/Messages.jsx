@@ -1,17 +1,52 @@
 
-import React from "react";
+import React, { useRef, useCallback, useEffect } from "react";
 import { assets } from "../../assets/assets";
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-const Messages = ({ messages, isLoading, isLoadingHistory, messagesEndRef, onScrollTop, containerRef }) => {
+const Messages = ({ 
+  messages, 
+  isLoading, 
+  isLoadingHistory, 
+  messagesEndRef, 
+  onScrollTop, 
+  containerRef,
+  hasMoreHistory 
+}) => {
   const { t, i18n } = useTranslation();
+  
+  // Observer for the second item to trigger history load
+  const observer = useRef();
+  const secondItemRef = useCallback(node => {
+    if (isLoadingHistory || !hasMoreHistory) return;
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && onScrollTop) {
+        onScrollTop();
+      }
+    }, {
+      root: containerRef.current,
+      threshold: 0.1
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [isLoadingHistory, hasMoreHistory, onScrollTop, containerRef]);
+
+  // Cleanup observer on unmount
+  useEffect(() => {
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
+
   return (
     <div 
       ref={containerRef}
       className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4"
       onScroll={(e) => {
-        if (e.target.scrollTop <= 5 && onScrollTop) {
+        // Keep as fallback for older browsers or quick scrolls
+        if (e.target.scrollTop <= 5 && onScrollTop && !isLoadingHistory && hasMoreHistory) {
           onScrollTop();
         }
       }}
@@ -49,7 +84,11 @@ const Messages = ({ messages, isLoading, isLoadingHistory, messagesEndRef, onScr
       )}
       {messages.map((msg, index) =>
         msg.type === "divider" ? (
-          <div key={msg.id} className="flex items-center gap-3 py-2">
+          <div 
+            key={msg.id} 
+            ref={index === 1 ? secondItemRef : null}
+            className="flex items-center gap-3 py-2"
+          >
             <span className="h-px bg-[#CBD5E1] flex-1" />
             <span className="text-sm font-semibold text-[#94A3B8]">
               {msg.date 
@@ -66,6 +105,7 @@ const Messages = ({ messages, isLoading, isLoadingHistory, messagesEndRef, onScr
         ) : (
           <div
             key={msg.id}
+            ref={index === 1 ? secondItemRef : null}
             className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"} gap-3`}
           >
             {/* bot icon */}
@@ -133,6 +173,7 @@ const Messages = ({ messages, isLoading, isLoadingHistory, messagesEndRef, onScr
     </div>
   );
 };
+
 
 export default Messages;
 

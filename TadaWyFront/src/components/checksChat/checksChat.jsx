@@ -194,6 +194,7 @@ export default function MedicalChecksChat() {
             messagesEndRef={messagesEndRef}
             onScrollTop={handleScrollTop}
             containerRef={containerRef}
+            hasMoreHistory={hasMoreHistory}
           />
           {/* Footer */}
           {showUpload && (
