@@ -38,8 +38,10 @@ const Messages = () => {
   const [chats, setChats] = useState([]);
   const [activeChatUserId, setActiveChatUserId] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [hasMore, setHasMore] = useState(false);
   const [loadingChats, setLoadingChats] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [sending, setSending] = useState(false);
 
   // Use a ref to keep track of the current activeChatUserId for the SignalR callback
@@ -154,21 +156,57 @@ const Messages = () => {
   const handleSelectChat = async (userId) => {
     setActiveChatUserId(userId);
     setMessages([]);
+    setHasMore(false);
     
     // Clear unread count locally immediately
     setChats(prev => prev.map(c => c.userId === userId ? { ...c, unreadCount: 0, isSeen: true } : c));
 
     try {
       setLoadingMessages(true);
-      const [history] = await Promise.all([
+      const [historyResponse] = await Promise.all([
         getChatHistory(userId),
         markAsSeenSignalR(userId).catch(() => {})
       ]);
-      setMessages(Array.isArray(history) ? history : []);
+      
+      const items = historyResponse?.items || [];
+      const more = historyResponse?.hasMore || false;
+      
+      setMessages(items);
+      setHasMore(more);
     } catch (err) {
       console.error("Failed to load chat history", err);
     } finally {
       setLoadingMessages(false);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (!activeChatUserId || loadingMore || !hasMore || messages.length < 2) return;
+
+    try {
+      setLoadingMore(true);
+      // Use the createdAt of the second older message (index 1 in the items array)
+      // The user specified: "when scrolling reaches to second older message it calls endpoint again with lastCreatedAt for second older message from response that has index 1"
+      // Since messages are oldest first, messages[1] is the second oldest.
+      const lastCreatedAt = messages[1].createdAt;
+      
+      const response = await getChatHistory(activeChatUserId, lastCreatedAt);
+      const newItems = response?.items || [];
+      const more = response?.hasMore || false;
+
+      if (newItems.length > 0) {
+        setMessages(prev => {
+            // Merge and avoid duplicates by ID if necessary, but keep ordering
+            const existingIds = new Set(prev.map(m => m.id));
+            const filteredNewItems = newItems.filter(m => !existingIds.has(m.id));
+            return [...filteredNewItems, ...prev];
+        });
+      }
+      setHasMore(more);
+    } catch (err) {
+      console.error("Failed to load more messages", err);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
@@ -209,7 +247,10 @@ const Messages = () => {
         messages={messages} 
         currentUserId={currentUserId}
         onSendMessage={handleSendMessage} 
+        onLoadMore={handleLoadMore}
+        hasMore={hasMore}
         loadingMessages={loadingMessages}
+        loadingMore={loadingMore}
         sending={sending}
       />
     </div>

@@ -3,20 +3,72 @@ import { useTranslation } from 'react-i18next';
 import { Send, Paperclip, FileText, Loader2 } from 'lucide-react';
 import { assets } from '../../assets/assets';
 
-const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingMessages, sending }) => {
+const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, loadingMessages, loadingMore, sending, currentUserId }) => {
   const { t, i18n } = useTranslation();
   const [inputText, setInputText] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const secondMessageRef = useRef(null);
+  const unreadMessageRef = useRef(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [prevMessagesCount, setPrevMessagesCount] = useState(0);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const scrollToBottom = (behavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+  };
+
+  const scrollToUnread = () => {
+    if (unreadMessageRef.current) {
+        unreadMessageRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
+    } else {
+        scrollToBottom('auto');
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (loadingMessages) {
+        setIsInitialLoad(true);
+        return;
+    }
+
+    if (isInitialLoad && messages.length > 0) {
+        scrollToUnread();
+        setIsInitialLoad(false);
+        setPrevMessagesCount(messages.length);
+    } else if (!isInitialLoad && messages.length > prevMessagesCount) {
+        // If the new messages are at the end (I sent one or received one while chatting)
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage.senderUserId === currentUserId) {
+            scrollToBottom('smooth');
+        }
+        setPrevMessagesCount(messages.length);
+    }
+  }, [messages, loadingMessages]);
+
+  // Intersection Observer for Infinite Scroll
+  useEffect(() => {
+    if (!hasMore || loadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const target = secondMessageRef.current;
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) observer.unobserve(target);
+    };
+  }, [hasMore, loadingMore, messages, onLoadMore]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -104,38 +156,63 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
       </div>
 
       {/* Messages List */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-[#1E293B]">
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-[#1E293B]"
+      >
         {loadingMessages ? (
             <div className="flex items-center justify-center h-full">
                 <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
             </div>
-        ) : Object.keys(groupedMessages).map((date) => (
-          <div key={date} className="space-y-6">
-            <div className="flex justify-center mb-6">
-              <span className="px-4 py-1 bg-gray-200/50 dark:bg-[#1E293B] text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
-                {translateDate(date)}
-              </span>
-            </div>
+        ) : (
+          <>
+            {loadingMore && (
+                <div className="flex justify-center py-4">
+                    <Loader2 className="w-6 h-6 text-teal-500 animate-spin" />
+                </div>
+            )}
+            {(() => {
+                let globalMsgIndex = 0;
+                return Object.keys(groupedMessages).map((date) => (
+                  <div key={date} className="space-y-6">
+                    <div className="flex justify-center mb-6">
+                      <span className="px-4 py-1 bg-gray-200/50 dark:bg-[#1E293B] text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
+                        {translateDate(date)}
+                      </span>
+                    </div>
 
-            {groupedMessages[date].map((msg) => {
-              const isMe = msg.senderUserId === currentUserId;
-              const timeString = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              
-              const isImage = (url) => {
-                if (!url) return false;
-                const cleanUrl = url.split('?')[0];
-                return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(cleanUrl);
-              };
+                    {groupedMessages[date].map((msg) => {
+                      const isMe = msg.senderUserId === currentUserId;
+                      const timeString = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                      
+                      const isSecondMessage = globalMsgIndex === 1;
+                      globalMsgIndex++;
 
-              const getFileNameFromUrl = (url) => {
-                if (!url) return '';
-                const parts = url.split('/');
-                const lastPart = parts[parts.length - 1];
-                return lastPart.split('?')[0];
-              };
+                      const isImage = (url) => {
+                    if (!url) return false;
+                    const cleanUrl = url.split('?')[0];
+                    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(cleanUrl);
+                  };
 
-              return (
-                <div key={msg.id} className={`flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`}>
+                  const getFileNameFromUrl = (url) => {
+                    if (!url) return '';
+                    const parts = url.split('/');
+                    const lastPart = parts[parts.length - 1];
+                    return lastPart.split('?')[0];
+                  };
+
+                  const isUnread = !msg.isSeen && msg.senderUserId !== currentUserId;
+                  const isFirstUnread = isUnread && globalMsgIndex === messages.findIndex(m => !m.isSeen && m.senderUserId !== currentUserId);
+
+                  return (
+                    <div 
+                        key={msg.id} 
+                        ref={(el) => {
+                            if (isSecondMessage) secondMessageRef.current = el;
+                            if (isFirstUnread) unreadMessageRef.current = el;
+                        }}
+                        className={`flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`}
+                    >
                   <div className={`flex items-end gap-2 max-w-[85%] md:max-w-[70%]`}>
                     {!isMe && (
                        !activeChat.imageUrl ? (
@@ -196,8 +273,11 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
                 </div>
               );
             })}
-          </div>
-        ))}
+            </div>
+          ));
+        })()}
+      </>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
