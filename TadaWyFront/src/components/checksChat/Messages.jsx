@@ -3,6 +3,9 @@ import React, { useRef, useCallback, useEffect } from "react";
 import { assets } from "../../assets/assets";
 import { LoaderCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import { arEG, enUS } from 'date-fns/locale';
 
 const Messages = ({ 
   messages, 
@@ -92,12 +95,12 @@ const Messages = ({
             <span className="h-px bg-[#CBD5E1] flex-1" />
             <span className="text-sm font-semibold text-[#94A3B8]">
               {msg.date 
-                ? new Date(msg.date).toLocaleDateString(i18n.language === "ar" ? "ar-EG" : "en-US", {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })
+                ? (() => {
+                    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const dateLocale = i18n.language === 'ar' ? arEG : enUS;
+                    const zonedDate = toZonedTime(msg.date, userTimeZone);
+                    return format(zonedDate, 'EEEE, MMMM d, yyyy', { locale: dateLocale });
+                  })()
                 : msg.text}
             </span>
             <span className="h-px bg-[#CBD5E1] flex-1" />

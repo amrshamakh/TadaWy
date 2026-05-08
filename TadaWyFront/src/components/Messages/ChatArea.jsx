@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Paperclip, FileText, Loader2 } from 'lucide-react';
 import { assets } from '../../assets/assets';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import { arEG, enUS } from 'date-fns/locale';
 
 const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, loadingMessages, loadingMore, sending, currentUserId }) => {
   const { t, i18n } = useTranslation();
@@ -13,7 +16,8 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
   const secondMessageRef = useRef(null);
   const unreadMessageRef = useRef(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-  const [prevMessagesCount, setPrevMessagesCount] = useState(0);
+
+  const [lastMsgId, setLastMsgId] = useState(null);
 
   const scrollToBottom = (behavior = 'smooth') => {
     messagesEndRef.current?.scrollIntoView({ behavior });
@@ -30,22 +34,24 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
   useEffect(() => {
     if (loadingMessages) {
         setIsInitialLoad(true);
+        setLastMsgId(null);
         return;
     }
 
-    if (isInitialLoad && messages.length > 0) {
+    if (messages.length === 0) return;
+
+    const currentLastMsg = messages[messages.length - 1];
+
+    if (isInitialLoad) {
         scrollToUnread();
         setIsInitialLoad(false);
-        setPrevMessagesCount(messages.length);
-    } else if (!isInitialLoad && messages.length > prevMessagesCount) {
-        // If the new messages are at the end (I sent one or received one while chatting)
-        const lastMessage = messages[messages.length - 1];
-        if (lastMessage.senderUserId === currentUserId) {
-            scrollToBottom('smooth');
-        }
-        setPrevMessagesCount(messages.length);
+        setLastMsgId(currentLastMsg.id);
+    } else if (currentLastMsg.id !== lastMsgId) {
+        // A new message was added at the BOTTOM (sent or received)
+        // We no longer auto-scroll here per user request
+        setLastMsgId(currentLastMsg.id);
     }
-  }, [messages, loadingMessages]);
+  }, [messages, loadingMessages, lastMsgId, currentUserId]);
 
   // Intersection Observer for Infinite Scroll
   useEffect(() => {
@@ -91,18 +97,25 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
     fileInputRef.current?.click();
   };
 
+  const userTimeZone = 'Africa/Cairo';
+  const dateLocale = i18n.language === 'ar' ? arEG : enUS;
+
+  const getZonedDate = (date) => {
+    if (!date) return new Date();
+    const dateStr = date.endsWith('Z') ? date : `${date}Z`;
+    return toZonedTime(dateStr, userTimeZone);
+  };
+
   // Group messages by date
   const groupMessages = () => {
     const groups = {};
     if (!messages) return groups;
     messages.forEach(msg => {
-      const dateStr = new Date(msg.createdAt).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
-      });
-      if (!groups[dateStr]) groups[dateStr] = [];
-      groups[dateStr].push(msg);
+      const zonedDate = getZonedDate(msg.createdAt);
+      // Group by date string (e.g., '2026-05-08')
+      const dateKey = format(zonedDate, 'yyyy-MM-dd');
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(msg);
     });
     return groups;
   };
@@ -110,12 +123,13 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
   const groupedMessages = groupMessages();
 
   // Helper to translate date strings
-  const translateDate = (dateStr) => {
-    if (i18n.language === 'ar') {
-        const d = new Date(dateStr);
-        if (!isNaN(d)) return d.toLocaleDateString('ar-EG', { month: 'long', day: 'numeric', year: 'numeric' });
+  const translateDate = (dateKey) => {
+    try {
+      const date = new Date(dateKey);
+      return format(date, 'MMMM d, yyyy', { locale: dateLocale });
+    } catch {
+      return dateKey;
     }
-    return dateStr;
   };
 
   if (!activeChat) {
@@ -183,7 +197,6 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
 
                     {groupedMessages[date].map((msg) => {
                       const isMe = msg.senderUserId === currentUserId;
-                      const timeString = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                       
                       const isSecondMessage = globalMsgIndex === 1;
                       globalMsgIndex++;
@@ -266,7 +279,9 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
                             {t('messages.unseen', 'unSeen')} .
                           </span>
                         )}
-                        <span>{timeString.replace('AM', t('common.am', 'AM')).replace('PM', t('common.pm', 'PM'))}</span>
+                        <span>
+                          {format(getZonedDate(msg.createdAt), 'p', { locale: dateLocale })}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -312,7 +327,7 @@ const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, lo
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={t('messages.typeMessage', 'Type your message here...')}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 py-2 text-gray-900 dark:text-white placeholder:text-gray-400"
+                className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-sm px-3 py-2 text-gray-900 dark:text-white placeholder:text-gray-400"
               />
             </div>
 
