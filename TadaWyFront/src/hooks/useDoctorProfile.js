@@ -103,7 +103,7 @@ export const useDoctorProfile = () => {
         bioEn: form.bioEn,
         bioAr: form.bioAr,
         price: Number(form.price) || 0,
-        careerStartDate: form.careerStartDate || new Date().toISOString()
+        careerStartDate: form.careerStartDate || null
       };
       await updateDoctorProfile(updateDto);
       toast.success(t("profile.updatedSuccess") || "Profile updated successfully");
