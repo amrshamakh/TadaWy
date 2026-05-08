@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace TadaWy.Applicaation.DTO.ChatDTOs
+{
+    public class ChatHistoryResponseDto
+    {
+        public List<MessageDto> Items { get; set; } = new();
+
+        public bool HasMore { get; set; }
+    }
+}
+
