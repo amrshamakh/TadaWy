@@ -12,5 +12,8 @@ namespace TadaWy.Applicaation.IService
 
         Task<List<AllergyDto>> GetAllergiesAsync();
         Task AddAllergyAsync(string nameEn, string nameAr);
+
+        Task<List<StateDto>> GetStatesAsync();
+        Task<List<CityDto>> GetCitiesByStateAsync(int stateId);
     }
 }
