@@ -1,14 +1,27 @@
 import { useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Navbar from "./src/components/Navbar";
 import Sidebar from "./src/components/Sidebar";
 import { assets } from "./src/assets/assets";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "./src/context/AuthContext";
+import MedicalChecksChat from "./src/components/checksChat/checksChat";
 
 const Layout = () => {
   const { t } = useTranslation();
+  const { user, role } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
+
+  const userRole = role?.toLowerCase();
+
+  // Redirect doctors and admins away from patient routes
+  if (user && userRole === "doctor") {
+    return <Navigate to="/doctor/appointments" replace />;
+  }
+  if (user && userRole === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
   const isLandingPage = location.pathname === "/";
   const isDiscoverPage = location.pathname === "/discover";
   const isMessagesPage = location.pathname === "/messages";
@@ -30,11 +43,13 @@ const Layout = () => {
       <Navbar onToggleSidebar={handleToggleSidebar} />
 
       <div className="flex flex-1 overflow-hidden relative">
-        <Sidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-          menuItems={userMenu}
-        />
+        {user && (
+          <Sidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            menuItems={userMenu}
+          />
+        )}
 
         <div
           className={`
@@ -44,11 +59,12 @@ const Layout = () => {
     flex justify-center
   `}
         >
-          <div className="w-full">
-            <Outlet />
+          <div className={`w-full ${noPadding ? "" : "max-w-7xl"}`}>
+            <Outlet context={{ isSidebarOpen }} />
           </div>
         </div>
       </div>
+      <MedicalChecksChat />
     </div>
   );
 };
