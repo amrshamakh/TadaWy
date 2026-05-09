@@ -1,10 +1,32 @@
 import { useMemo, useState, useRef, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import { Calendar as CalendarIcon, Clock, User } from "lucide-react";
 import CalendarGrid from "./CalendarGrid";
 import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
 import "../Booking/Booking.css";
 import infoIcon from "../../assets/info.svg";
+
+const scrollbarStyles = `
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #00BBA7;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #009e8f;
+  }
+  /* For Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #00BBA7 transparent;
+  }
+`;
 import {
   getAppointmentsByStatus,
   getAppointmentsByDate,
@@ -38,6 +60,7 @@ export default function Calender() {
   const [showPaymentLegend, setShowPaymentLegend] = useState(false);
   const paymentLegendRef = useRef(null);
   const { t, i18n } = useTranslation();
+  const { isSidebarOpen } = useOutletContext() || { isSidebarOpen: false };
 
   const [appointmentDates, setAppointmentDates] = useState([]);
   const [appointmentsForSelectedDay, setAppointmentsForSelectedDay] = useState([]);
@@ -179,7 +202,7 @@ export default function Calender() {
 
   const getStatusTabClass = (statusKey) => {
     const base =
-      "px-6 py-2 text-sm font-medium border-r border-gray-200 dark:border-[#334155] last:border-r-0 transition-colors";
+      "px-4 py-1.5 text-xs font-medium border-r border-gray-200 dark:border-[#334155] last:border-r-0 transition-colors";
     if (activeStatus !== statusKey) {
       if (statusKey === "cancelled" || statusKey === "missed") return `${base} text-red-600 dark:text-red-400 bg-white dark:bg-[#0F172A]`;
       if (statusKey === "pending") return `${base} text-yellow-600 dark:text-yellow-400 bg-white dark:bg-[#0F172A]`;
@@ -193,85 +216,94 @@ export default function Calender() {
   };
 
   return (
-    <div className="relative bg-white dark:bg-[#0F172A] flex flex-col flex-1 p-6 w-full box-border overflow-x-hidden">
-      <h1 className="text-3xl font-semibold text-gray-800 dark:text-white mb-1">
-        {t("calendar.title")}
-      </h1>
-      <p className="text-sm text-gray-500 dark:text-[#94A3B8] mb-6 m-0">
-        {t("calendar.subtitle")}
-      </p>
+    <div className="relative bg-white dark:bg-[#0F172A] flex flex-col flex-1 pt-2 px-6 pb-6 w-full box-border overflow-x-hidden">
+      <style>{scrollbarStyles}</style>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 mb-4 items-stretch">
-        <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-6 flex flex-col gap-6 overflow-hidden">
-          <CalendarGrid
-            currentDate={currentDate}
-            onMonthChange={setCurrentDate}
-            selectedDate={selectedDate}
-            onSelectDay={setSelectedDate}
-            appointmentDates={appointmentDates}
-          />
+      <div className={`w-full max-w-[950px] flex flex-col gap-4 ${isSidebarOpen ? (i18n.language === "ar" ? "mr-4" : "ml-4") : "mx-auto"}`}>
+        <div className="flex justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-1">
+              {t("calendar.title")}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 m-0">
+              {t("calendar.subtitle")}
+            </p>
+          </div>
         </div>
 
-        <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-5 flex flex-col justify-start shadow-sm">
-          <p className="text-lg font-medium text-gray-800 dark:text-white mb-0">
-            {selectedDate ? formatSelectedDate(selectedDate, i18n.language) : t("calendar.selectDate")}
-          </p>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_330px] gap-4 items-stretch lg:h-[550px]">
+          <div className="w-full h-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col overflow-hidden">
+            <CalendarGrid
+              currentDate={currentDate}
+              onMonthChange={setCurrentDate}
+              selectedDate={selectedDate}
+              onSelectDay={setSelectedDate}
+              appointmentDates={appointmentDates}
+            />
+          </div>
 
-          {selectedDate === null ? (
-            <div className="flex-1 flex flex-col items-center justify-start gap-4 pt-16">
-              <CalendarIcon size={48} strokeWidth={1.5} className="text-gray-300 dark:text-[#334155]" />
-              <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center">
-                {t("calendar.selectDateHint")}
-              </p>
-            </div>
-          ) : (
-            <div className="flex-1 flex flex-col pt-3 gap-4">
-              {localizedDayAppointments.length === 0 ? (
-                <p className="text-sm text-gray-500 dark:text-[#94A3B8]">{t("calendar.noAppointments")}</p>
+          <div className="w-full h-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col shadow-sm overflow-hidden">
+            <p className="text-xl font-semibold text-gray-800 dark:text-white mb-3 flex-shrink-0">
+              {selectedDate ? formatSelectedDate(selectedDate, i18n.language) : t("calendar.selectDate")}
+            </p>
+
+            <div className="flex-1 overflow-y-auto pr-3 custom-scrollbar">
+              {selectedDate === null ? (
+                <div className="h-full flex flex-col items-center justify-center gap-4">
+                  <CalendarIcon size={48} strokeWidth={1.5} className="text-gray-300 dark:text-[#334155]" />
+                  <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center">
+                    {t("calendar.selectDateHint")}
+                  </p>
+                </div>
               ) : (
-                <div className="flex flex-col gap-2.5">
-                  {localizedDayAppointments.map((apt, i) => (
-                    <div
-                      key={i}
-                      className="p-3 rounded-xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#0F172A]"
-                    >
-                      <p className="text-base font-semibold text-gray-800 dark:text-white m-0">{apt.clinic}</p>
-                      {apt.specialty && apt.specialty !== apt.clinic && (
-                        <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{apt.specialty}</p>
-                      )}
-                      <div className="mt-2 flex flex-col gap-1.5">
-                        <div className="flex items-center gap-1.5">
-                          <User size={14} className="text-gray-400 dark:text-[#94A3B8]" />
-                          <span className="text-sm text-gray-500 dark:text-[#94A3B8]">{apt.doctor}</span>
+                <div className="flex flex-col gap-4">
+                  {localizedDayAppointments.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-[#94A3B8]">{t("calendar.noAppointments")}</p>
+                  ) : (
+                    <div className="flex flex-col gap-2.5">
+                      {localizedDayAppointments.map((apt, i) => (
+                        <div
+                          key={i}
+                          className="p-3 rounded-xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#0F172A] max-w-[92%] mx-auto w-full"
+                        >
+                          <p className="text-base font-semibold text-gray-800 dark:text-white m-0">{apt.clinic}</p>
+                          {apt.specialty && apt.specialty !== apt.clinic && (
+                            <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{apt.specialty}</p>
+                          )}
+                          <div className="mt-2 flex flex-col gap-1.5">
+                            <div className="flex items-center gap-1.5">
+                              <User size={14} className="text-gray-400 dark:text-[#94A3B8]" />
+                              <span className="text-sm text-gray-500 dark:text-[#94A3B8]">{apt.doctor}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Clock size={14} className="text-gray-400 dark:text-[#94A3B8]" />
+                              <span className="text-sm text-gray-500 dark:text-[#94A3B8]">{apt.time}</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <Clock size={14} className="text-gray-400 dark:text-[#94A3B8]" />
-                          <span className="text-sm text-gray-500 dark:text-[#94A3B8]">{apt.time}</span>
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
 
       <div className="relative w-full">
-        <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-6 flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-3 pr-4">
+        <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pr-4">
             <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
               {t("calendar.allAppointments")}
             </h2>
-            <div className="relative flex items-center gap-2" ref={paymentLegendRef}>
-              <div className="inline-flex items-center rounded-full overflow-hidden border border-[#CBD5E1] dark:border-[#334155]">
+            <div className="relative flex items-center gap-2 w-full sm:w-auto" ref={paymentLegendRef}>
+              <div className="flex-1 sm:flex-none inline-flex items-center rounded-full overflow-x-auto sm:overflow-hidden border border-[#CBD5E1] dark:border-[#334155] custom-scrollbar no-scrollbar">
                 {statusTabs.map((tab) => (
                   <button
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveStatus(tab.key)}
-                    className={getStatusTabClass(tab.key)}
+                    className={`${getStatusTabClass(tab.key)} whitespace-nowrap`}
                   >
                     {tab.label}
                   </button>
@@ -325,6 +357,7 @@ export default function Calender() {
               ))
             )}
           </div>
+        </div>
         </div>
       </div>
     </div>

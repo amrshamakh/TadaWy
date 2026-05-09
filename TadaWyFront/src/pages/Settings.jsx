@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
 import AppearanceSettings from "../components/settings/AppearanceSettings";
 import LanguageSettings from "../components/settings/LanguageSettings";
 import NotificationSettings from "../components/settings/NotificationSettings";
@@ -11,6 +12,7 @@ import { toast } from "react-toastify";
 const Settings = () => {
   const { t } = useTranslation();
   const [settings, setSettings] = useState(null);
+  const { isSidebarOpen } = useOutletContext() || {};
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -49,9 +51,9 @@ const Settings = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`max-w-5xl w-full space-y-6 mt-2 transition-all duration-300 ${isSidebarOpen ? "ms-8" : "mx-auto"}`}>
       <div>
-        <h1 className="dark:text-white text-2xl font-bold">
+        <h1 className="dark:text-white text-3xl font-bold">
           {t('settings.title')}
         </h1>
         <p className="text-gray-500 dark:text-gray-400 text-lg mt-1">

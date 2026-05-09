@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
-import { Star, MapPin, Phone, Grid, List, Search, ArrowLeft, ArrowRight } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { useOutletContext } from "react-router-dom";
+import { Star, MapPin, Phone, Search, ArrowLeft, ArrowRight, Eraser } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 
@@ -9,7 +10,6 @@ import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import { getDoctors } from "../modules/patient/api/doctorDiscoveryApi";
 import { getAllSpecializations, getStates, getCitiesByState } from "../modules/doctor/api/lookupApi";
-import { useEffect } from "react";
 import { useLocalizedField } from "../hooks/useLocalizedField";
 import Footer from "../components/Landing/Footer";
 
@@ -18,8 +18,10 @@ const CLINIC_PLACEHOLDER = "https://images.unsplash.com/photo-1519494026892-80bb
 
 // Main Component
 export default function DiscoverPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
   const navigate = useNavigate();
+  const { isSidebarOpen } = useOutletContext() || {};
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSpecialty, setSelectedSpecialty] = useState("");
@@ -138,13 +140,23 @@ export default function DiscoverPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setSelectedSpecialty("");
+    setSelectedRating("");
+    setSelectedState("");
+    setSelectedCity("");
+    setSelectedStateId("");
+    setCurrentPage(1);
+  };
+
   const handleBookAppointment = (doctor) => {
     navigate(`/booking/${doctor.id}`, { state: { doctor } });
   };
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pb-12">
+      <div className={`max-w-6xl mx-auto w-full px-4 sm:px-6 pb-12 mt-3 transition-all duration-300 ${isSidebarOpen ? "ms-8" : "mx-auto"}`}>
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold dark:text-white text-gray-800 mb-2">
@@ -255,27 +267,13 @@ export default function DiscoverPage() {
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex gap-2 p-1">
-              <button
-                onClick={() => setViewMode("grid")}
-                className={`p-2 w-9 h-9 rounded-xl transition-colors flex justify-center items-center ${viewMode === "grid"
-                  ? "bg-teal-500 text-white border"
-                  : "text-gray-600 hover:bg-gray-200 border border-gray-300"
-                  }`}
-              >
-                <Grid className="w-4 h-4 dark:text-white" />
-              </button>
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 w-9 h-9 rounded-xl transition-colors ${viewMode === "list"
-                  ? "bg-teal-500 text-white"
-                  : "text-gray-600 hover:bg-gray-200 border border-gray-300"
-                  }`}
-              >
-                <List className="w-5 h-5 dark:text-white" />
-              </button>
-            </div>
+            <button
+              onClick={handleClearFilters}
+              title={isAr ? "مسح جميع الفلاتر" : "Clear All Filters"}
+              className="p-2 w-10 h-10 rounded-xl transition-colors flex justify-center items-center bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-[#334155] text-gray-500 hover:text-teal-600 hover:border-teal-500 dark:hover:border-teal-500 transition-all shadow-sm"
+            >
+              <Eraser className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Results count */}
@@ -301,13 +299,7 @@ export default function DiscoverPage() {
               <p className="text-gray-400 text-sm mt-2">{t("discover.adjustFilters")}</p>
             </div>
           ) : (
-            <div
-              className={
-                viewMode === "grid"
-                  ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  : "flex flex-col gap-4"
-              }
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {doctors.map((doctor) => (
                 <div
                   key={doctor.id}
@@ -317,7 +309,7 @@ export default function DiscoverPage() {
                     <img
                       src={doctor.imageUrl || CLINIC_PLACEHOLDER}
                       alt={doctor.doctorName}
-                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="p-4">

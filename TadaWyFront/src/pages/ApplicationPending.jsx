@@ -12,45 +12,45 @@ const ApplicationPending = () => {
   const lottieUrl = "https://lottie.host/5b210f8a-982c-474c-879e-14187e14d86b/yV9R26v5S7.json";
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-white via-teal-50 to-white dark:from-[#0b2a3a] dark:via-[#0f5a57] dark:to-[#0b2a3a] flex flex-col items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#1E293B] rounded-3xl shadow-2xl w-full max-w-lg p-10 border border-gray-100 dark:border-[#334155] text-center space-y-8">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm">
-            <img className="w-16 h-16" src={assets.logo} alt="logo" />
-          </div>
+    <div className="min-h-screen bg-linear-to-b from-1% from-white via-teal-100 to-white to-95% dark:from-[#020617] dark:via-[#0f766e] dark:to-[#020617] dark:to-99% flex flex-col items-center justify-center p-4">
+      <div className="bg-white dark:bg-[#1E293B] rounded-3xl shadow-2xl w-full max-w-sm p-6 sm:p-7 border border-gray-100 dark:border-[#334155] text-center space-y-2">
+        
+        {/* Logo at top - lowered slightly */}
+        <div className="flex justify-center pt-4">
+          <img className="w-20 h-20" src={assets.logo} alt="logo" />
         </div>
 
-        {/* Animation */}
-        <div className="w-64 h-64 mx-auto">
+        {/* Animation - Shrunk more to reduce card length */}
+        <div className="w-32 h-32 mx-auto">
           <Lottie 
-            animationData={null} // We'll fetch the JSON or use a local one
+            animationData={null}
             loop={true}
             style={{ width: '100%', height: '100%' }}
-            // Fallback for demo
             path={lottieUrl}
           />
         </div>
 
         {/* Text */}
-        <div className="space-y-4">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-extrabold text-gray-800 dark:text-white">
             {t('auth.doctor.applicationSubmitted', 'Application Submitted!')}
           </h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
+          <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm mx-auto leading-relaxed">
             {t('auth.doctor.waitApproval', 'Your application is currently being reviewed by our medical board. We will notify you via email once your account is approved.')}
           </p>
         </div>
 
         {/* Action */}
-        <button
-          onClick={() => navigate('/')}
-          className="px-8 py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-xl shadow-lg transition-all transform hover:scale-105"
-        >
-          {t('common.backToHome', 'Back to Home')}
-        </button>
+        <div className="pt-3">
+          <button
+            onClick={() => navigate('/')}
+            className="px-10 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-xl shadow-lg transition-all transform hover:scale-105"
+          >
+            {t('common.backToHome', 'Back to Home')}
+          </button>
+        </div>
 
-        <p className="text-sm text-gray-400">
+        <p className="text-xs text-gray-400 pt-4">
           {t('auth.doctor.checkEmail', 'Expected review time: 1-3 business days.')}
         </p>
       </div>

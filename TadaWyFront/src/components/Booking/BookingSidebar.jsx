@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 import infoIcon from "@/assets/Info.svg";
 import html2canvas from "html2canvas";
@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import PaymentMethodModal from "./payments/PaymentMethodModal";
 import BookingReceiptModal from "./payments/BookingReceiptModal";
+import OfflineBookingReceiptModal from "./payments/OfflineBookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
 import { toReadableDateTime } from "./utils/bookingDate";
 import { bookOfflineAppointment, bookOnlineAppointment } from "../../modules/patient/api/appointmentApi";
@@ -18,6 +19,8 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { id: urlDoctorId } = useParams();
   const isAr = i18n.language === "ar";
 
   const availability = useMemo(() => {
@@ -45,6 +48,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const [activeModal, setActiveModal] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [receiptData, setReceiptData] = useState(null);
   const receiptRef = useRef(null);
   const sidebarRef = useRef(null);
   const wrapperRef = useRef(null);
@@ -134,14 +138,15 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     }
 
     const payload = {
-      doctorId: doctor.id,
+      doctorId: doctor?.id || parseInt(urlDoctorId, 10),
       date: isoDate,
       amount: appointmentCost,
     };
 
     if (method === "offline") {
       try {
-        await bookOfflineAppointment(payload);
+        const response = await bookOfflineAppointment(payload);
+        setReceiptData(response);
         setActiveModal("success");
         if (onBookingSuccess) onBookingSuccess();
       } catch (error) {
@@ -155,8 +160,8 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
         const response = await bookOnlineAppointment(payload);
         const url = response?.url || (typeof response === 'string' && response.startsWith('http') ? response : null);
         if (url) {
-          toast.info("Redirecting...");
-          setTimeout(() => { window.location.href = url; }, 500);
+          toast.info("Opening payment page...");
+          setTimeout(() => { window.open(url, "_blank"); }, 500);
         }
       } catch (error) {
         toast.error("Failed to initiate payment");
@@ -299,28 +304,34 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
               <span className="booking-price-currency"> {t("booking.sidebar.currency")}</span>
             </span>
           </div>
-          <button type="button" className="booking-submit-btn mt-4" onClick={handleBook} disabled={isDisabled}>
+          <button
+            type="button"
+            className="booking-submit-btn mt-4"
+            onClick={() => {
+              if (!user) {
+                navigate("/login", { state: { from: location.pathname } });
+                return;
+              }
+              handleBook();
+            }}
+            disabled={!user ? false : isDisabled}
+          >
             <Calendar size={18} className="mr-2" />
-            {t("booking.sidebar.bookBtn")}
+            {user ? t("booking.sidebar.bookBtn") : t("booking.sidebar.loginToBook", "Login To Book Appointment")}
           </button>
         </div>
 
         {activeModal && <div className="fixed inset-0 z-[98] bg-black/20 backdrop-blur-sm" />}
 
-        {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login")} onCancel={() => setShowAuthModal(false)} />}
+        {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login", { state: { from: location.pathname } })} onCancel={() => setShowAuthModal(false)} />}
         {activeModal === "payment" && <PaymentMethodModal onSelectMethod={handlePaymentSelection} />}
         {activeModal === "receipt" && (
-          <BookingReceiptModal
+          <OfflineBookingReceiptModal
             receiptRef={receiptRef}
-            receiptNumber={receiptNumber}
-            patientName={patientName}
-            patientEmail={patientEmail}
-            doctor={doctor}
-            appointmentDateValue={appointmentDateValue}
-            appointmentCost={appointmentCost}
+            receiptData={receiptData}
             isPrinting={isPrinting}
             onPrintReceipt={handlePrintReceipt}
-            onDone={() => setActiveModal(null)}
+            onDone={() => { setActiveModal(null); setReceiptData(null); }}
           />
         )}
         {activeModal === "success" && <BookingSuccessModal />}

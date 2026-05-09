@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { X, Info, Upload, LoaderCircle } from "lucide-react";
 import { assets } from "../../assets/assets";
 import Header from "./Header";
@@ -6,15 +7,19 @@ import Messages from "./Messages";
 import { predictAlzheimer, getAlzheimerHistory } from "./api";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import AuthRequiredModal from "../AuthRequiredModal";
 
 export default function MedicalChecksChat() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const hideOnPaths = ["/login", "/signup", "/messages", "/doctor/messages"];
+  const shouldHide = hideOnPaths.includes(location.pathname);
+
   const [messages, setMessages] = useState([]);
   const [cursorDate, setCursorDate] = useState(null);
   const [hasMoreHistory, setHasMoreHistory] = useState(false);
@@ -131,6 +136,14 @@ export default function MedicalChecksChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
+  // When user logs out, silently close the chat — no "Please login first" popup
+  useEffect(() => {
+    if (!user) {
+      setIsOpen(false);
+      setShowAuthModal(false);
+    }
+  }, [user]);
+
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -178,11 +191,13 @@ export default function MedicalChecksChat() {
     e.target.value = "";
   };
 
+  if (shouldHide) return null;
+
   return (
     <div className="fixed bottom-20 right-6 flex flex-col items-end z-50">
       {/* Chat Popup */}
       {isOpen && (
-        <div className="mb-4 w-[340px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white dark:bg-[#1E293B] dark:border-[#334155] h-[60vh] sm:h-[65vh] md:h-[70vh] lg:h-[75vh] max-h-[800px]">
+        <div className="mb-4 w-[320px] sm:w-[360px] md:w-[400px] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white dark:bg-[#1E293B] dark:border-[#334155] h-[55vh] sm:h-[60vh] md:h-[65vh] max-h-[650px]">
           {/* Header */}
           <Header setIsOpen={setIsOpen} />
 
@@ -230,7 +245,7 @@ export default function MedicalChecksChat() {
         <AuthRequiredModal
           onLogin={() => {
             setShowAuthModal(false);
-            navigate("/login");
+            navigate("/login", { state: { from: location.pathname } });
           }}
           onCancel={() => setShowAuthModal(false)}
         />
@@ -243,13 +258,13 @@ export default function MedicalChecksChat() {
           }
           setIsOpen((prev) => !prev);
         }}
-        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
         aria-label={isOpen ? t("checksChat.closeAria") : t("checksChat.openAria")}
       >
         {isOpen ? (
-          <X className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         ) : (
-          <img src={assets.brainIcon} className="w-10 h-10 sm:w-12 sm:h-12" alt="Brain Icon" />
+          <img src={assets.brainIcon} className="w-7 h-7 sm:w-8 sm:h-8" alt="Brain Icon" />
         )}
       </button>
     </div>

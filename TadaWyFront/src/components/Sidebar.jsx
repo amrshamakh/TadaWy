@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
@@ -18,20 +18,17 @@ const Item = ({ to, icon: Icon, label, end, currentPath, onClick }) => {
         `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors
         ${isActive || isBookingAndHome
           ? "bg-teal-500 text-white"
-          : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+          : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#334155]"
         }`
       }
     >
       {({ isActive }) => (
         <>
-          {Icon && (typeof Icon === 'string' ? (
+          {typeof Icon === 'string' ? (
             <img src={Icon} alt={label} className="w-5 h-5 shrink-0" />
           ) : (
-            <Icon 
-              className={`w-5 h-5 shrink-0 ${isActive ? 'text-white' : 'text-[#64748B] dark:text-slate-400'}`} 
-              strokeWidth={1.66667}
-            />
-          ))}
+            <Icon className={`w-5 h-5 shrink-0 ${isActive || isBookingAndHome ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`} />
+          )}
           <span>{label}</span>
         </>
       )}
@@ -42,6 +39,7 @@ const Item = ({ to, icon: Icon, label, end, currentPath, onClick }) => {
 export default function Sidebar({ isOpen, onClose, menuItems }) {
   const { i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
 
@@ -58,7 +56,7 @@ export default function Sidebar({ isOpen, onClose, menuItems }) {
         <AuthRequiredModal
           onLogin={() => {
             setShowAuthModal(false);
-            navigate("/login");
+            navigate("/login", { state: { from: location.pathname } });
           }}
           onCancel={() => setShowAuthModal(false)}
         />

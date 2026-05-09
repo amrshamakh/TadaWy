@@ -10,7 +10,9 @@ i18n
   .use(initReactI18next)
   .init({
     detection: {
-      caches: [] // Do not cache in localStorage
+      order: ['localStorage', 'cookie', 'htmlTag', 'path', 'subdomain'],
+      caches: [],
+      lookupLocalStorage: 'guestLanguage'
     },
     resources: {
       en: {

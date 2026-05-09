@@ -53,6 +53,7 @@
     "subtitle": "Manage your personal and medical information",
     "edit": "Edit",
     "save": "Save",
+    "saving": "Saving...",
     "updatedSuccess": "Profile updated successfully",
     "saveError": "Failed to save profile",
     "loadError": "Failed to load profile",
@@ -190,6 +191,8 @@
     "add": "Add",
     "adding": "Adding…",
     "backToHome": "Back to Home",
+    "next": "Next",
+    "back": "Back",
     "am": "AM",
     "pm": "PM",
     "reviews": "Reviews",
@@ -476,6 +479,11 @@
       "paid": "Paid",
       "notPaid": "Not paid"
     },
+    "cancelConfirm": "Are you sure you want to cancel this appointment?",
+    "keepAppointment": "No, keep it",
+    "cancelAppointment": "Yes, cancel",
+    "cancelSuccess": "Appointment canceled successfully",
+    "cancelError": "Failed to cancel appointment",
     "receipt": {
       "title": "Receipt Details"
     },
@@ -518,6 +526,7 @@
       "addressDescriptionEn": "Clinic Address (EN)",
       "addressDescriptionAr": "Clinic Address (AR)",
       "save": "Save",
+      "saving": "Saving...",
       "edit": "Edit",
       "careerStartDate": "Career Start Date",
       "price": "Consultation Price",

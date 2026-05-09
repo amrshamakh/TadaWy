@@ -1,22 +1,23 @@
 .booking-page-wrapper {
   background-color: #F8F9FA;
-  width: calc(100% + 48px);
-  margin: -24px;
+  width: 100%;
+  margin: 0;
   padding: 40px 0;
   min-height: calc(100vh - 64px);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .booking-page {
-  max-width: 1120px;
+  max-width: 1050px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
 .booking-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1.3fr);
+  grid-template-columns: minmax(0, 1.65fr) minmax(340px, 1.35fr);
   gap: 32px;
+  align-items: start;
 }
 
 .booking-main-column {
@@ -130,6 +131,7 @@
   color: #8593a8;
   margin-bottom: 2px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .booking-doctor-tag-value {
@@ -267,7 +269,7 @@
 
 .booking-sidebar-header-bar {
   background-color: #00BBA7;
-  padding: 24px 32px;
+  padding: 32px 32px 24px;
   display: flex;
   align-items: center;
   gap: 12px;

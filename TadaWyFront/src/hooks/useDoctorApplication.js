@@ -1,7 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { getAllSpecializations } from "../modules/doctor/api/lookupApi";
 import { registerDoctor } from "../modules/doctor/api/registerDoctorApi";
+
+const extractApiError = (err, fallback) => {
+  const data = err?.response?.data;
+  if (!data) return fallback;
+
+  // Plain string
+  if (typeof data === "string" && data.trim()) return data;
+
+  // ASP.NET Identity result: { errors: [{ code, description }] }
+  if (Array.isArray(data?.errors)) {
+    const errObj = data.errors[0];
+    if (typeof errObj === 'string') return errObj;
+    return errObj?.description || errObj?.code || fallback;
+  }
+
+  // ModelState: { errors: { Field: ["msg", ...] } }
+  if (data?.errors && typeof data.errors === "object") {
+    const firstField = Object.values(data.errors)[0];
+    return Array.isArray(firstField) ? firstField[0] : String(firstField);
+  }
+
+  // { message: "..." }
+  if (data?.message && typeof data.message === "string") return data.message;
+
+  // ProblemDetails { title: "..." }
+  if (data?.title && typeof data.title === "string") return data.title;
+
+  return fallback;
+};
 
 const LOCATION_STORAGE_KEY = "doctor_location";
 
@@ -148,7 +178,8 @@ export const useDoctorApplication = () => {
       navigate("/application-pending");
     } catch (err) {
       console.error("Application failed:", err);
-      alert("Submission failed. Please check your data and try again.");
+      const message = extractApiError(err, "Submission failed. Please check your data and try again.");
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

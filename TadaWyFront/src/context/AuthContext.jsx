@@ -49,6 +49,7 @@ export function AuthProvider({ children }) {
       const rawToken = TokenService.getToken() || localStorage.getItem("userToken");
       const claims = decodeToken(rawToken);
       const userRole = getRoleFromClaims(claims);
+      const userId = claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || claims.sub || claims.id;
       setRole(userRole);
 
       let profileData = null;
@@ -59,30 +60,44 @@ export function AuthProvider({ children }) {
         profileData = await getPatientProfile();
       }
 
-      // Fetch and apply settings for all roles
-      try {
-        const settings = await getSettings();
-        if (settings) {
-          // Apply theme
-          if (settings.theme) {
-            setDarkMode(settings.theme === 'dark');
-          }
-          // Apply language
-          if (settings.language && i18n.language !== settings.language) {
-            i18n.changeLanguage(settings.language);
-            // Also update document attributes
-            document.documentElement.setAttribute('dir', settings.language === 'ar' ? 'rtl' : 'ltr');
-            document.documentElement.setAttribute('lang', settings.language);
-          }
+      // Fetch and apply settings
+      if (roleLower === "admin") {
+        const adminTheme = localStorage.getItem("adminTheme");
+        if (adminTheme) {
+          setDarkMode(adminTheme === "dark");
         }
-      } catch (settingsErr) {
-        console.error("Failed to fetch settings on login", settingsErr);
+        const adminLang = localStorage.getItem("adminLanguage");
+        if (adminLang && i18n.language !== adminLang) {
+          i18n.changeLanguage(adminLang);
+          document.documentElement.setAttribute('dir', adminLang === 'ar' ? 'rtl' : 'ltr');
+          document.documentElement.setAttribute('lang', adminLang);
+        }
+      } else {
+        try {
+          const settings = await getSettings();
+          if (settings) {
+            // Apply theme
+            if (settings.theme) {
+              setDarkMode(settings.theme === 'dark');
+            }
+            // Apply language
+            if (settings.language && i18n.language !== settings.language) {
+              i18n.changeLanguage(settings.language);
+              // Also update document attributes
+              document.documentElement.setAttribute('dir', settings.language === 'ar' ? 'rtl' : 'ltr');
+              document.documentElement.setAttribute('lang', settings.language);
+            }
+          }
+        } catch (settingsErr) {
+          console.error("Failed to fetch settings on login", settingsErr);
+        }
       }
 
       if (profileData) {
         // Normalize keys for Navbar (supports both camelCase and PascalCase from API)
         const normalizedUser = {
           ...profileData,
+          id: profileData.id || profileData.Id || userId,
           firstName: profileData.firstName || profileData.FirstName || profileData.firstNameEn || profileData.FirstNameEn || "",
           lastName: profileData.lastName || profileData.LastName || profileData.lastNameEn || profileData.LastNameEn || "",
           firstNameEn: profileData.firstNameEn || profileData.FirstNameEn || "",
@@ -95,7 +110,7 @@ export function AuthProvider({ children }) {
         setUser(normalizedUser);
       } else {
         // Fallback for roles without profile endpoints or if fetch failed
-        setUser({ email: claims.email || "", role: userRole });
+        setUser({ id: userId, email: claims.email || "", role: userRole });
       }
     } catch (err) {
       console.error("Failed to fetch user profile", err);
@@ -128,6 +143,15 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("userToken");
       setUser(null);
       setRole(null);
+
+      // Restore guest settings
+      const guestTheme = localStorage.getItem("guestTheme");
+      setDarkMode(guestTheme === "dark");
+
+      const guestLang = localStorage.getItem("guestLanguage") || "en";
+      i18n.changeLanguage(guestLang);
+      document.documentElement.setAttribute('dir', guestLang === 'ar' ? 'rtl' : 'ltr');
+      document.documentElement.setAttribute('lang', guestLang);
     }
   };
 
