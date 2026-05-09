@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import './i18n.js'; 
+import i18n from './i18n';
 import { BrowserRouter } from 'react-router-dom'
 import { ThemeProvider } from './context/themeContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
@@ -16,7 +16,6 @@ createRoot(document.getElementById('root')).render(
     <AuthProvider>
       <NotificationProvider>
        <App />
-       <ToastContainer position="top-center" autoClose={3000} />
       </NotificationProvider>
     </AuthProvider>
   </ThemeProvider>

@@ -168,17 +168,15 @@ const SignUp = () => {
   return (
     <div
       className="min-h-screen bg-linear-to-b from-white from-1%
-via-teal-200
-to-white to-80%  dark:from-[#0b2a3a] 
-dark:via-[#0f5a57] 
-dark:to-[#202326] flex items-center justify-center p-4 py-8"
+via-teal-100
+to-white to-80%  dark:from-[#020617] 
+dark:via-[#0f766e] 
+dark:to-[#020617] flex items-center justify-center p-4 py-8"
     >
       <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-200 dark:border-[#334155]">
         {/* Logo */}
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-            <img className="w-16 h-16" src={assets.logo} alt="logo" />
-          </div>
+          <img className="w-16 h-16" src={assets.logo} alt="logo" />
         </div>
 
         {/* Title */}
@@ -194,34 +192,34 @@ dark:to-[#202326] flex items-center justify-center p-4 py-8"
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* First Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("profile.personalInfo.firstName", "First Name")}
-            </label>
-            <input
-              type="text"
-              value={formData.firstName}
-              onChange={(e) => handleChange("firstName", e.target.value)}
-              placeholder="John"
-              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-              required
-            />
-          </div>
-
-          {/* Last Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("profile.personalInfo.lastName", "Last Name")}
-            </label>
-            <input
-              type="text"
-              value={formData.lastName}
-              onChange={(e) => handleChange("lastName", e.target.value)}
-              placeholder="Doe"
-              className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-              required
-            />
+          {/* First & Last Name */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("profile.personalInfo.firstName", "First Name")}
+              </label>
+              <input
+                type="text"
+                value={formData.firstName}
+                onChange={(e) => handleChange("firstName", e.target.value)}
+                placeholder="John"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("profile.personalInfo.lastName", "Last Name")}
+              </label>
+              <input
+                type="text"
+                value={formData.lastName}
+                onChange={(e) => handleChange("lastName", e.target.value)}
+                placeholder="Doe"
+                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                required
+              />
+            </div>
           </div>
 
           {/* Email */}
@@ -239,45 +237,45 @@ dark:to-[#202326] flex items-center justify-center p-4 py-8"
             />
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("auth.signup.password", "Password")}
-            </label>
-            <div className="relative">
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) => handleChange("password", e.target.value)}
-                placeholder={t(
-                  "auth.signup.createPassword",
-                  "Create a password",
-                )}
-                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-                required
-              />
+          {/* Password & Confirm Password */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("auth.signup.password", "Password")}
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
+                  placeholder={t(
+                    "auth.signup.createPassword",
+                    "Create a password",
+                  )}
+                  className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
             </div>
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("auth.signup.confirmPassword", "Confirm Password")}
-            </label>
-            <div className="relative">
-              <input
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) =>
-                  handleChange("confirmPassword", e.target.value)
-                }
-                placeholder={t(
-                  "auth.signup.confirmPasswordPlaceholder",
-                  "Confirm your password",
-                )}
-                className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
-                required
-              />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("auth.signup.confirmPassword", "Confirm Password")}
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    handleChange("confirmPassword", e.target.value)
+                  }
+                  placeholder={t(
+                    "auth.signup.confirmPasswordPlaceholder",
+                    "Confirm your password",
+                  )}
+                  className="w-full px-4 py-2.5 bg-gray-50 dark:bg-[#334155] border border-gray-200 dark:border-[#475569] text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+                  required
+                />
+              </div>
             </div>
           </div>
 

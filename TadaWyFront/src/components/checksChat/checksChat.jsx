@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { X, Info, Upload, LoaderCircle } from "lucide-react";
 import { assets } from "../../assets/assets";
 import Header from "./Header";
@@ -6,15 +7,19 @@ import Messages from "./Messages";
 import { predictAlzheimer, getAlzheimerHistory } from "./api";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import AuthRequiredModal from "../AuthRequiredModal";
 
 export default function MedicalChecksChat() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+
+  const hideOnPaths = ["/login", "/signup", "/messages", "/doctor/messages"];
+  const shouldHide = hideOnPaths.includes(location.pathname);
+
   const [messages, setMessages] = useState([]);
   const [cursorDate, setCursorDate] = useState(null);
   const [hasMoreHistory, setHasMoreHistory] = useState(false);
@@ -178,6 +183,8 @@ export default function MedicalChecksChat() {
     e.target.value = "";
   };
 
+  if (shouldHide) return null;
+
   return (
     <div className="fixed bottom-20 right-6 flex flex-col items-end z-50">
       {/* Chat Popup */}
@@ -229,7 +236,7 @@ export default function MedicalChecksChat() {
         <AuthRequiredModal
           onLogin={() => {
             setShowAuthModal(false);
-            navigate("/login");
+            navigate("/login", { state: { from: location.pathname } });
           }}
           onCancel={() => setShowAuthModal(false)}
         />
@@ -242,13 +249,13 @@ export default function MedicalChecksChat() {
           }
           setIsOpen((prev) => !prev);
         }}
-        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
+        className="w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
         aria-label={isOpen ? t("checksChat.closeAria") : t("checksChat.openAria")}
       >
         {isOpen ? (
-          <X className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+          <X className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
         ) : (
-          <img src={assets.brainIcon} className="w-10 h-10 sm:w-12 sm:h-12" alt="Brain Icon" />
+          <img src={assets.brainIcon} className="w-8 h-8 sm:w-10 sm:h-10" alt="Brain Icon" />
         )}
       </button>
     </div>

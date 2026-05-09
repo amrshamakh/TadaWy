@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { assets } from "../assets/assets";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { loginPatient } from "../modules/patient/api/loginPatientAPi";
 import { useAuth } from "../context/AuthContext";
@@ -16,6 +16,8 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from;
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -30,9 +32,13 @@ const Login = () => {
         await login(res.token);
         const userRole = Array.isArray(res.role) ? res.role[0] : res.role;
         const normalizedRole = String(userRole || "").toLowerCase();
-        if (normalizedRole === "doctor") navigate("/doctor");
-        else if (normalizedRole === "admin") navigate("/admin");
-        else navigate("/discover");
+        if (from) {
+          navigate(from, { replace: true });
+        } else {
+          if (normalizedRole === "doctor") navigate("/doctor/appointments");
+          else if (normalizedRole === "admin") navigate("/admin");
+          else navigate("/discover");
+        }
       }
     } catch (error) {
       console.error("Login failed", error);
@@ -44,16 +50,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-linear-to-b from-1% from-white 
-via-teal-200
-to-white to-95% dark:from-[#0b2a3a] 
-dark:via-[#0f5a57] 
-dark:to-[#0b2a3a] dark:to-99% flex items-center justify-center p-4">
+via-teal-100
+to-white to-95% dark:from-[#020617] 
+dark:via-[#0f766e] 
+dark:to-[#020617] dark:to-99% flex items-center justify-center p-4">
       <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-200 dark:border-[#334155]">
         {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-            <img className="w-16 h-16" src={assets.logo} alt="logo" />
-          </div>
+          <img className="w-16 h-16" src={assets.logo} alt="logo" />
         </div>
 
         {/* Title */}

@@ -16,8 +16,14 @@ export default function DoctorAppointments() {
   const [appointments, setAppointments] = useState([]);
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeDay, setActiveDay] = useState("all");
-  const [pickedDate, setPickedDate] = useState(null);
+
+  // Default to today
+  const [activeDay, setActiveDay] = useState(() => {
+    return new Date().toLocaleDateString("en-US", { weekday: "short" }).toLowerCase();
+  });
+  const [pickedDate, setPickedDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
   const [activePayment, setActivePayment] = useState("all");
 
   const fetchAppointments = useCallback(async () => {

@@ -127,12 +127,12 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
   return (
     <>
       <div className="w-full rounded-xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B]">
-        <div className="w-full flex items-center justify-between gap-3 px-4 py-4">
+        <div className="w-full flex items-center justify-between gap-3 px-3 py-3">
           <div className="min-w-0 flex-1">
-            <p className="text-base font-semibold text-gray-800 dark:text-white m-0">{clinic}</p>
-            <p className="text-sm text-gray-700 dark:text-[#94A3B8] m-0">{doctor}</p>
+            <p className="text-sm font-semibold text-gray-800 dark:text-white m-0">{clinic}</p>
+            <p className="text-xs text-gray-700 dark:text-[#94A3B8] m-0">{doctor}</p>
             {specialty && specialty !== clinic && (
-              <p className="text-sm text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{specialty}</p>
+              <p className="text-[11px] text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{specialty}</p>
             )}
           </div>
 
@@ -143,8 +143,8 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
               {statusLabel}
             </span>
             <div className="text-right flex-shrink-0">
-              <p className="text-sm font-semibold text-gray-800 dark:text-white m-0">{date}</p>
-              <p className="text-xs text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{time}</p>
+              <p className="text-xs font-semibold text-gray-800 dark:text-white m-0">{date}</p>
+              <p className="text-[11px] text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{time}</p>
             </div>
             <button
               type="button"

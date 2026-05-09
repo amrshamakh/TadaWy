@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
 import infoIcon from "@/assets/Info.svg";
 import html2canvas from "html2canvas";
@@ -18,6 +18,7 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const isAr = i18n.language === "ar";
 
   const availability = useMemo(() => {
@@ -299,15 +300,26 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
               <span className="booking-price-currency"> {t("booking.sidebar.currency")}</span>
             </span>
           </div>
-          <button type="button" className="booking-submit-btn mt-4" onClick={handleBook} disabled={isDisabled}>
+          <button
+            type="button"
+            className="booking-submit-btn mt-4"
+            onClick={() => {
+              if (!user) {
+                navigate("/login", { state: { from: location.pathname } });
+                return;
+              }
+              handleBook();
+            }}
+            disabled={!user ? false : isDisabled}
+          >
             <Calendar size={18} className="mr-2" />
-            {t("booking.sidebar.bookBtn")}
+            {user ? t("booking.sidebar.bookBtn") : t("booking.sidebar.loginToBook", "Login To Book Appointment")}
           </button>
         </div>
 
         {activeModal && <div className="fixed inset-0 z-[98] bg-black/20 backdrop-blur-sm" />}
 
-        {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login")} onCancel={() => setShowAuthModal(false)} />}
+        {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login", { state: { from: location.pathname } })} onCancel={() => setShowAuthModal(false)} />}
         {activeModal === "payment" && <PaymentMethodModal onSelectMethod={handlePaymentSelection} />}
         {activeModal === "receipt" && (
           <BookingReceiptModal

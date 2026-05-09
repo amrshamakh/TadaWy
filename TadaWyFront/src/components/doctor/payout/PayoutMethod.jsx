@@ -109,7 +109,7 @@ export default function PayoutMethod({ onWithdrawSuccess }) {
               }`}
             >
               {isEditing ? <Save className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
-              <span>{isEditing ? t("common.save", "Save") : t("doctorDashboard.payout.payoutMethod.edit", "Edit")}</span>
+              <span>{isEditing ? t("doctorDashboard.profile.save", "Save") : t("doctorDashboard.payout.payoutMethod.edit", "Edit")}</span>
             </button>
           </div>
         </div>

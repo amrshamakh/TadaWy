@@ -70,7 +70,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2 relative" ref={legendWrapRef}>
           <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
             {new Date(year, monthIndex).toLocaleDateString(i18n.language, {
@@ -129,7 +129,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-x-1.5 mb-3">
+      <div className="grid grid-cols-7 gap-x-1.5 mb-2">
         {Array.from({ length: 7 }).map((_, i) => {
           const date = new Date(2023, 0, 1 + i);
           const dayName = date.toLocaleDateString(i18n.language, { weekday: "short" });
@@ -144,7 +144,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
       <div className="grid grid-cols-7 gap-1.5">
         {days.map((day, index) => {
           if (day === null) {
-            return <div key={index} className="w-full aspect-square" />;
+            return <div key={index} className="w-full aspect-[1.2/1]" />;
           }
 
           const today = new Date();
@@ -157,7 +157,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
           const showDot = Boolean(status);
 
           let cellClass =
-            "relative w-full aspect-square rounded-xl border-2 flex items-center justify-center cursor-pointer text-base font-medium transition-colors ";
+            "relative w-full aspect-[1.2/1] rounded-xl border-2 flex items-center justify-center cursor-pointer text-base font-medium transition-colors ";
 
           if (isSelected) {
             cellClass += "bg-[#E6FFFA] dark:bg-[#00BBA7]/20 border-[#00BBA7] text-gray-800 dark:text-white ";

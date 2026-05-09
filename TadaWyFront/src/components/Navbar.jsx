@@ -3,9 +3,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { MdOutlineLanguage } from "react-icons/md";
-import { FiUser, FiMenu } from "react-icons/fi";
+import { FiUser, FiMenu, FiSun, FiMoon } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/themeContext";
 import { getSettings, updateSettings } from "../services/settingService";
 
 import NotificationDropdown from "./NotificationDropdown";
@@ -24,6 +25,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
   const isDoctor = location.pathname.startsWith("/doctor");
 
   const { user, logout } = useAuth();
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const isLoggedIn = !!user;
   const userRole = user?.role?.toLowerCase();
 
@@ -52,7 +54,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     ? `${localizedFirstName || ""} ${localizedLastName || ""}`.trim() 
     : (userDisplayName || "");
   const displayEmail = user ? user.email : (userEmail || "");
-  const profilePath = isDoctor ? "/doctor" : "/profile";
+  const profilePath = isDoctor ? "/doctor/profile" : "/profile";
   const roleHomePath = userRole === "admin" ? "/admin" : userRole === "doctor" ? "/doctor" : userRole === "patient" ? "/discover" : "/";
 
   const toggleLanguage = async () => {
@@ -91,7 +93,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
           {/* Left section with menu toggle and logo */}
           <div className="flex items-center gap-3">
             {/* Sidebar Toggle Button */}
-            {onToggleSidebar && (
+            {onToggleSidebar && isLoggedIn && (
               <button
                 onClick={onToggleSidebar}
                 className="flex p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors"
@@ -103,8 +105,8 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
             {/* Logo */}
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => goTo(roleHomePath)}>
-              <img src={assets.logo} alt="logo" className="w-8 h-8" />
-              <span className="text-xl font-semibold dark:text-white">TadaWY</span>
+              <img src={assets.logo} alt="logo" className="w-11 h-11" />
+              <span className="text-xl font-semibold dark:text-white">TadaWy</span>
             </div>
           </div>
 
@@ -135,6 +137,15 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
               >
                 <MdOutlineLanguage size={20} className="text-teal-500" />
                 <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
+              </button>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDarkMode ? <FiSun size={20} className="text-yellow-400" /> : <FiMoon size={20} className="text-slate-700" />}
               </button>
               {/* Profile */}
               <div className="hidden md:flex relative" ref={dropdownRef}>
@@ -185,8 +196,8 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                       {t("nav.settings")}
                     </button>
                     <button
-                      onClick={() => {
-                        logout();
+                      onClick={async () => {
+                        await logout();
                         goTo("/");
                       }}
                       className="flex gap-3 items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"
@@ -213,6 +224,15 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                 <MdOutlineLanguage size={20} className="text-teal-500" />
                 <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
               </button>
+
+              {/* Theme Toggle for Guests */}
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDarkMode ? <FiSun size={20} className="text-yellow-400" /> : <FiMoon size={20} className="text-slate-700" />}
+              </button>
               <button
                 onClick={() => goTo("/login")}
                 className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
@@ -237,6 +257,15 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                 <span className="text-xs font-bold uppercase">{i18n.language === "ar" ? "EN" : "AR"}</span>
               </button>
 
+              {/* Theme Toggle for Admin */}
+              <button
+                onClick={toggleDarkMode}
+                className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
+                title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDarkMode ? <FiSun size={20} className="text-yellow-400" /> : <FiMoon size={20} className="text-slate-700" />}
+              </button>
+
               {/* Admin Profile Dropdown */}
               <div className="relative" ref={dropdownRef}>
                 <button
@@ -259,8 +288,8 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
                      {/* Sign Out */}
                     <button
-                      onClick={() => {
-                        logout();
+                      onClick={async () => {
+                        await logout();
                         goTo("/");
                       }}
                       className="flex gap-3 items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950"

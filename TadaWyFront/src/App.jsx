@@ -20,7 +20,6 @@ import Booking from "./pages/Booking";
 import AdminLayout from "./admin/AdminLayout";
 import AdminDoctors from "./admin/AdminDoctors";
 import AdminSettings from "./admin/AdminSettings";
-import MedicalChecksChat from "./components/checksChat/checksChat";
 import DoctorLayout from "./components/doctor/DoctorLayout";
 import DoctorProfile from "./components/doctor/DoctorProfile";
 import DoctorAppointments from "./components/doctor/appointments/DoctorAppointments";
@@ -29,6 +28,8 @@ import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 import DoctorPayout from "./components/doctor/payout/DoctorPayout";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Messages from "./components/Messages/Messages";
 
 const App = () => {
@@ -77,7 +78,22 @@ const App = () => {
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
-      <MedicalChecksChat />
+      <ToastContainer 
+        position="top-center" 
+        autoClose={3000} 
+        rtl={i18n.language === 'ar'} 
+      />
+      <style>
+        {`
+          [dir="rtl"] .Toastify__toast-body {
+            flex-direction: row-reverse !important;
+          }
+          [dir="rtl"] .Toastify__toast-icon {
+            margin-left: 12px;
+            margin-right: 0;
+          }
+        `}
+      </style>
     </div>
   );
 };

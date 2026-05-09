@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Navbar from "../Navbar";
 import Sidebar from "../Sidebar";
 import { assets } from "../../assets/assets";
+import MedicalChecksChat from "../checksChat/checksChat";
 
 import { CreditCard } from "lucide-react";
 
@@ -82,6 +83,7 @@ const DoctorLayout = () => {
           </div>
         </div>
       </div>
+      <MedicalChecksChat />
     </div>
   );
 };

@@ -291,7 +291,7 @@ const Profile = () => {
           <span className="inline-flex items-center gap-2">
             {isEditing ? <FiCheck size={16} /> : <FiEdit2 size={16} />}
           {saving
-            ? t("common.saving") || "Saving..."
+            ? t("profile.saving", "Saving...")
             : isEditing
             ? t("profile.save", "Save")
             : t("profile.edit", "Edit")}
