@@ -28,13 +28,13 @@ import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 import DoctorPayout from "./components/doctor/payout/DoctorPayout";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import AdminGuard from "./guards/AdminGuard";
 import DoctorGuard from "./guards/DoctorGuard";
 import PatientGuard from "./guards/PatientGuard";
 import Messages from "./components/Messages/Messages";
 import MedicalChecksChat from "./components/checksChat/checksChat";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Redirects any unknown URL back to the last visited page
 function GoBack() {
