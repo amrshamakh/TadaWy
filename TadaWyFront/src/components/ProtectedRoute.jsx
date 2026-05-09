@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthRequiredModal from "./AuthRequiredModal";
 
@@ -7,6 +7,22 @@ export default function ProtectedRoute({ children, allowedRoles, renderBlockedCo
   const { user, role, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isRoleBlocked =
+    !!user &&
+    !!allowedRoles?.length &&
+    !allowedRoles.some((item) => item.toLowerCase() === role?.toLowerCase());
+
+  // ✅ All hooks are called unconditionally at the top — Rules of Hooks compliant
+  useEffect(() => {
+    if (!loading && isRoleBlocked) {
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate("/", { replace: true });
+      }
+    }
+  }, [loading, isRoleBlocked, navigate]);
 
   if (loading) return null;
 
@@ -39,25 +55,8 @@ export default function ProtectedRoute({ children, allowedRoles, renderBlockedCo
     );
   }
 
-  const isRoleBlocked =
-    !!allowedRoles?.length &&
-    !allowedRoles.some((item) => item.toLowerCase() === role?.toLowerCase());
-
-  useEffect(() => {
-    if (!loading && user && isRoleBlocked) {
-      // Send the user back to wherever they came from
-      if (window.history.length > 1) {
-        navigate(-1);
-      } else {
-        navigate("/", { replace: true });
-      }
-    }
-  }, [loading, user, isRoleBlocked, navigate]);
-
-  if (!loading && user && isRoleBlocked) {
-    // Render nothing while the effect fires
-    return null;
-  }
+  // Render nothing while the back-navigation effect fires
+  if (isRoleBlocked) return null;
 
   return children;
 }
