@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using TadaWy.Domain.Entities.AuthModels;
 
@@ -8,11 +8,11 @@ namespace TadaWy.Domain.Entities.Identity
     {
         public ApplicationUser()
         {
-            Settings = new UserSettings(); 
+            RefreshTokens = new List<RefreshToken>(); 
         }
 
         public ICollection<RefreshToken> RefreshTokens { get; set; }
 
-        public UserSettings Settings { get; set; }  
+        public UserSettings? Settings { get; set; }  
     }
 }
