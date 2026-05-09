@@ -12,12 +12,12 @@ const ApplicationPending = () => {
   const lottieUrl = "https://lottie.host/5b210f8a-982c-474c-879e-14187e14d86b/yV9R26v5S7.json";
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-white via-teal-50 to-white dark:from-[#0b2a3a] dark:via-[#0f5a57] dark:to-[#0b2a3a] flex flex-col items-center justify-center p-4">
-      <div className="bg-white dark:bg-[#1E293B] rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-7 border border-gray-100 dark:border-[#334155] text-center space-y-2">
+    <div className="min-h-screen bg-linear-to-b from-1% from-white via-teal-100 to-white to-95% dark:from-[#020617] dark:via-[#0f766e] dark:to-[#020617] dark:to-99% flex flex-col items-center justify-center p-4">
+      <div className="bg-white dark:bg-[#1E293B] rounded-3xl shadow-2xl w-full max-w-sm p-6 sm:p-7 border border-gray-100 dark:border-[#334155] text-center space-y-2">
         
         {/* Logo at top - lowered slightly */}
         <div className="flex justify-center pt-4">
-          <img className="w-16 h-16" src={assets.logo} alt="logo" />
+          <img className="w-20 h-20" src={assets.logo} alt="logo" />
         </div>
 
         {/* Animation - Shrunk more to reduce card length */}

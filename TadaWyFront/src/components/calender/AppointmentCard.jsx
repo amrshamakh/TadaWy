@@ -45,11 +45,11 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
     try {
       setIsCanceling(true);
       await cancelAppointment(id);
-      toast.success("Appointment canceled successfully");
+      toast.success(t("calendar.cancelSuccess"));
       onCancel?.();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to cancel appointment.");
+      toast.error(t("calendar.cancelError"));
     } finally {
       setIsCanceling(false);
     }
@@ -58,25 +58,25 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
   const handleCancel = () => {
     toast(
       ({ closeToast }) => (
-        <div className="flex flex-col gap-3">
-          <p className="m-0 text-sm font-medium text-gray-800 dark:text-gray-200">
-            Are you sure you want to cancel this appointment?
+        <div className={`flex flex-col gap-3 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+          <p className="m-0 text-sm font-semibold text-gray-900 dark:text-white leading-relaxed">
+            {t("calendar.cancelConfirm")}
           </p>
-          <div className="flex justify-end gap-2 mt-2">
+          <div className="flex justify-end gap-2.5 mt-2">
             <button
               onClick={closeToast}
-              className="px-3 py-1.5 text-xs font-medium rounded bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="px-4 py-2 text-xs font-bold rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 transition-all border border-gray-200 dark:border-white/10 shadow-sm"
             >
-              No, keep it
+              {t("calendar.keepAppointment")}
             </button>
             <button
               onClick={() => {
                 closeToast();
                 executeCancel();
               }}
-              className="px-3 py-1.5 text-xs font-medium rounded bg-[#EF4444] text-white hover:bg-red-700 transition-colors"
+              className="px-4 py-2 text-xs font-bold rounded-lg bg-red-500 text-white hover:bg-red-600 active:scale-95 transition-all shadow-md shadow-red-500/20"
             >
-              Yes, cancel
+              {t("calendar.cancelAppointment")}
             </button>
           </div>
         </div>
@@ -127,29 +127,29 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
   return (
     <>
       <div className="w-full rounded-xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B]">
-        <div className="w-full flex items-center justify-between gap-3 px-3 py-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-gray-800 dark:text-white m-0">{clinic}</p>
-            <p className="text-xs text-gray-700 dark:text-[#94A3B8] m-0">{doctor}</p>
+        <div className="w-full flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 px-3 py-3">
+          <div className="min-w-0 flex-1 basis-full sm:basis-auto">
+            <p className="text-sm font-semibold text-gray-800 dark:text-white m-0 truncate">{clinic}</p>
+            <p className="text-xs text-gray-700 dark:text-[#94A3B8] m-0 truncate">{doctor}</p>
             {specialty && specialty !== clinic && (
-              <p className="text-[11px] text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{specialty}</p>
+              <p className="text-[11px] text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0 truncate">{specialty}</p>
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between sm:justify-end gap-3 flex-1 sm:flex-none w-full sm:w-auto mt-2 sm:mt-0 border-t sm:border-t-0 border-gray-100 dark:border-[#334155]/30 pt-2 sm:pt-0">
             <span
-              className={`inline-flex items-center gap-1 text-xs font-semibold border rounded-full px-2.5 py-1 ${statusPillClass}`}
+              className={`inline-flex items-center gap-1 text-[10px] sm:text-xs font-semibold border rounded-full px-2 py-0.5 sm:px-2.5 sm:py-1 ${statusPillClass}`}
             >
               {statusLabel}
             </span>
             <div className="text-right flex-shrink-0">
-              <p className="text-xs font-semibold text-gray-800 dark:text-white m-0">{date}</p>
-              <p className="text-[11px] text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{time}</p>
+              <p className="text-[10px] sm:text-xs font-semibold text-gray-800 dark:text-white m-0">{date}</p>
+              <p className="text-[9px] sm:text-[11px] text-gray-500 dark:text-[#94A3B8] mt-0.5 m-0">{time}</p>
             </div>
             <button
               type="button"
               onClick={() => setExpanded((prev) => !prev)}
-              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200/80 dark:hover:bg-[#334155] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00BBA7]"
+              className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200/80 dark:hover:bg-[#334155] focus:outline-none"
               aria-expanded={expanded}
             >
               <ChevronDown className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`} />

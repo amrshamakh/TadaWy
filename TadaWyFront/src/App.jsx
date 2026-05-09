@@ -82,6 +82,7 @@ const App = () => {
         position="top-center" 
         autoClose={3000} 
         rtl={i18n.language === 'ar'} 
+        theme="colored"
       />
       <style>
         {`

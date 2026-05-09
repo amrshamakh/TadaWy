@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { FiCheck, FiEdit2 } from "react-icons/fi";
 import PersonalInfo from "../components/PersonalInfo";
 import MedicalInfo from "../components/MedicalInfo";
@@ -23,6 +23,7 @@ import {
 const Profile = () => {
   const { t } = useTranslation();
   const { user, loading: authLoading, fetchUser } = useAuth();
+  const { isSidebarOpen } = useOutletContext() || {};
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -255,7 +256,7 @@ const Profile = () => {
   // ─── Loading state ────────────────────────────────────────
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center h-96">
+      <div className="flex justify-center h-96">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
       </div>
     );
@@ -264,7 +265,7 @@ const Profile = () => {
   if (!user) return null; // will redirect via useEffect
 
   return (
-    <div className="w-auto h-auto">
+    <div className={`max-w-5xl w-full mt-2 transition-all duration-300 ${isSidebarOpen ? 'ms-4 md:ms-8 lg:ms-12' : 'mx-auto'}`}>
       {/* ERROR BANNER */}
       {error && (
         <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-sm">
@@ -299,7 +300,7 @@ const Profile = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 min-h-[450px]">
         <PersonalInfo
           data={profileData.personalInfo}
           isEditing={isEditing}

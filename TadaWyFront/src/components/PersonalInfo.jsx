@@ -133,7 +133,7 @@ const [position, setPosition] = useState(
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
-      className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm"
+      className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm h-full"
     >
       {/* HEADER */}
       <div className="px-6 py-4">
@@ -146,7 +146,7 @@ const [position, setPosition] = useState(
       </div>
 
       {/* FIELDS */}
-      <div className="px-6 pb-6 grid grid-cols-2 gap-4">
+      <div className="p-8 grid grid-cols-2 gap-6">
         {fields.map(([key, label]) => (
           <div key={key}>
             <p className="text-sm font-medium mb-1 dark:text-white">{label}</p>
@@ -154,7 +154,7 @@ const [position, setPosition] = useState(
               disabled={!isEditing}
               value={data[key] || ""}
               onChange={(e) => onChange(key, e.target.value)}
-              className={`w-full font-normal text-sm px-3 py-2 border outline-teal-500 text-gray-500 dark:text-gray-200 tracking-tight ${
+              className={`w-full font-normal text-sm px-3 py-2 border outline-teal-500 text-gray-500 dark:text-gray-200 tracking-tight rounded-xl ${
                 isEditing
                   ? "border-white dark:border-[#334155] bg-teal-50/40 dark:bg-teal-900/10"
                   : "border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d]"
@@ -173,10 +173,10 @@ const [position, setPosition] = useState(
               type="date"
               value={data.dateOfBirth ? data.dateOfBirth.split("T")[0] : ""}
               onChange={(e) => onChange("dateOfBirth", e.target.value)}
-              className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] outline-teal-500 text-gray-500 dark:text-gray-200 bg-teal-50/40 dark:bg-teal-900/10"
+              className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] outline-teal-500 text-gray-500 dark:text-gray-200 bg-teal-50/40 dark:bg-teal-900/10 rounded-xl"
             />
           ) : (
-            <div className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d] text-gray-500 dark:text-gray-200">
+            <div className="w-full font-normal text-sm px-3 py-2 border border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d] text-gray-500 dark:text-gray-200 rounded-xl">
               {data.dateOfBirth ? (
                 <span>
                   {data.dateOfBirth.split("T")[0]} ({data.age} {t("doctorDashboard.schedule.perAppt").includes("appointment") ? "years" : "سنة"})
@@ -202,7 +202,7 @@ const [position, setPosition] = useState(
               readOnly
               value={data.location || ""}
               placeholder="City, Town, Address"
-              className={`w-full font-normal text-sm px-3 py-2 border outline-teal-500 text-gray-500 dark:text-gray-200 tracking-tight ${
+              className={`w-full font-normal text-sm px-3 py-2 border outline-teal-500 text-gray-500 dark:text-gray-200 tracking-tight rounded-xl ${
                 isEditing
                   ? "border-white dark:border-[#334155] bg-teal-50/40 dark:bg-teal-900/10"
                   : "border-white dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#04070a4d]"

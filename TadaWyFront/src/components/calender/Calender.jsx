@@ -292,18 +292,18 @@ export default function Calender() {
 
       <div className="relative w-full">
         <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-3 pr-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pr-4">
             <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
               {t("calendar.allAppointments")}
             </h2>
-            <div className="relative flex items-center gap-2" ref={paymentLegendRef}>
-              <div className="inline-flex items-center rounded-full overflow-hidden border border-[#CBD5E1] dark:border-[#334155]">
+            <div className="relative flex items-center gap-2 w-full sm:w-auto" ref={paymentLegendRef}>
+              <div className="flex-1 sm:flex-none inline-flex items-center rounded-full overflow-x-auto sm:overflow-hidden border border-[#CBD5E1] dark:border-[#334155] custom-scrollbar no-scrollbar">
                 {statusTabs.map((tab) => (
                   <button
                     key={tab.key}
                     type="button"
                     onClick={() => setActiveStatus(tab.key)}
-                    className={getStatusTabClass(tab.key)}
+                    className={`${getStatusTabClass(tab.key)} whitespace-nowrap`}
                   >
                     {tab.label}
                   </button>

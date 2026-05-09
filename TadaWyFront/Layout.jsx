@@ -25,7 +25,8 @@ const Layout = () => {
   const isLandingPage = location.pathname === "/";
   const isDiscoverPage = location.pathname === "/discover";
   const isMessagesPage = location.pathname === "/messages";
-  const noPadding = isLandingPage || isDiscoverPage || isMessagesPage;
+  const isBookingPage = location.pathname.startsWith("/booking");
+  const noPadding = isLandingPage || isDiscoverPage || isMessagesPage || isBookingPage;
   const userMenu = [
     { to: "/discover", icon: assets.homeIcon, label: t("nav.home"), end: true },
     { to: "/calendar", icon: assets.calenderIcon, label: t("nav.calendar"), end: false },

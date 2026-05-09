@@ -187,7 +187,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
                 {showDot && (
                   <span
                     aria-hidden
-                    className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${dotClass}`}
+                    className={`absolute bottom-[3px] sm:bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${dotClass}`}
                   />
                 )}
               </button>

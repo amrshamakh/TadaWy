@@ -192,50 +192,54 @@ const DoctorProfile = () => {
             </div>
 
             {/* Form */}
-            <div className="mt-8 space-y-8">
-              {/* Personal Information (English) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
-                <div className="md:col-span-2">
-                   <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
-                     {t("auth.doctor.personalInfoEn", "Personal Info (English)")}
-                   </h3>
+            <div className="mt-8 space-y-8">              {/* Personal Information (English) */}
+              {(isEditing || !isRtl) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                  <div className="md:col-span-2">
+                    <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
+                      {t("auth.doctor.personalInfoEn", "Personal Info (English)")}
+                    </h3>
+                  </div>
+                  <Field
+                    label={t("doctorDashboard.profile.firstNameEn")}
+                    value={form.firstNameEn}
+                    disabled={disabled}
+                    onChange={(v) => handleChange("firstNameEn", v)}
+                  />
+                  <Field
+                    label={t("doctorDashboard.profile.lastNameEn")}
+                    value={form.lastNameEn}
+                    disabled={disabled}
+                    onChange={(v) => handleChange("lastNameEn", v)}
+                  />
                 </div>
-                <Field
-                  label={t("doctorDashboard.profile.firstNameEn")}
-                  value={form.firstNameEn}
-                  disabled={disabled}
-                  onChange={(v) => handleChange("firstNameEn", v)}
-                />
-                <Field
-                  label={t("doctorDashboard.profile.lastNameEn")}
-                  value={form.lastNameEn}
-                  disabled={disabled}
-                  onChange={(v) => handleChange("lastNameEn", v)}
-                />
-              </div>
+              )}
 
               {/* Personal Information (Arabic) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
-                <div className="md:col-span-2">
-                   <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2 text-right">
-                     {t("auth.doctor.personalInfoAr", "Personal Info (Arabic)")}
-                   </h3>
+              {(isEditing || isRtl) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                  <div className="md:col-span-2">
+                    <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2 text-right">
+                      {t("auth.doctor.personalInfoAr", "Personal Info (Arabic)")}
+                    </h3>
+                  </div>
+                  <Field
+                    label={t("doctorDashboard.profile.firstNameAr")}
+                    value={form.firstNameAr}
+                    disabled={disabled}
+                    isRtl={true}
+                    onChange={(v) => handleChange("firstNameAr", v)}
+                  />
+                  <Field
+                    label={t("doctorDashboard.profile.lastNameAr")}
+                    value={form.lastNameAr}
+                    disabled={disabled}
+                    isRtl={true}
+                    onChange={(v) => handleChange("lastNameAr", v)}
+                  />
                 </div>
-                <Field
-                  label={t("doctorDashboard.profile.firstNameAr")}
-                  value={form.firstNameAr}
-                  disabled={disabled}
-                  isRtl={true}
-                  onChange={(v) => handleChange("firstNameAr", v)}
-                />
-                <Field
-                  label={t("doctorDashboard.profile.lastNameAr")}
-                  value={form.lastNameAr}
-                  disabled={disabled}
-                  isRtl={true}
-                  onChange={(v) => handleChange("lastNameAr", v)}
-                />
-              </div>
+              )}
+
 
               {/* Contact & Professional Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
@@ -299,19 +303,23 @@ const DoctorProfile = () => {
                      {t("doctorDashboard.profile.locationDetails")}
                    </h3>
                 </div>
-                <Field
-                  label={t("doctorDashboard.profile.addressDescriptionEn")}
-                  value={form.addressDescriptionEn}
-                  disabled={disabled}
-                  onChange={(v) => handleChange("addressDescriptionEn", v)}
-                />
-                <Field
-                  label={t("doctorDashboard.profile.addressDescriptionAr")}
-                  value={form.addressDescriptionAr}
-                  disabled={disabled}
-                  isRtl={true}
-                  onChange={(v) => handleChange("addressDescriptionAr", v)}
-                />
+                {(isEditing || !isRtl) && (
+                  <Field
+                    label={t("doctorDashboard.profile.addressDescriptionEn")}
+                    value={form.addressDescriptionEn}
+                    disabled={disabled}
+                    onChange={(v) => handleChange("addressDescriptionEn", v)}
+                  />
+                )}
+                {(isEditing || isRtl) && (
+                  <Field
+                    label={t("doctorDashboard.profile.addressDescriptionAr")}
+                    value={form.addressDescriptionAr}
+                    disabled={disabled}
+                    isRtl={true}
+                    onChange={(v) => handleChange("addressDescriptionAr", v)}
+                  />
+                )}
               </div>
 
               {/* Bios */}
@@ -321,41 +329,45 @@ const DoctorProfile = () => {
                      {t("doctorDashboard.profile.about")}
                    </h3>
                 </div>
-                <div className="space-y-2">
-                  <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
-                    {t("doctorDashboard.profile.bioEn")}
-                  </label>
-                  <textarea
-                    value={form.bioEn}
-                    onChange={(e) => handleChange("bioEn", e.target.value)}
-                    disabled={disabled}
-                    rows={4}
-                    className={[
-                      "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-all resize-none ltr text-left",
-                      disabled
-                        ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
-                        : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
-                    ].join(" ")}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200 text-right block">
-                    {t("doctorDashboard.profile.bioAr")}
-                  </label>
-                  <textarea
-                    value={form.bioAr}
-                    onChange={(e) => handleChange("bioAr", e.target.value)}
-                    disabled={disabled}
-                    rows={4}
-                    dir="rtl"
-                    className={[
-                      "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-all resize-none rtl text-right",
-                      disabled
-                        ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
-                        : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
-                    ].join(" ")}
-                  />
-                </div>
+                {(isEditing || !isRtl) && (
+                  <div className="space-y-2">
+                    <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                      {t("doctorDashboard.profile.bioEn")}
+                    </label>
+                    <textarea
+                      value={form.bioEn}
+                      onChange={(e) => handleChange("bioEn", e.target.value)}
+                      disabled={disabled}
+                      rows={4}
+                      className={[
+                        "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-all resize-none ltr text-left",
+                        disabled
+                          ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                          : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
+                      ].join(" ")}
+                    />
+                  </div>
+                )}
+                {(isEditing || isRtl) && (
+                  <div className="space-y-2">
+                    <label className="pl-2 text-sm font-medium text-slate-700 dark:text-slate-200 text-right block">
+                      {t("doctorDashboard.profile.bioAr")}
+                    </label>
+                    <textarea
+                      value={form.bioAr}
+                      onChange={(e) => handleChange("bioAr", e.target.value)}
+                      disabled={disabled}
+                      rows={4}
+                      dir="rtl"
+                      className={[
+                        "w-full rounded-[22px] border px-4 py-3 text-sm outline-none transition-all resize-none rtl text-right",
+                        disabled
+                          ? "bg-slate-50 text-slate-600 border-slate-200 dark:bg-[#1E293B] dark:text-white dark:border-[#334155]"
+                          : "bg-white border-slate-200 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:bg-[#0B1220] dark:text-slate-400 dark:border-[#1E293B] dark:focus:ring-teal-900/30",
+                      ].join(" ")}
+                    />
+                  </div>
+                )}
               </div>
             </div>
 

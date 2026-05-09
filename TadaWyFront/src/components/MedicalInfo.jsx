@@ -144,7 +144,7 @@ const MedicalInfo = ({
     .map(([name]) => name);
 
   return (
-    <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm">
+    <div className="bg-white dark:bg-[#1E293B] rounded-2xl border border-[#E2E8F0] dark:border-[#334155] shadow-sm h-full">
       <div className="px-6 py-4 border-b border-gray-50 dark:border-[#334155]">
         <div className="flex gap-2 items-center">
           <RiPulseFill className="text-teal-500 text-xl" />
@@ -157,7 +157,7 @@ const MedicalInfo = ({
         </p>
       </div>
 
-      <div className="p-6 space-y-8">
+      <div className="p-8 space-y-10">
         {/* Blood Type */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
@@ -178,7 +178,7 @@ const MedicalInfo = ({
               ))}
             </select>
           ) : (
-            <div className="px-4 py-2.5 bg-gray-50 dark:bg-[#3341554D] text-gray-600 dark:text-gray-300 rounded-xl font-medium border border-gray-100 dark:border-[#334155]">
+            <div className="px-4 py-2.5 bg-[#F8FAFC] dark:bg-[#04070a4d] text-gray-500 dark:text-gray-300 rounded-xl font-normal border border-white dark:border-[#334155]">
               {data.bloodType || "—"}
             </div>
           )}

@@ -40,14 +40,12 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-1% from-white via-teal-200 to-white to-95% dark:from-[#0b2a3a] dark:via-[#0f5a57] dark:to-[#0b2a3a] dark:to-99% flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-b from-1% from-white via-teal-100 to-white to-95% dark:from-[#020617] dark:via-[#0f766e] dark:to-[#020617] dark:to-99% flex items-center justify-center p-4">
       <div className="bg-white dark:bg-[#1E293B] rounded-2xl shadow-xl w-full max-w-md p-8 border border-gray-200 dark:border-[#334155]">
         
         {/* Logo */}
         <div className="flex justify-center mb-4">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-            <img className="w-16 h-16" src={assets.logo} alt="logo" />
-          </div>
+          <img className="w-16 h-16" src={assets.logo} alt="logo" />
         </div>
 
         {/* Title */}

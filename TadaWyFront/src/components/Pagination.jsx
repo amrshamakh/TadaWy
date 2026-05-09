@@ -19,7 +19,7 @@ const isRTL = i18n.dir() === "rtl";
   };
 
   return (
-    <div className="flex items-center justify-center py-5 gap-2 mt-8">
+    <div className="flex items-center justify-center py-1 gap-2 mt-1">
       <button
         onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
