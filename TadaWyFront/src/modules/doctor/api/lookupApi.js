@@ -7,3 +7,10 @@ export function getAllSpecializations() {
 export function createLookupSpecialization(name) {
   return ApiClient.post(`/Lookup/specializations?name=${encodeURIComponent(name)}`);
 }
+export function getStates() {
+  return ApiClient.get("/Lookup/states");
+}
+
+export function getCitiesByState(stateId) {
+  return ApiClient.get(`/Lookup/states/${stateId}/cities`);
+}

@@ -128,7 +128,15 @@
       "confirmPassword": "Confirm Password",
       "confirmPasswordPlaceholder": "Confirm your password",
       "selectLocation": "Select your location",
+      "firstNameEn": "First Name (English)",
+      "lastNameEn": "Last Name (English)",
+      "firstNameAr": "First Name (Arabic)",
+      "lastNameAr": "Last Name (Arabic)",
+      "bioEn": "Bio (English)",
+      "bioAr": "Bio (Arabic)",
       "addressDetails": "Address Description",
+      "addressDescriptionEn": "Address Description (English)",
+      "addressDescriptionAr": "Address Description (Arabic)",
       "addressPlaceholder": "Building number, street name, floor, etc.",
       "careerStartDate": "Career Start Date",
       "specialization": "Specialization",
@@ -154,6 +162,7 @@
     "profile": "Profile",
     "settings": "Settings",
     "notifications": "Notifications",
+    "noNotifications": "No new notifications",
     "markAllRead": "Mark all as read",
     "clickToReview": "Click to Review",
     "clickForDetails": "Click for Details",
@@ -183,7 +192,18 @@
     "backToHome": "Back to Home",
     "am": "AM",
     "pm": "PM",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "processing": "Processing...",
+    "errors": {
+      "insufficientBalance": "Insufficient available balance",
+      "unauthorized": "Unauthorized, please login again",
+      "forbidden": "You do not have permission to perform this action",
+      "notFound": "Requested resource not found",
+      "serverError": "Server error, please try again later",
+      "networkError": "Network error, please check your connection",
+      "unknownError": "An unknown error occurred, please try again later",
+      "badRequest": "Bad request, please check your input"
+    }
   },
   "hero": {
     "badge": "Your Health, Simplified",
@@ -403,6 +423,7 @@
       "cvUploaded": "CV Uploaded",
       "emailAddress": "Email Address",
       "specialization": "Specialization",
+      "bio": "Doctor Bio",
       "banReason": "Ban Reason",
       "noBanReason": "No reason provided",
       "banReasonPrompt": "Write the reason for banning this doctor",
@@ -487,7 +508,15 @@
       "email": "Email Address",
       "telephone": "Telephone Number",
       "firstName": "First Name",
+      "firstNameEn": "First Name (EN)",
+      "firstNameAr": "First Name (AR)",
       "lastName": "Last Name",
+      "lastNameEn": "Last Name (EN)",
+      "lastNameAr": "Last Name (AR)",
+      "bioEn": "Bio (EN)",
+      "bioAr": "Bio (AR)",
+      "addressDescriptionEn": "Clinic Address (EN)",
+      "addressDescriptionAr": "Clinic Address (AR)",
       "save": "Save",
       "edit": "Edit",
       "careerStartDate": "Career Start Date",
@@ -584,7 +613,15 @@
           "date": "DATE",
           "patientName": "PATIENT NAME",
           "amount": "AMOUNT"
-        }
+        },
+        "noPayments": "No recent payments found"
+      },
+      "errors": {
+        "withdrawFailed": "Withdrawal failed",
+        "invalidAmount": "Please enter a valid amount"
+      },
+      "success": {
+        "withdraw": "Withdrawal request submitted successfully"
       }
     }
   },

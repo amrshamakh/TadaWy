@@ -70,7 +70,7 @@ export default function Calender() {
       }
     };
     fetchCalendar();
-  }, [currentDate]);
+  }, [currentDate, i18n.language]);
 
   // Fetch specific day appointments when selectedDate changes
   useEffect(() => {
@@ -90,7 +90,7 @@ export default function Calender() {
       }
     };
     fetchDay();
-  }, [selectedDate]);
+  }, [selectedDate, i18n.language]);
 
   // Fetch all appointments by status when status changes
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function Calender() {
       }
     };
     fetchAll();
-  }, [activeStatus]);
+  }, [activeStatus, i18n.language]);
 
   useEffect(() => {
     if (!showPaymentLegend) return;

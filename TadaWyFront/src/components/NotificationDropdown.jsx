@@ -1,33 +1,60 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, CheckCircle2, Stethoscope, Bell } from 'lucide-react';
+import { Calendar, CheckCircle2, Bell, XCircle } from 'lucide-react';
+import { useNotifications } from '../context/NotificationContext';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import { arEG, enUS } from 'date-fns/locale';
 
-const NotificationItem = ({ type, title, description, time, actionLabel, isLast }) => {
+const NotificationItem = ({ id, type, title, message, createdAt, isRead, appointmentId, onRead }) => {
   const { t, i18n } = useTranslation();
   const isRTL = i18n.dir() === 'rtl';
 
   const icons = {
-    reminder: {
-      icon: <Calendar size={20} />,
-      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-      iconColor: 'text-blue-500 dark:text-blue-400',
-    },
-    booked: {
+    1: { // AppointmentBooked
       icon: <CheckCircle2 size={20} />,
       bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
       iconColor: 'text-emerald-500 dark:text-emerald-400',
     },
-    completed: {
-      icon: <Stethoscope size={20} />,
-      bgColor: 'bg-orange-50 dark:bg-orange-900/20',
-      iconColor: 'text-orange-500 dark:text-orange-400',
+    2: { // AppointmentReminder
+      icon: <Calendar size={20} />,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      iconColor: 'text-blue-500 dark:text-blue-400',
+    },
+    3: { // AppointmentCancelled
+      icon: <XCircle size={20} />,
+      bgColor: 'bg-red-50 dark:bg-red-900/20',
+      iconColor: 'text-red-500 dark:text-red-400',
+    },
+    4: { // Reminder 12h
+      icon: <Calendar size={20} />,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      iconColor: 'text-blue-500 dark:text-blue-400',
+    },
+    5: { // Reminder 2h
+      icon: <Calendar size={20} />,
+      bgColor: 'bg-blue-50 dark:bg-blue-900/20',
+      iconColor: 'text-blue-500 dark:text-blue-400',
     }
   };
 
-  const { icon, bgColor, iconColor } = icons[type] || icons.reminder;
+  const { icon, bgColor, iconColor } = icons[type] || {
+    icon: <Bell size={20} />,
+    bgColor: 'bg-gray-50 dark:bg-gray-900/20',
+    iconColor: 'text-gray-500 dark:text-gray-400',
+  };
+
+  const userTimeZone = 'Africa/Cairo';
+  const dateLocale = i18n.language === 'ar' ? arEG : enUS;
+  const dateStr = createdAt && !createdAt.endsWith('Z') ? `${createdAt}Z` : createdAt;
+  const zonedDate = toZonedTime(dateStr, userTimeZone);
+  const time = format(zonedDate, 'p', { locale: dateLocale });
 
   return (
-    <div className={`p-4 rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-[#1E293B] shadow-sm mb-3 last:mb-0 transition-all hover:shadow-md cursor-pointer`}>
+    <div 
+      onClick={() => !isRead && onRead(id)}
+      className={`p-4 rounded-2xl border ${isRead ? 'border-gray-100 dark:border-gray-800' : 'border-teal-100 dark:border-teal-900/30'} bg-white dark:bg-[#1E293B] shadow-sm mb-3 last:mb-0 transition-all hover:shadow-md cursor-pointer`}
+    >
       <div className="flex gap-4">
         {/* Icon */}
         <div className={`flex-shrink-0 w-12 h-12 rounded-full ${bgColor} ${iconColor} flex items-center justify-center`}>
@@ -37,19 +64,15 @@ const NotificationItem = ({ type, title, description, time, actionLabel, isLast 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-1">
-            <h4 className="text-sm font-bold text-gray-900 dark:text-white truncate">
+            <h4 className={`text-sm ${isRead ? 'font-medium' : 'font-bold'} text-gray-900 dark:text-white truncate`}>
               {title}
             </h4>
-            {actionLabel && (
-              <span className="text-[11px] font-medium text-[#00BBA7] hover:underline whitespace-nowrap">
-                {actionLabel}
-              </span>
-            )}
           </div>
           <p className="text-[13px] text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
-            {description}
+            {message}
           </p>
-          <div className={`mt-2 flex ${isRTL ? 'justify-start' : 'justify-end'}`}>
+          <div className={`mt-2 flex ${isRTL ? 'justify-start' : 'justify-end'} items-center gap-2`}>
+            {!isRead && <span className="w-1.5 h-1.5 bg-teal-500 rounded-full"></span>}
             <span className="text-[11px] text-gray-400 dark:text-gray-500">
               {time}
             </span>
@@ -62,33 +85,10 @@ const NotificationItem = ({ type, title, description, time, actionLabel, isLast 
 
 const NotificationDropdown = ({ isOpen, onClose }) => {
   const { t, i18n } = useTranslation();
+  const { notifications, markNotificationAsRead, markAllAsRead } = useNotifications();
   const isRTL = i18n.dir() === 'rtl';
 
   if (!isOpen) return null;
-
-  const notifications = [
-    {
-      type: 'reminder',
-      title: t('nav.appointmentReminder'),
-      description: t('nav.appointmentReminderDesc'),
-      time: t('nav.justNow'),
-      actionLabel: null
-    },
-    {
-      type: 'booked',
-      title: t('nav.appointmentBooked'),
-      description: t('nav.appointmentBookedDesc'),
-      time: t('nav.hoursAgo', { count: 2 }),
-      actionLabel: t('nav.clickForDetails')
-    },
-    {
-      type: 'completed',
-      title: t('nav.appointmentCompleted'),
-      description: t('nav.appointmentCompletedDesc'),
-      time: t('nav.yesterday'),
-      actionLabel: t('nav.clickToReview')
-    }
-  ];
 
   return (
     <div 
@@ -100,19 +100,27 @@ const NotificationDropdown = ({ isOpen, onClose }) => {
         <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
           {t('nav.notifications')}
         </h3>
-        <button className="text-[13px] font-semibold text-[#00BBA7] hover:text-[#00a392] transition-colors">
-          {t('nav.markAllRead')}
-        </button>
+        {notifications.some(n => !n.isRead) && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              markAllAsRead();
+            }}
+            className="text-[13px] font-semibold text-[#00BBA7] hover:text-[#00a392] transition-colors"
+          >
+            {t('nav.markAllRead')}
+          </button>
+        )}
       </div>
 
       {/* List */}
       <div className="p-4 max-h-[480px] overflow-y-auto custom-scrollbar bg-gray-50/50 dark:bg-[#0F172A]">
         {notifications.length > 0 ? (
-          notifications.map((notif, idx) => (
+          notifications.map((notif) => (
             <NotificationItem 
-              key={idx} 
-              {...notif} 
-              isLast={idx === notifications.length - 1} 
+              key={notif.id} 
+              {...notif}
+              onRead={markNotificationAsRead}
             />
           ))
         ) : (

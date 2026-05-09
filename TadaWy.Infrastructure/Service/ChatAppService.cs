@@ -71,7 +71,7 @@ namespace TadaWy.Infrastructure.Service
                 ReceiverUserId = dto.ReceiverUserId,
                 Content = dto.Content,
                 ImageUrl = imageUrl,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 IsSeen = false
             };
 
@@ -131,7 +131,7 @@ namespace TadaWy.Infrastructure.Service
         //////////////////////////////////////////////
         //////CHAT HISTORY (INFINITE SCROLL)//////////
         //////////////////////////////////////////////
-        public async Task<List<MessageDto>> GetChatHistoryAsync(string userId, string otherUserId, DateTime? lastCreatedAt)
+        public async Task<ChatHistoryResponseDto> GetChatHistoryAsync(string userId, string otherUserId, DateTime? lastCreatedAt)
         {
             var query = _context.Messages
                 .Where(m =>
@@ -167,7 +167,11 @@ namespace TadaWy.Infrastructure.Service
 
             messages.Reverse();
 
-            return messages;
+            return new ChatHistoryResponseDto
+            {
+                Items = messages,
+                HasMore = hasMore
+            };
         }
 
         ////////////////////////////////////

@@ -128,7 +128,15 @@
       "confirmPassword": "تأكيد كلمة المرور",
       "confirmPasswordPlaceholder": "أكد كلمة المرور",
       "selectLocation": "اختر موقعك",
+      "firstNameEn": "الاسم الأول (بالإنجليزي)",
+      "lastNameEn": "اسم العائلة (بالإنجليزي)",
+      "firstNameAr": "الاسم الأول (بالعربي)",
+      "lastNameAr": "اسم العائلة (بالعربي)",
+      "bioEn": "النبذة التعريفية (بالإنجليزي)",
+      "bioAr": "النبذة التعريفية (بالعربي)",
       "addressDetails": "وصف العنوان",
+      "addressDescriptionEn": "وصف العنوان (بالإنجليزي)",
+      "addressDescriptionAr": "وصف العنوان (بالعربي)",
       "addressPlaceholder": "رقم المبنى، اسم الشارع، الطابق، إلخ",
       "careerStartDate": "تاريخ بدء المسيرة المهنية",
       "specialization": "التخصص",
@@ -154,6 +162,7 @@
     "profile": "الملف الشخصي",
     "settings": "الإعدادات",
     "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات جديدة",
     "markAllRead": "تحديد الكل كمقروء",
     "clickToReview": "اضغط للتقييم",
     "clickForDetails": "اضغط للتفاصيل",
@@ -183,7 +192,18 @@
     "backToHome": "العودة للرئيسية",
     "am": "ص",
     "pm": "م",
-    "reviews": "التقييمات"
+    "reviews": "التقييمات",
+    "processing": "جارٍ المعالجة...",
+    "errors": {
+      "insufficientBalance": "رصيد متاح غير كافٍ",
+      "unauthorized": "غير مصرح لك بالدخول، يرجى تسجيل الدخول مجدداً",
+      "forbidden": "ليس لديك صلاحية للقيام بهذا الإجراء",
+      "notFound": "المورد المطلوب غير موجود",
+      "serverError": "حدث خطأ في الخادم، يرجى المحاولة لاحقاً",
+      "networkError": "خطأ في الاتصال بالشبكة، يرجى التحقق من اتصالك",
+      "unknownError": "حدث خطأ غير معروف، يرجى المحاولة لاحقاً",
+      "badRequest": "طلب غير صحيح، يرجى التحقق من البيانات المدخلة"
+    }
   },
   "hero": {
     "badge": "صحتك، ببساطة",
@@ -405,6 +425,7 @@
     "cvUploaded": "السيرة الذاتية المرفوعة",
     "emailAddress": "البريد الإلكتروني",
     "specialization": "التخصص",
+    "bio": "النبذة التعريفية",
     "banReason": "سبب الحظر",
     "noBanReason": "لم يتم إدخال سبب",
     "banReasonPrompt": "اكتب سبب حظر هذا الطبيب",
@@ -494,7 +515,15 @@
       "email": "البريد الإلكتروني",
       "telephone": "رقم الهاتف",
       "firstName": "الاسم الأول",
+      "firstNameEn": "الاسم الأول (EN)",
+      "firstNameAr": "الاسم الأول (AR)",
       "lastName": "اسم العائلة",
+      "lastNameEn": "اسم العائلة (EN)",
+      "lastNameAr": "اسم العائلة (AR)",
+      "bioEn": "النبذة التعريفية (EN)",
+      "bioAr": "النبذة التعريفية (AR)",
+      "addressDescriptionEn": "عنوان العيادة (EN)",
+      "addressDescriptionAr": "عنوان العيادة (AR)",
       "save": "حفظ",
       "edit": "تعديل",
       "careerStartDate": "تاريخ بدء المسيرة المهنية",
@@ -592,7 +621,15 @@
           "date": "التاريخ",
           "patientName": "اسم المريض",
           "amount": "المبلغ"
-        }
+        },
+        "noPayments": "لم يتم العثور على مدفوعات أخيرة"
+      },
+      "errors": {
+        "withdrawFailed": "فشل السحب",
+        "invalidAmount": "يرجى إدخال مبلغ صالح"
+      },
+      "success": {
+        "withdraw": "تم إرسال طلب السحب بنجاح"
       }
     }
   },

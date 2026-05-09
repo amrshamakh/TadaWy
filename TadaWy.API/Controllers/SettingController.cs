@@ -1,15 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TadaWy.Applicaation.DTO.ChangePasswordDTO;
 using TadaWy.Applicaation.DTO.SettingDtos;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
 using TadaWy.Infrastructure.Presistence;
-using TadaWy.Infrastructure.service;
-using TadaWy.Infrastructure.Service;
 
 namespace TadaWy.API.Controllers
 {

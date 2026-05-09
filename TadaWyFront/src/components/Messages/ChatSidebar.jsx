@@ -2,27 +2,40 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search } from 'lucide-react';
 import { assets } from '../../assets/assets';
+import { format, isToday, isYesterday, differenceInMinutes, differenceInHours, differenceInDays } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import { arEG, enUS } from 'date-fns/locale';
 
 // Helper to format ISO date string to relative time
 const formatRelativeTime = (isoString, lang) => {
   if (!isoString) return '';
-  const date = new Date(isoString);
-  const now = new Date();
-  const diffMs = now - date;
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
+  
+  const userTimeZone = 'Africa/Cairo';
+  const dateLocale = lang === 'ar' ? arEG : enUS;
+  const dateStr = isoString.endsWith('Z') ? isoString : `${isoString}Z`;
+  const date = toZonedTime(dateStr, userTimeZone);
+  const now = toZonedTime(new Date(), userTimeZone);
+
+  const diffMins = differenceInMinutes(now, date);
+  const diffHours = differenceInHours(now, date);
+  const diffDays = differenceInDays(now, date);
 
   if (diffMins < 1) return lang === 'ar' ? 'الآن' : 'now';
   if (diffMins < 60) return lang === 'ar' ? `${diffMins} د` : `${diffMins}m`;
-  if (diffHours < 24) {
-    return date.toLocaleTimeString(lang === 'ar' ? 'ar-EG' : 'en-US', { hour: '2-digit', minute: '2-digit' });
+  
+  if (isToday(date)) {
+    return format(date, 'p', { locale: dateLocale });
   }
-  if (diffDays === 1) return lang === 'ar' ? 'أمس' : 'Yesterday';
+  
+  if (isYesterday(date)) {
+    return lang === 'ar' ? 'أمس' : 'Yesterday';
+  }
+  
   if (diffDays < 7) {
-    return date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { weekday: 'short' });
+    return format(date, 'EEEE', { locale: dateLocale });
   }
-  return date.toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { month: 'short', day: 'numeric' });
+  
+  return format(date, 'MMM d', { locale: dateLocale });
 };
 
 const ChatSidebar = ({ chats, activeChatId, onSelectChat, loading }) => {

@@ -22,7 +22,6 @@ const LanguageSettings = ({ settings, onUpdate }) => {
 
   const applyLanguage = (languageCode) => {
     i18n.changeLanguage(languageCode);
-    localStorage.setItem('language', languageCode);
     if (languageCode === 'ar') {
       document.documentElement.setAttribute('dir', 'rtl');
       document.documentElement.setAttribute('lang', 'ar');

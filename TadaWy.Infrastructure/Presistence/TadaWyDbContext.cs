@@ -38,6 +38,8 @@ namespace TadaWy.Infrastructure.Presistence
         public DbSet<AiBrainScan> AiBrainScans => Set<AiBrainScan>();
         public DbSet<Message> Messages => Set<Message>();
         public DbSet<Notification> Notifications => Set<Notification>();
+        public DbSet<State> States => Set<State>();
+        public DbSet<City> Cities => Set<City>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -11,8 +11,13 @@ export const getConversations = () => ApiClient.get("/Chat/conversations");
  * @param {string} otherUserId
  * @returns {Promise<Array>} list of message objects
  */
-export const getChatHistory = (otherUserId) =>
-  ApiClient.get(`/Chat/history?otherUserId=${otherUserId}`);
+export const getChatHistory = (otherUserId, lastCreatedAt = null) => {
+  let url = `/Chat/history?otherUserId=${otherUserId}`;
+  if (lastCreatedAt) {
+    url += `&lastCreatedAt=${encodeURIComponent(lastCreatedAt)}`;
+  }
+  return ApiClient.get(url);
+};
 
 /**
  * Upload an image/file attachment and receive its hosted URL.

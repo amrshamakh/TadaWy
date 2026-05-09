@@ -69,7 +69,9 @@ namespace TadaWy.Infrastructure.Service
                 SpecializationNameEn = d.Specialization.NameEn,
                 SpecializationNameAr = d.Specialization.NameAr,
                 d.Address.City,
+                d.Address.CityAr,
                 d.Address.Street,
+                d.Address.StreetAr,
                 d.AddressDescriptionEn,
                 d.AddressDescriptionAr,
                 Rating = d.Reviews.Any()
@@ -98,10 +100,10 @@ namespace TadaWy.Infrastructure.Service
                     Specialization = CultureInfo.CurrentUICulture.Name.StartsWith("ar") 
                         ? d.SpecializationNameAr 
                         : d.SpecializationNameEn,
-                    City = d.City,
+                    City = CultureInfo.CurrentUICulture.Name.StartsWith("ar") ? d.CityAr : d.City,
                     Street = d.Street == "Unknown"
                         ? (CultureInfo.CurrentUICulture.Name.StartsWith("ar") ? d.AddressDescriptionAr : d.AddressDescriptionEn)
-                        : d.Street,
+                        : (CultureInfo.CurrentUICulture.Name.StartsWith("ar") ? d.StreetAr : d.Street),
                     ImageUrl = d.ImageUrl
                 })
                 .ToListAsync();

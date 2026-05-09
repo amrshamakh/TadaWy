@@ -34,6 +34,9 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
                 a.Property(p => p.Street).HasMaxLength(100);
                 a.Property(p => p.City).HasMaxLength(50);
                 a.Property(p => p.State).HasMaxLength(50);
+                a.Property(p => p.StreetAr).HasMaxLength(100);
+                a.Property(p => p.CityAr).HasMaxLength(50);
+                a.Property(p => p.StateAr).HasMaxLength(50);
             });
             builder.OwnsOne(p=>p.Location, l =>
             {

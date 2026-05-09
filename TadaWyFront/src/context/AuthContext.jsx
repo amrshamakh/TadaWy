@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getPatientProfile } from '../modules/patient/api/profilePatientAPi';
 import { getDoctorProfile } from '../modules/doctor/api/profileDoctorApi';
 import { TokenService } from '../services/tokenService';
+import { getSettings } from '../services/settingService';
+import i18n from '../i18n';
+import { useTheme } from './themeContext';
 
 const AuthContext = createContext(null);
 
@@ -31,6 +34,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { setDarkMode } = useTheme();
 
   const fetchUser = async () => {
     try {
@@ -55,12 +59,36 @@ export function AuthProvider({ children }) {
         profileData = await getPatientProfile();
       }
 
+      // Fetch and apply settings for all roles
+      try {
+        const settings = await getSettings();
+        if (settings) {
+          // Apply theme
+          if (settings.theme) {
+            setDarkMode(settings.theme === 'dark');
+          }
+          // Apply language
+          if (settings.language && i18n.language !== settings.language) {
+            i18n.changeLanguage(settings.language);
+            // Also update document attributes
+            document.documentElement.setAttribute('dir', settings.language === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', settings.language);
+          }
+        }
+      } catch (settingsErr) {
+        console.error("Failed to fetch settings on login", settingsErr);
+      }
+
       if (profileData) {
         // Normalize keys for Navbar (supports both camelCase and PascalCase from API)
         const normalizedUser = {
           ...profileData,
-          firstName: profileData.firstName || profileData.FirstName || "",
-          lastName: profileData.lastName || profileData.LastName || "",
+          firstName: profileData.firstName || profileData.FirstName || profileData.firstNameEn || profileData.FirstNameEn || "",
+          lastName: profileData.lastName || profileData.LastName || profileData.lastNameEn || profileData.LastNameEn || "",
+          firstNameEn: profileData.firstNameEn || profileData.FirstNameEn || "",
+          firstNameAr: profileData.firstNameAr || profileData.FirstNameAr || "",
+          lastNameEn: profileData.lastNameEn || profileData.LastNameEn || "",
+          lastNameAr: profileData.lastNameAr || profileData.LastNameAr || "",
           email: profileData.email || profileData.Email || claims.email || "",
           role: userRole
         };

@@ -2,21 +2,79 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Paperclip, FileText, Loader2 } from 'lucide-react';
 import { assets } from '../../assets/assets';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import { arEG, enUS } from 'date-fns/locale';
 
-const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingMessages, sending }) => {
+const ChatArea = ({ activeChat, messages, onSendMessage, onLoadMore, hasMore, loadingMessages, loadingMore, sending, currentUserId }) => {
   const { t, i18n } = useTranslation();
   const [inputText, setInputText] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const fileInputRef = useRef(null);
+  const secondMessageRef = useRef(null);
+  const unreadMessageRef = useRef(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const [lastMsgId, setLastMsgId] = useState(null);
+
+  const scrollToBottom = (behavior = 'smooth') => {
+    messagesEndRef.current?.scrollIntoView({ behavior });
+  };
+
+  const scrollToUnread = () => {
+    if (unreadMessageRef.current) {
+        unreadMessageRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
+    } else {
+        scrollToBottom('auto');
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (loadingMessages) {
+        setIsInitialLoad(true);
+        setLastMsgId(null);
+        return;
+    }
+
+    if (messages.length === 0) return;
+
+    const currentLastMsg = messages[messages.length - 1];
+
+    if (isInitialLoad) {
+        scrollToUnread();
+        setIsInitialLoad(false);
+        setLastMsgId(currentLastMsg.id);
+    } else if (currentLastMsg.id !== lastMsgId) {
+        // A new message was added at the BOTTOM (sent or received)
+        // We no longer auto-scroll here per user request
+        setLastMsgId(currentLastMsg.id);
+    }
+  }, [messages, loadingMessages, lastMsgId, currentUserId]);
+
+  // Intersection Observer for Infinite Scroll
+  useEffect(() => {
+    if (!hasMore || loadingMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          onLoadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const target = secondMessageRef.current;
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) observer.unobserve(target);
+    };
+  }, [hasMore, loadingMore, messages, onLoadMore]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,18 +97,25 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
     fileInputRef.current?.click();
   };
 
+  const userTimeZone = 'Africa/Cairo';
+  const dateLocale = i18n.language === 'ar' ? arEG : enUS;
+
+  const getZonedDate = (date) => {
+    if (!date) return new Date();
+    const dateStr = date.endsWith('Z') ? date : `${date}Z`;
+    return toZonedTime(dateStr, userTimeZone);
+  };
+
   // Group messages by date
   const groupMessages = () => {
     const groups = {};
     if (!messages) return groups;
     messages.forEach(msg => {
-      const dateStr = new Date(msg.createdAt).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
-      });
-      if (!groups[dateStr]) groups[dateStr] = [];
-      groups[dateStr].push(msg);
+      const zonedDate = getZonedDate(msg.createdAt);
+      // Group by date string (e.g., '2026-05-08')
+      const dateKey = format(zonedDate, 'yyyy-MM-dd');
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(msg);
     });
     return groups;
   };
@@ -58,12 +123,13 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
   const groupedMessages = groupMessages();
 
   // Helper to translate date strings
-  const translateDate = (dateStr) => {
-    if (i18n.language === 'ar') {
-        const d = new Date(dateStr);
-        if (!isNaN(d)) return d.toLocaleDateString('ar-EG', { month: 'long', day: 'numeric', year: 'numeric' });
+  const translateDate = (dateKey) => {
+    try {
+      const date = new Date(dateKey);
+      return format(date, 'MMMM d, yyyy', { locale: dateLocale });
+    } catch {
+      return dateKey;
     }
-    return dateStr;
   };
 
   if (!activeChat) {
@@ -104,38 +170,62 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
       </div>
 
       {/* Messages List */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-[#1E293B]">
+      <div 
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:[&::-webkit-scrollbar-thumb]:bg-[#1E293B]"
+      >
         {loadingMessages ? (
             <div className="flex items-center justify-center h-full">
                 <Loader2 className="w-8 h-8 text-teal-500 animate-spin" />
             </div>
-        ) : Object.keys(groupedMessages).map((date) => (
-          <div key={date} className="space-y-6">
-            <div className="flex justify-center mb-6">
-              <span className="px-4 py-1 bg-gray-200/50 dark:bg-[#1E293B] text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
-                {translateDate(date)}
-              </span>
-            </div>
+        ) : (
+          <>
+            {loadingMore && (
+                <div className="flex justify-center py-4">
+                    <Loader2 className="w-6 h-6 text-teal-500 animate-spin" />
+                </div>
+            )}
+            {(() => {
+                let globalMsgIndex = 0;
+                return Object.keys(groupedMessages).map((date) => (
+                  <div key={date} className="space-y-6">
+                    <div className="flex justify-center mb-6">
+                      <span className="px-4 py-1 bg-gray-200/50 dark:bg-[#1E293B] text-gray-600 dark:text-gray-300 text-xs font-semibold rounded-full">
+                        {translateDate(date)}
+                      </span>
+                    </div>
 
-            {groupedMessages[date].map((msg) => {
-              const isMe = msg.senderUserId === currentUserId;
-              const timeString = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              
-              const isImage = (url) => {
-                if (!url) return false;
-                const cleanUrl = url.split('?')[0];
-                return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(cleanUrl);
-              };
+                    {groupedMessages[date].map((msg) => {
+                      const isMe = msg.senderUserId === currentUserId;
+                      
+                      const isSecondMessage = globalMsgIndex === 1;
+                      globalMsgIndex++;
 
-              const getFileNameFromUrl = (url) => {
-                if (!url) return '';
-                const parts = url.split('/');
-                const lastPart = parts[parts.length - 1];
-                return lastPart.split('?')[0];
-              };
+                      const isImage = (url) => {
+                    if (!url) return false;
+                    const cleanUrl = url.split('?')[0];
+                    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/i.test(cleanUrl);
+                  };
 
-              return (
-                <div key={msg.id} className={`flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`}>
+                  const getFileNameFromUrl = (url) => {
+                    if (!url) return '';
+                    const parts = url.split('/');
+                    const lastPart = parts[parts.length - 1];
+                    return lastPart.split('?')[0];
+                  };
+
+                  const isUnread = !msg.isSeen && msg.senderUserId !== currentUserId;
+                  const isFirstUnread = isUnread && globalMsgIndex === messages.findIndex(m => !m.isSeen && m.senderUserId !== currentUserId);
+
+                  return (
+                    <div 
+                        key={msg.id} 
+                        ref={(el) => {
+                            if (isSecondMessage) secondMessageRef.current = el;
+                            if (isFirstUnread) unreadMessageRef.current = el;
+                        }}
+                        className={`flex flex-col w-full ${isMe ? 'items-end' : 'items-start'}`}
+                    >
                   <div className={`flex items-end gap-2 max-w-[85%] md:max-w-[70%]`}>
                     {!isMe && (
                        !activeChat.imageUrl ? (
@@ -189,15 +279,20 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
                             {t('messages.unseen', 'unSeen')} .
                           </span>
                         )}
-                        <span>{timeString.replace('AM', t('common.am', 'AM')).replace('PM', t('common.pm', 'PM'))}</span>
+                        <span>
+                          {format(getZonedDate(msg.createdAt), 'p', { locale: dateLocale })}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
               );
             })}
-          </div>
-        ))}
+            </div>
+          ));
+        })()}
+      </>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
@@ -232,7 +327,7 @@ const ChatArea = ({ activeChat, messages, onSendMessage, currentUserId, loadingM
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 placeholder={t('messages.typeMessage', 'Type your message here...')}
-                className="flex-1 bg-transparent border-none focus:ring-0 text-sm px-3 py-2 text-gray-900 dark:text-white placeholder:text-gray-400"
+                className="flex-1 bg-transparent border-none focus:ring-0 focus:outline-none text-sm px-3 py-2 text-gray-900 dark:text-white placeholder:text-gray-400"
               />
             </div>
 

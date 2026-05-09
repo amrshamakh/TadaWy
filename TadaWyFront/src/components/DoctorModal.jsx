@@ -13,7 +13,7 @@ const statusStyles = {
 };
 
 export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove, onReject, onBan, onUnban }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const localize = useLocalizedField();
   const { getDoctorDetails } = useDoctors();
   const [doctor, setDoctor] = useState(summaryDoctor);
@@ -100,7 +100,7 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.doctorName")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-              {doctor?.name || summaryDoctor.name}
+              {localize(doctor || summaryDoctor, "name") || doctor?.name || summaryDoctor?.name || "—"}
             </div>
           </div>
 
@@ -109,7 +109,7 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.clinicLocation")}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-              {doctor?.clinicLocation || "—"}
+              {doctor?.clinicLocation || summaryDoctor?.clinicLocation || "—"}
             </div>
           </div>
 
@@ -127,9 +127,10 @@ export default function DoctorModal({ doctor: summaryDoctor, onClose, onApprove,
               {t("admin.doctorModal.clinicDetails") || "Clinic Details"}
             </label>
             <div className="bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-              {doctor?.clinicDetails || "—"}
+              {localize(doctor || summaryDoctor, "addressDescription") || "—"}
             </div>
           </div>
+
 
           <div className="col-span-2 sm:col-span-1">
             <label className="block text-sm font-medium text-gray-700 dark:text-white mb-1">

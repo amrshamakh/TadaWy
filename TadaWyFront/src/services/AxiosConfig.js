@@ -2,6 +2,7 @@
 import axios from "axios";
 import { ENV } from "@/config/env";
 import { TokenService } from "./tokenService";
+import i18n from "../i18n";
 /**
  * ===============================
  * Axios Instance
@@ -25,7 +26,7 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = TokenService.getToken();
-    const language = localStorage.getItem("i18nextLng") || localStorage.getItem("language") || "en";
+    const language = i18n.language || "en";
     const acceptLanguage = language.startsWith("ar") ? "ar-EG" : "en-US";
     
     config.headers = config.headers || {};
