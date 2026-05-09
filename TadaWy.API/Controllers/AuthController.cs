@@ -13,6 +13,7 @@ using TadaWy.Domain.Entities.AuthModels;
 using TadaWy.Infrastructure.Presistence;
 using Microsoft.AspNetCore.Identity;
 using TadaWy.Domain.Entities;
+using static System.Net.WebRequestMethods;
 
 namespace TadaWy.API.Controllers
 {
@@ -188,14 +189,21 @@ namespace TadaWy.API.Controllers
                 await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
 
             if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
-                return Unauthorized(new { message = "Google authentication failed" });
+            {
+                
+                return Redirect($"http://localhost:5173/auth/callback?error=google_failed");
+            }
 
-            var email = authenticateResult.Principal
-                .FindFirst(ClaimTypes.Email)?.Value;
+            var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
 
             var authModel = await _authService.LoginWithGoogleAsync(email);
 
-            return Ok(authModel);
+            var token = authModel.Token;
+            var role = authModel.Role; 
+
+            var redirectUrl = $"http://localhost:5173/auth/callback?token={token}&role={role}";
+
+            return Redirect(redirectUrl);
         }
     }
 }

@@ -1,0 +1,233 @@
+erDiagram
+
+  ApplicationUser {
+    string Id PK
+    string UserName
+    string Email
+    string PasswordHash
+    string PhoneNumber
+  }
+
+  RefreshToken {
+    string Token
+    datetime ExpireOn
+    datetime CreatedOn
+    datetime RevokedOn
+  }
+
+  UserSettings {
+    int Id PK
+    string UserId FK
+    string Theme
+    string Language
+    bool EmailNotifications
+    bool ApplicationNotifications
+  }
+
+  Admin {
+    int Id PK
+    string UserID FK
+  }
+
+  Specialization {
+    int Id PK
+    string NameEn
+    string NameAr
+  }
+
+  Doctor {
+    int Id PK
+    string UserID FK
+    int SpecializationId FK
+    string FirstNameEn
+    string FirstNameAr
+    string LastNameEn
+    string LastNameAr
+    string PhoneNumber
+    string ImageUrl
+    string BioEn
+    string BioAr
+    decimal Price
+    int AppointmentDurationMinutes
+    datetime CareerStartDate
+    string Status
+    double Rating
+    datetime CreatedAt
+    datetime BannedAt
+    string RejectionReason
+    string BannedReason
+    string VerificationDocumentPath
+    string AddressDescriptionEn
+    string AddressDescriptionAr
+    string Address_Street
+    string Address_City
+    string Address_State
+    double Location_Latitude
+    double Location_Longitude
+  }
+
+  DoctorSchedule {
+    int Id PK
+    int DoctorId FK
+    string DayOfWeek
+    bool IsWorkingDay
+  }
+
+  DoctorTimeSlot {
+    int Id PK
+    int DoctorScheduleId FK
+    time StartTime
+    time EndTime
+  }
+
+  DoctorReview {
+    int Id PK
+    int DoctorId FK
+    int PatientId FK
+    int Rating
+    string Comment
+  }
+
+  DoctorWallet {
+    int Id PK
+    int DoctorId FK
+    decimal TotalBalance
+    decimal AvailableBalance
+    datetime UpdatedAt
+  }
+
+  WalletTransaction {
+    int Id PK
+    int DoctorId FK
+    decimal Amount
+    string Type
+    int PaymentId FK
+    string Description
+    datetime CreatedAt
+  }
+
+  Patient {
+    int Id PK
+    string UserID FK
+    string FirstName
+    string LastName
+    string Gendre
+    date DateOfBirth
+    string BloodType
+    string Address_Street
+    string Address_City
+    string Address_State
+    double Location_Latitude
+    double Location_Longitude
+  }
+
+  Appointment {
+    int Id PK
+    datetime Date
+    string PatientId FK
+    int DoctorId FK
+    string Status
+  }
+
+  Payment {
+    int Id PK
+    int AppointmentId FK
+    decimal Amount
+    string Status
+    string Method
+    string DoctorId
+    datetime PaymentDate
+    datetime RefundedAt
+    string ExternalTransactionId
+    string ExternalOrderId
+    decimal CommissionAmount
+    decimal DoctorAmount
+    bool IsReleasedToWallet
+  }
+
+  Allergy {
+    int Id PK
+    string NameEn
+    string NameAr
+  }
+
+  PatientAllergy {
+    int PatientId FK
+    int AllergyId FK
+  }
+
+  ChronicDisease {
+    int Id PK
+    string NameEn
+    string NameAr
+  }
+
+  PatientChronicDisease {
+    int PatientId FK
+    int ChronicDiseaseId FK
+  }
+
+  AiBrainScan {
+    int Id PK
+    string UserId FK
+    string ImagePath
+    string DescriptionEn
+    string DescriptionAr
+    datetime CreatedAt
+  }
+
+  Message {
+    int Id PK
+    string SenderUserId FK
+    string ReceiverUserId FK
+    string Content
+    string ImageUrl
+    datetime CreatedAt
+    bool IsSeen
+  }
+
+  Notification {
+    int Id PK
+    string UserId FK
+    int AppointmentId FK
+    string TitleEn
+    string TitleAr
+    string MessageEn
+    string MessageAr
+    datetime CreatedAt
+    bool IsRead
+    string Type
+  }
+
+  ApplicationUser ||--o{ RefreshToken        : "owns (Owned Type)"
+  ApplicationUser ||--|| UserSettings        : "has settings"
+  ApplicationUser ||--o{ AiBrainScan         : "uploads"
+  ApplicationUser ||--o{ Notification        : "receives"
+  ApplicationUser ||--o{ Message             : "sends (SenderUserId)"
+  ApplicationUser ||--o{ Message             : "receives (ReceiverUserId)"
+  ApplicationUser ||--o| Admin               : "may be admin"
+  ApplicationUser ||--o| Doctor              : "may be doctor"
+  ApplicationUser ||--o| Patient             : "may be patient"
+
+  Specialization  ||--o{ Doctor              : "specializes"
+
+  Doctor          ||--o{ Appointment         : "has"
+  Doctor          ||--o{ DoctorSchedule      : "has schedules"
+  Doctor          ||--o{ DoctorReview        : "receives reviews"
+  Doctor          ||--|| DoctorWallet        : "owns wallet"
+  Doctor          ||--o{ WalletTransaction   : "has transactions"
+
+  DoctorSchedule  ||--o{ DoctorTimeSlot      : "has time slots"
+
+  Patient         ||--o{ Appointment         : "books"
+  Patient         ||--o{ DoctorReview        : "writes"
+  Patient         ||--o{ PatientAllergy      : "has"
+  Patient         ||--o{ PatientChronicDisease : "has"
+
+  Allergy         ||--o{ PatientAllergy      : "linked via"
+  ChronicDisease  ||--o{ PatientChronicDisease : "linked via"
+
+  Appointment     ||--o| Payment             : "paid by"
+  Appointment     ||--o{ Notification        : "triggers"
+
+  Payment         ||--o{ WalletTransaction   : "generates"
