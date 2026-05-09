@@ -6,49 +6,30 @@ export default function PaymentMethodModal({ onSelectMethod }) {
   const { t } = useTranslation();
   return (
     <div
-      className="booking-modal payment-method-modal"
+      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 shadow-[0_24px_60px_rgba(15,23,42,0.18)] p-7"
+      style={{ width: "min(78vw, 440px)", zIndex: 101 }}
       role="dialog"
       aria-modal="true"
-      style={{
-        width: "min(78vw, 440px)",
-        zIndex: 101,
-        paddingTop: 18,
-        paddingBottom: 16,
-        paddingLeft: 22,
-        paddingRight: 22,
-      }}
     >
-      <h3
-        className="payment-modal-title"
-        style={{ fontWeight: 600, fontSize: "1.45rem", marginBottom: 14 }}
-      >
+      <h3 className="text-[1.45rem] font-semibold text-gray-800 dark:text-white mb-4">
         {t("booking.modals.payment.title")}
       </h3>
-      <div className="payment-method-grid" style={{ gap: 12 }}>
-        <button
-          type="button"
-          className="payment-method-option"
-          onClick={() => onSelectMethod("offline")}
-          style={{ padding: "16px 12px" }}
-        >
-          <span className="payment-method-icon payment-method-icon-offline">
-            <img src={offlineIcon} alt="" style={{ width: 20, height: 20 }} />
+      <div className="grid grid-cols-2 gap-3">
+        <button type="button" onClick={() => onSelectMethod("offline")}
+          className="border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 p-5 flex flex-col items-center gap-2 cursor-pointer hover:border-teal-400 hover:-translate-y-0.5 transition-all">
+          <span className="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 inline-flex items-center justify-center">
+            <img src={offlineIcon} alt="" className="w-5 h-5" />
           </span>
-          <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>{t("booking.modals.payment.offline")}</span>
-          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>{t("booking.modals.payment.offlineSub")}</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-white">{t("booking.modals.payment.offline")}</span>
+          <span className="text-sm text-gray-400 font-normal text-center">{t("booking.modals.payment.offlineSub")}</span>
         </button>
-
-        <button
-          type="button"
-          className="payment-method-option"
-          onClick={() => onSelectMethod("online")}
-          style={{ padding: "16px 12px" }}
-        >
-          <span className="payment-method-icon payment-method-icon-online">
-            <img src={onlineIcon} alt="" style={{ width: 20, height: 20 }} />
+        <button type="button" onClick={() => onSelectMethod("online")}
+          className="border border-gray-200 dark:border-slate-600 rounded-xl bg-gray-50 dark:bg-slate-700 p-5 flex flex-col items-center gap-2 cursor-pointer hover:border-teal-400 hover:-translate-y-0.5 transition-all">
+          <span className="w-12 h-12 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-700 inline-flex items-center justify-center">
+            <img src={onlineIcon} alt="" className="w-5 h-5" />
           </span>
-          <span className="payment-method-name" style={{ fontWeight: 500, fontSize: "1.35rem" }}>{t("booking.modals.payment.online")}</span>
-          <span className="payment-method-subtitle" style={{ fontWeight: 400, fontSize: "1.1rem" }}>{t("booking.modals.payment.onlineSub")}</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-white">{t("booking.modals.payment.online")}</span>
+          <span className="text-sm text-gray-400 font-normal text-center">{t("booking.modals.payment.onlineSub")}</span>
         </button>
       </div>
     </div>

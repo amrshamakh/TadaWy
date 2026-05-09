@@ -1,19 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { Calendar, ArrowLeft, ArrowRight } from "lucide-react";
+import { Calendar, ArrowLeft, ArrowRight, Clock, CheckCircle2 } from "lucide-react";
 import infoIcon from "@/assets/Info.svg";
 import html2canvas from "html2canvas";
 import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import PaymentMethodModal from "./payments/PaymentMethodModal";
-import BookingReceiptModal from "./payments/BookingReceiptModal";
 import OfflineBookingReceiptModal from "./payments/OfflineBookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
 import { toReadableDateTime } from "./utils/bookingDate";
 import { bookOfflineAppointment, bookOnlineAppointment } from "../../modules/patient/api/appointmentApi";
 import AuthRequiredModal from "../AuthRequiredModal";
-import "./Booking.css";
 
 export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { user } = useAuth();
@@ -23,16 +21,13 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const { id: urlDoctorId } = useParams();
   const isAr = i18n.language === "ar";
 
-  const availability = useMemo(() => {
-    return doctor?.availableDaysSlots || [];
-  }, [doctor]);
+  const availability = useMemo(() => doctor?.availableDaysSlots || [], [doctor]);
 
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
   const [startIndex, setStartIndex] = useState(0);
   const visibleDaysCount = 5;
   const [selectedTime, setSelectedTime] = useState(null);
 
-  // Ensure selection resets when doctor changes
   useEffect(() => {
     setSelectedDayIndex(0);
     setStartIndex(0);
@@ -50,8 +45,6 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
   const [isPrinting, setIsPrinting] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const receiptRef = useRef(null);
-  const sidebarRef = useRef(null);
-  const wrapperRef = useRef(null);
 
   const appointmentCost = doctor?.price || 150;
 
@@ -59,80 +52,37 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     if (!availability[selectedDayIndex]) return [];
     return availability[selectedDayIndex].slots.map(slot => {
       const start = new Date(slot.startTime);
-      return start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
-      });
+      return start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", { hour: '2-digit', minute: '2-digit', hour12: true });
     });
   }, [availability, selectedDayIndex, isAr]);
 
-  // handlePrev: Move focus back. Slide carousel back only if focus goes out of view.
   const handlePrev = () => {
     if (selectedDayIndex > 0) {
-      const prevIndex = selectedDayIndex - 1;
-      setSelectedDayIndex(prevIndex);
+      const prev = selectedDayIndex - 1;
+      setSelectedDayIndex(prev);
       setSelectedTime(null);
-      if (prevIndex < startIndex) {
-        setStartIndex(prevIndex);
-      }
+      if (prev < startIndex) setStartIndex(prev);
     }
   };
 
-  // handleNext: Move focus forward. Slide carousel forward if focus goes out of view.
   const handleNext = () => {
-    const nextIndex = selectedDayIndex + 1;
-    if (nextIndex < availability.length) {
-      setSelectedDayIndex(nextIndex);
+    const next = selectedDayIndex + 1;
+    if (next < availability.length) {
+      setSelectedDayIndex(next);
       setSelectedTime(null);
-      if (nextIndex >= startIndex + visibleDaysCount) {
-        setStartIndex(nextIndex - visibleDaysCount + 1);
-      }
+      if (next >= startIndex + visibleDaysCount) setStartIndex(next - visibleDaysCount + 1);
     }
-  };
-
-  const handleBook = () => {
-    if (!doctor || !selectedDateStr || !selectedTime) return;
-    if (!user) {
-      setShowAuthModal(true);
-      return;
-    }
-    setActiveModal("payment");
   };
 
   const isDisabled = !selectedDateStr || !selectedTime;
 
-  const patientName = useMemo(() => {
-    if (!user) return "John Doe";
-    const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
-    return fullName || user.name || "John Doe";
-  }, [user]);
-
-  const patientEmail = user?.email || "JohnDoe@gmail.com";
-
-  const appointmentDateValue = useMemo(
-    () => toReadableDateTime(selectedDateStr, selectedTime, i18n.language),
-    [selectedDateStr, selectedTime, i18n.language]
-  );
-
-  const receiptNumber = useMemo(
-    () => `RX-${Date.now().toString().slice(-10)}`,
-    []
-  );
-
   const handlePaymentSelection = async (method) => {
     setActiveModal(null);
-
     let isoDate = new Date().toISOString();
     if (availability[selectedDayIndex]) {
       const selectedSlot = availability[selectedDayIndex].slots.find(slot => {
         const start = new Date(slot.startTime);
-        const formattedStart = start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: true
-        });
-        return formattedStart === selectedTime;
+        return start.toLocaleTimeString(isAr ? "ar-EG" : "en-US", { hour: '2-digit', minute: '2-digit', hour12: true }) === selectedTime;
       });
       if (selectedSlot) isoDate = selectedSlot.startTime;
     }
@@ -193,149 +143,163 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
     }
   }, [activeModal]);
 
-  // Sidebar positioning logic (Fixed on scroll)
-  useEffect(() => {
-    const updatePosition = () => {
-      if (!wrapperRef.current || !sidebarRef.current) return;
-      const wrapperRect = wrapperRef.current.getBoundingClientRect();
-      const sidebar = sidebarRef.current;
-
-      if (wrapperRect.top <= 96) {
-        sidebar.style.position = 'fixed';
-        sidebar.style.top = '96px';
-        sidebar.style.width = `${wrapperRect.width}px`;
-        sidebar.style.left = `${wrapperRect.left}px`;
-        sidebar.style.right = 'auto';
-      } else {
-        sidebar.style.position = 'static';
-        sidebar.style.top = 'auto';
-        sidebar.style.width = '100%';
-        sidebar.style.left = 'auto';
-      }
-    };
-
-    window.addEventListener('scroll', updatePosition, true);
-    const resizeObserver = new ResizeObserver(updatePosition);
-    if (wrapperRef.current) resizeObserver.observe(wrapperRef.current);
-    updatePosition();
-
-    return () => {
-      window.removeEventListener('scroll', updatePosition, true);
-      resizeObserver.disconnect();
-    };
-  }, []);
-
   return (
-    <div ref={wrapperRef} className="booking-sidebar-wrapper">
-      <aside ref={sidebarRef} className="booking-card booking-sidebar">
-        <div className="booking-sidebar-header-bar">
-          <Calendar size={20} className="booking-sidebar-header-icon" />
-          <h3 className="booking-sidebar-header-title">{t("booking.sidebar.title")}</h3>
+    <div className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm overflow-hidden">
+      <div className="px-6 py-5 bg-gradient-to-r from-teal-500 to-teal-400 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+            <Calendar size={20} className="text-white" />
+          </div>
+          <h3 className="text-white font-extrabold text-lg m-0">{t("booking.sidebar.title")}</h3>
         </div>
+        {selectedDateStr && selectedTime && (
+          <div className="flex items-center gap-2 bg-white/20 text-white text-sm font-bold px-4 py-1.5 rounded-full backdrop-blur-sm">
+            <CheckCircle2 size={14} />
+            <span>{selectedDateStr} · {selectedTime}</span>
+          </div>
+        )}
+      </div>
 
-        <div className="booking-sidebar-content flex-1 overflow-y-auto">
-          {availability.length === 0 ? (
-            <div className="py-8 text-center bg-gray-50 dark:bg-slate-800/50 rounded-xl mt-4">
-              <p className="text-sm text-gray-500">{t("booking.sidebar.notAvailable")}</p>
-            </div>
-          ) : (
-            <>
-              <div className="booking-sidebar-section">
-                <p className="booking-sidebar-label flex items-center gap-1.5">
+      {availability.length === 0 ? (
+        <div className="py-12 text-center">
+          <Clock size={32} className="mx-auto text-gray-300 dark:text-slate-600 mb-3" />
+          <p className="text-sm text-gray-400 dark:text-gray-500">{t("booking.sidebar.notAvailable")}</p>
+        </div>
+      ) : (
+        <div className="p-6">
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="lg:w-[320px] flex-shrink-0">
+              <div className="flex items-center gap-2 mb-4">
+                <p className="text-gray-400 dark:text-gray-500 text-sm font-bold uppercase tracking-widest m-0">
                   {t("booking.sidebar.selectDay")}
-                  <img src={infoIcon} alt="" className="w-3.5 h-3.5 dark:invert" />
                 </p>
-                <div className="booking-date-carousel" style={{ direction: "ltr" }}>
-                  <button type="button" className="booking-carousel-nav" onClick={handlePrev} disabled={selectedDayIndex === 0}>
-                    <ArrowLeft size={20} />
-                  </button>
-
-                  <div className="booking-date-grid">
-                    {availability.slice(startIndex, startIndex + visibleDaysCount).map((item, localIndex) => {
-                      const index = startIndex + localIndex;
-                      const date = new Date(item.date);
-                      const dayName = date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { weekday: 'short' });
-                      const datePill = `${date.getDate()} ${date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { month: "short" })}`;
-
-                      return (
-                        <button
-                          key={`${item.date}-${index}`}
-                          type="button"
-                          className={`booking-date-pill ${selectedDayIndex === index ? "booking-date-pill-selected" : ""}`}
-                          onClick={() => { setSelectedDayIndex(index); setSelectedTime(null); }}
-                        >
-                          <span className="booking-date-pill-day">{dayName}</span>
-                          <span className="booking-date-pill-date">{datePill}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <button type="button" className="booking-carousel-nav" onClick={handleNext} disabled={selectedDayIndex + 1 >= availability.length && startIndex + visibleDaysCount >= availability.length}>
-                    <ArrowRight size={20} />
-                  </button>
-                </div>
+                <img src={infoIcon} alt="" className="w-4 h-4 dark:invert opacity-60" />
               </div>
 
-              <div className="booking-sidebar-section mt-4">
-                <p className="booking-sidebar-label">{t("booking.sidebar.availableTime")}</p>
-                <div className="booking-time-grid">
-                  {TIME_OPTIONS.map((time) => (
+              <div className="flex items-center gap-2" style={{ direction: "ltr" }}>
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  disabled={selectedDayIndex === 0}
+                  className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-600 text-gray-400 dark:text-gray-500 hover:border-teal-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all disabled:opacity-25 disabled:cursor-not-allowed bg-white dark:bg-slate-700"
+                >
+                  <ArrowLeft size={17} />
+                </button>
+
+                <div className="flex gap-2 flex-1 overflow-hidden">
+                  {availability.slice(startIndex, startIndex + visibleDaysCount).map((item, localIndex) => {
+                    const index = startIndex + localIndex;
+                    const date = new Date(item.date);
+                    const dayName = date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { weekday: 'short' }).toUpperCase();
+                    const dayNum = date.getDate();
+                    const month = date.toLocaleDateString(isAr ? "ar-EG" : "en-US", { month: "short" }).toUpperCase();
+                    const isSelected = selectedDayIndex === index;
+                    return (
+                      <button
+                        key={`${item.date}-${index}`}
+                        type="button"
+                        onClick={() => { setSelectedDayIndex(index); setSelectedTime(null); }}
+                        className={`flex-1 min-w-0 py-4 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all
+                          ${isSelected
+                            ? "bg-teal-500 text-white shadow-[0_6px_16px_rgba(20,184,166,0.4)] border-2 border-teal-400"
+                            : "border-2 border-gray-100 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 hover:border-teal-300 hover:bg-teal-50/50 dark:hover:bg-slate-600"
+                          }`}
+                      >
+                        <span className={`text-[0.75rem] font-bold tracking-wider ${isSelected ? "text-teal-100" : "text-gray-400 dark:text-gray-500"}`}>{dayName}</span>
+                        <span className={`text-2xl font-black leading-none ${isSelected ? "text-white" : "text-gray-800 dark:text-white"}`}>{dayNum}</span>
+                        <span className={`text-[0.75rem] font-bold ${isSelected ? "text-teal-100" : "text-gray-400 dark:text-gray-500"}`}>{month}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={selectedDayIndex + 1 >= availability.length && startIndex + visibleDaysCount >= availability.length}
+                  className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-600 text-gray-400 dark:text-gray-500 hover:border-teal-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all disabled:opacity-25 disabled:cursor-not-allowed bg-white dark:bg-slate-700"
+                >
+                  <ArrowRight size={17} />
+                </button>
+              </div>
+            </div>
+
+            <div className="hidden lg:block w-px bg-gray-100 dark:bg-slate-700 self-stretch" />
+
+            <div className="flex-1">
+              <p className="text-gray-400 dark:text-gray-500 text-sm font-bold uppercase tracking-widest mb-4 m-0">
+                {t("booking.sidebar.availableTime")}
+              </p>
+              <div className="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-5 gap-2">
+                {TIME_OPTIONS.map((time) => {
+                  const isSelected = selectedTime === time;
+                  return (
                     <button
                       key={time}
                       type="button"
-                      className={`booking-time-pill ${selectedTime === time ? "booking-time-pill-selected" : ""}`}
                       onClick={() => setSelectedTime(time)}
+                      className={`py-3 rounded-xl text-sm font-bold cursor-pointer transition-all text-center border relative overflow-hidden
+                        ${isSelected
+                          ? "bg-teal-500 text-white border-teal-500 shadow-[0_4px_12px_rgba(20,184,166,0.3)]"
+                          : "border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:border-teal-300 hover:bg-teal-50/50 dark:hover:bg-slate-600"
+                        }`}
                     >
+                      {isSelected && (
+                        <span className="absolute inset-0 bg-white/10 animate-pulse rounded-xl" />
+                      )}
                       {time}
                     </button>
-                  ))}
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 pt-5 border-t border-gray-100 dark:border-slate-700 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col">
+                <span className="text-gray-400 dark:text-gray-500 text-sm font-bold mb-1">{t("booking.sidebar.cost")}</span>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-gray-900 dark:text-white">{appointmentCost}</span>
+                  <span className="text-base font-extrabold text-teal-500">{t("booking.sidebar.currency")}</span>
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
 
-        <div className="booking-sidebar-footer border-t dark:border-slate-800">
-          <div className="booking-price">
-            <span className="booking-price-label">{t("booking.sidebar.cost")}</span>
-            <span className="booking-price-box">
-              <span className="booking-price-value">{appointmentCost}</span>
-              <span className="booking-price-currency"> {t("booking.sidebar.currency")}</span>
-            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (!user) { navigate("/login", { state: { from: location.pathname } }); return; }
+                if (!selectedDateStr || !selectedTime) return;
+                setActiveModal("payment");
+              }}
+              disabled={user ? isDisabled : false}
+              className={`flex items-center gap-2 px-8 py-4 rounded-2xl font-black text-base transition-all
+                ${user && isDisabled
+                  ? "bg-gray-100 dark:bg-slate-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                  : "bg-teal-500 hover:bg-teal-600 active:scale-95 text-white shadow-[0_4px_16px_rgba(20,184,166,0.35)] hover:shadow-[0_6px_20px_rgba(20,184,166,0.45)]"
+                }`}
+            >
+              <Calendar size={16} />
+              {user ? t("booking.sidebar.bookBtn") : t("booking.sidebar.loginToBook", "Login to Book")}
+            </button>
           </div>
-          <button
-            type="button"
-            className="booking-submit-btn mt-4"
-            onClick={() => {
-              if (!user) {
-                navigate("/login", { state: { from: location.pathname } });
-                return;
-              }
-              handleBook();
-            }}
-            disabled={!user ? false : isDisabled}
-          >
-            <Calendar size={18} className="mr-2" />
-            {user ? t("booking.sidebar.bookBtn") : t("booking.sidebar.loginToBook", "Login To Book Appointment")}
-          </button>
         </div>
+      )}
 
-        {activeModal && <div className="fixed inset-0 z-[98] bg-black/20 backdrop-blur-sm" />}
-
-        {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login", { state: { from: location.pathname } })} onCancel={() => setShowAuthModal(false)} />}
-        {activeModal === "payment" && <PaymentMethodModal onSelectMethod={handlePaymentSelection} />}
-        {activeModal === "receipt" && (
-          <OfflineBookingReceiptModal
-            receiptRef={receiptRef}
-            receiptData={receiptData}
-            isPrinting={isPrinting}
-            onPrintReceipt={handlePrintReceipt}
-            onDone={() => { setActiveModal(null); setReceiptData(null); }}
-          />
-        )}
-        {activeModal === "success" && <BookingSuccessModal />}
-      </aside>
+      {activeModal && <div className="fixed inset-0 z-[98] bg-black/25 backdrop-blur-sm" />}
+      {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login", { state: { from: location.pathname } })} onCancel={() => setShowAuthModal(false)} />}
+      {activeModal === "payment" && <PaymentMethodModal onSelectMethod={handlePaymentSelection} />}
+      {activeModal === "receipt" && (
+        <OfflineBookingReceiptModal
+          receiptRef={receiptRef}
+          receiptData={receiptData}
+          isPrinting={isPrinting}
+          onPrintReceipt={handlePrintReceipt}
+          onDone={() => { setActiveModal(null); setReceiptData(null); }}
+        />
+      )}
+      {activeModal === "success" && <BookingSuccessModal />}
     </div>
   );
 }

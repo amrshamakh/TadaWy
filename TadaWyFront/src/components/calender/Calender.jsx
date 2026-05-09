@@ -4,7 +4,6 @@ import { Calendar as CalendarIcon, Clock, User } from "lucide-react";
 import CalendarGrid from "./CalendarGrid";
 import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
-import "../Booking/Booking.css";
 import infoIcon from "../../assets/info.svg";
 
 const scrollbarStyles = `
