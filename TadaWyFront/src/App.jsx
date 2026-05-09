@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Calender from "./pages/Calender";
@@ -49,7 +49,16 @@ function GoBack() {
 
 const App = () => {
   const { i18n } = useTranslation();
+  const { pathname } = useLocation();
 
+  // Auth pages and admin pages where the chat widget should NOT appear
+  const AUTH_ROUTES = [
+    "/login", "/signup", "/change-password",
+    "/forgot-password", "/reset-password",
+    "/doctorApplication", "/application-pending", "/online-payment",
+  ];
+  const showMedicalChat =
+    !AUTH_ROUTES.includes(pathname) && !pathname.startsWith("/admin");
   useEffect(() => {
     const lang = i18n.language || 'en';
     document.documentElement.setAttribute('lang', lang);
@@ -95,7 +104,7 @@ const App = () => {
         {/* Catch-all: unknown routes bounce back to the last visited page */}
         <Route path="*" element={<GoBack />} />
       </Routes>
-      <MedicalChecksChat />
+      {showMedicalChat && <MedicalChecksChat />}
     </div>
   );
 };
