@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import Calender from "./pages/Calender";
@@ -29,11 +29,36 @@ import DoctorSchedule from "./components/doctor/schedule/DoctorSchedule";
 import DoctorPayout from "./components/doctor/payout/DoctorPayout";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminGuard from "./guards/AdminGuard";
+import DoctorGuard from "./guards/DoctorGuard";
+import PatientGuard from "./guards/PatientGuard";
 import Messages from "./components/Messages/Messages";
+
+// Redirects any unknown URL back to the last visited page
+function GoBack() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+  return null;
+}
 
 const App = () => {
   const { i18n } = useTranslation();
+  const { pathname } = useLocation();
 
+  // Auth pages and admin pages where the chat widget should NOT appear
+  const AUTH_ROUTES = [
+    "/login", "/signup", "/change-password",
+    "/forgot-password", "/reset-password",
+    "/doctorApplication", "/application-pending", "/online-payment",
+  ];
+  const showMedicalChat =
+    !AUTH_ROUTES.includes(pathname) && !pathname.startsWith("/admin");
   useEffect(() => {
     const lang = i18n.language || 'en';
     document.documentElement.setAttribute('lang', lang);
@@ -55,19 +80,19 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />
           <Route path="discover" element={<DiscoverPage />} />
-          <Route path="calendar" element={<ProtectedRoute renderBlockedContent><Calender /></ProtectedRoute>} />
+          <Route path="calendar" element={<PatientGuard renderBlockedContent><Calender /></PatientGuard>} />
           <Route path="booking/:id?" element={<Booking />} />
-          <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-          <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="profile" element={<PatientGuard><Profile /></PatientGuard>} />
+          <Route path="messages" element={<PatientGuard><Messages /></PatientGuard>} />
+          <Route path="settings" element={<PatientGuard><Settings /></PatientGuard>} />
         </Route>
         {/* Admin routes */}
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/admin" element={<AdminGuard><AdminLayout /></AdminGuard>}>
           <Route index element={<AdminDoctors />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>
         {/* Doctor routes */}
-        <Route path="/doctor" element={<DoctorLayout />}>
+        <Route path="/doctor" element={<DoctorGuard><DoctorLayout /></DoctorGuard>}>
           <Route index element={<DoctorSchedule />} />
           <Route path="appointments" element={<DoctorAppointments />} />
           <Route path="schedule" element={<DoctorSchedule />} />
@@ -76,8 +101,10 @@ const App = () => {
           <Route path="messages" element={<Messages />} />
           <Route path="settings" element={<Settings />} />
         </Route>
+        {/* Catch-all: unknown routes bounce back to the last visited page */}
+        <Route path="*" element={<GoBack />} />
       </Routes>
-      <MedicalChecksChat />
+      {showMedicalChat && <MedicalChecksChat />}
     </div>
   );
 };
