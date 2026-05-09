@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
 import Footer from "../components/Landing/Footer";
 import { assets } from "../assets/assets";
 import { DoctorsProvider } from "../context/doctorContext"; // adjust path as needed
@@ -11,31 +10,16 @@ import { useTranslation } from "react-i18next";
 
 
 const AdminLayout = () => {
-  const { t } = useTranslation();
-  const adminMenu = [
-  { to: "", icon: assets.homeIcon, label: t("admin.adminLayout.doctors"), end: true },
-  { to: "settings", icon: assets.settingIcon,label: t("admin.adminLayout.settings"), end: false },
-];
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
   const havingFooter = location.pathname === "/admin";
   const isLandingPageUser = location.pathname === "/";
 
-  const handleToggleSidebar = () => {
-    setIsSidebarOpen((prev) => !prev);
-  };
-
   return (
     <DoctorsProvider>
       <div className="flex flex-col min-h-screen pt-16">
-        <Navbar onToggleSidebar={handleToggleSidebar} />
+        <Navbar />
 
         <div className="flex flex-1 overflow-hidden relative">
-          <Sidebar
-            isOpen={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            menuItems={adminMenu}
-          />
 
           <div
             className={`

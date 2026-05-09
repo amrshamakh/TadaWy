@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/themeContext";
 import { getSettings, updateSettings } from "../services/settingService";
+import { TokenService } from "../services/tokenService";
 
 import NotificationDropdown from "./NotificationDropdown";
 import { useNotifications } from "../context/NotificationContext";
@@ -62,7 +63,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     toggleDarkMode();
 
     const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
-    if (hasToken) {
+    if (hasToken && userRole !== "admin") {
       try {
         const currentSettings = await getSettings();
         await updateSettings({
@@ -72,6 +73,10 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
       } catch (error) {
         console.error("Failed to update theme setting", error);
       }
+    } else if (userRole === "admin") {
+      localStorage.setItem("adminTheme", nextTheme);
+    } else {
+      localStorage.setItem("guestTheme", nextTheme);
     }
   };
 
@@ -90,7 +95,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     }
 
     const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
-    if (hasToken) {
+    if (hasToken && userRole !== "admin") {
       try {
         const currentSettings = await getSettings();
         await updateSettings({
@@ -100,6 +105,10 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
       } catch (error) {
         console.error("Failed to update language setting", error);
       }
+    } else if (userRole === "admin") {
+      localStorage.setItem("adminLanguage", nextLang);
+    } else {
+      localStorage.setItem("guestLanguage", nextLang);
     }
   };
 

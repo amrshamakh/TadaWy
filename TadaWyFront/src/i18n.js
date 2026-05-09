@@ -11,7 +11,8 @@ i18n
   .init({
     detection: {
       order: ['localStorage', 'cookie', 'htmlTag', 'path', 'subdomain'],
-      caches: ['localStorage']
+      caches: [],
+      lookupLocalStorage: 'guestLanguage'
     },
     resources: {
       en: {
