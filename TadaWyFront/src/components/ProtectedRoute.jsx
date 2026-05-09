@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import AuthRequiredModal from "./AuthRequiredModal";
@@ -38,12 +39,24 @@ export default function ProtectedRoute({ children, allowedRoles, renderBlockedCo
     );
   }
 
-  if (allowedRoles?.length) {
-    const normalizedRole = role?.toLowerCase();
-    const isAllowed = allowedRoles.some((item) => item.toLowerCase() === normalizedRole);
-    if (!isAllowed) {
-      return <Navigate to="/" replace />;
+  const isRoleBlocked =
+    !!allowedRoles?.length &&
+    !allowedRoles.some((item) => item.toLowerCase() === role?.toLowerCase());
+
+  useEffect(() => {
+    if (!loading && user && isRoleBlocked) {
+      // Send the user back to wherever they came from
+      if (window.history.length > 1) {
+        navigate(-1);
+      } else {
+        navigate("/", { replace: true });
+      }
     }
+  }, [loading, user, isRoleBlocked, navigate]);
+
+  if (!loading && user && isRoleBlocked) {
+    // Render nothing while the effect fires
+    return null;
   }
 
   return children;
