@@ -197,7 +197,7 @@ export default function MedicalChecksChat() {
     <div className="fixed bottom-20 right-6 flex flex-col items-end z-50">
       {/* Chat Popup */}
       {isOpen && (
-        <div className="mb-4 w-[340px] sm:w-[400px] md:w-[450px] lg:w-[500px] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white dark:bg-[#1E293B] dark:border-[#334155] h-[60vh] sm:h-[65vh] md:h-[70vh] lg:h-[75vh] max-h-[800px]">
+        <div className="mb-4 w-[320px] sm:w-[360px] md:w-[400px] rounded-2xl shadow-2xl overflow-hidden flex flex-col bg-white dark:bg-[#1E293B] dark:border-[#334155] h-[55vh] sm:h-[60vh] md:h-[65vh] max-h-[650px]">
           {/* Header */}
           <Header setIsOpen={setIsOpen} />
 
@@ -258,13 +258,13 @@ export default function MedicalChecksChat() {
           }
           setIsOpen((prev) => !prev);
         }}
-        className="w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-xl flex items-center justify-center transition-all hover:scale-110 active:scale-95 bg-linear-to-b from-[#00BBA7] to-[#1D857A] cursor-pointer"
         aria-label={isOpen ? t("checksChat.closeAria") : t("checksChat.openAria")}
       >
         {isOpen ? (
-          <X className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         ) : (
-          <img src={assets.brainIcon} className="w-8 h-8 sm:w-10 sm:h-10" alt="Brain Icon" />
+          <img src={assets.brainIcon} className="w-7 h-7 sm:w-8 sm:h-8" alt="Brain Icon" />
         )}
       </button>
     </div>
