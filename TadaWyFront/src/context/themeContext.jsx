@@ -4,7 +4,12 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const hasToken = !!localStorage.getItem("userToken");
+    if (hasToken) return false; // Ignore local storage when logged in (rely on API/Admin defaults)
+    const savedTheme = localStorage.getItem('guestTheme');
+    return savedTheme === 'dark';
+  });
 
   useEffect(() => {
     if (isDarkMode) {

@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/themeContext";
 import { getSettings, updateSettings } from "../services/settingService";
+import { TokenService } from "../services/tokenService";
 
 import NotificationDropdown from "./NotificationDropdown";
 import { useNotifications } from "../context/NotificationContext";
@@ -57,6 +58,28 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
   const profilePath = isDoctor ? "/doctor/profile" : "/profile";
   const roleHomePath = userRole === "admin" ? "/admin" : userRole === "doctor" ? "/doctor" : userRole === "patient" ? "/discover" : "/";
 
+  const handleThemeToggle = async () => {
+    const nextTheme = isDarkMode ? "light" : "dark";
+    toggleDarkMode();
+
+    const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
+    if (hasToken && userRole !== "admin") {
+      try {
+        const currentSettings = await getSettings();
+        await updateSettings({
+          ...currentSettings,
+          theme: nextTheme
+        });
+      } catch (error) {
+        console.error("Failed to update theme setting", error);
+      }
+    } else if (userRole === "admin") {
+      localStorage.setItem("adminTheme", nextTheme);
+    } else {
+      localStorage.setItem("guestTheme", nextTheme);
+    }
+  };
+
   const toggleLanguage = async () => {
     const nextLang = i18n.language === "ar" ? "en" : "ar";
     
@@ -71,11 +94,10 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
       document.documentElement.setAttribute('lang', 'en');
     }
 
-    // Sync with backend if user is logged in
-    if (isLoggedIn) {
+    const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
+    if (hasToken && userRole !== "admin") {
       try {
-        const response = await getSettings();
-        const currentSettings = response;
+        const currentSettings = await getSettings();
         await updateSettings({
           ...currentSettings,
           language: nextLang
@@ -83,6 +105,10 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
       } catch (error) {
         console.error("Failed to update language setting", error);
       }
+    } else if (userRole === "admin") {
+      localStorage.setItem("adminLanguage", nextLang);
+    } else {
+      localStorage.setItem("guestLanguage", nextLang);
     }
   };
 
@@ -141,7 +167,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
               {/* Theme Toggle */}
               <button
-                onClick={toggleDarkMode}
+                onClick={handleThemeToggle}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
@@ -227,7 +253,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
               {/* Theme Toggle for Guests */}
               <button
-                onClick={toggleDarkMode}
+                onClick={handleThemeToggle}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
@@ -259,7 +285,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
               {/* Theme Toggle for Admin */}
               <button
-                onClick={toggleDarkMode}
+                onClick={handleThemeToggle}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
