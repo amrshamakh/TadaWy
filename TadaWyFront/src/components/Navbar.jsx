@@ -57,6 +57,23 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
   const profilePath = isDoctor ? "/doctor/profile" : "/profile";
   const roleHomePath = userRole === "admin" ? "/admin" : userRole === "doctor" ? "/doctor" : userRole === "patient" ? "/discover" : "/";
 
+  const handleThemeToggle = async () => {
+    const nextTheme = isDarkMode ? "light" : "dark";
+    toggleDarkMode();
+
+    if (isLoggedIn) {
+      try {
+        const currentSettings = await getSettings();
+        await updateSettings({
+          ...currentSettings,
+          theme: nextTheme
+        });
+      } catch (error) {
+        console.error("Failed to update theme setting", error);
+      }
+    }
+  };
+
   const toggleLanguage = async () => {
     const nextLang = i18n.language === "ar" ? "en" : "ar";
     
@@ -74,8 +91,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     // Sync with backend if user is logged in
     if (isLoggedIn) {
       try {
-        const response = await getSettings();
-        const currentSettings = response;
+        const currentSettings = await getSettings();
         await updateSettings({
           ...currentSettings,
           language: nextLang
@@ -141,7 +157,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
               {/* Theme Toggle */}
               <button
-                onClick={toggleDarkMode}
+                onClick={handleThemeToggle}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
@@ -227,7 +243,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
               {/* Theme Toggle for Guests */}
               <button
-                onClick={toggleDarkMode}
+                onClick={handleThemeToggle}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
@@ -259,7 +275,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
               {/* Theme Toggle for Admin */}
               <button
-                onClick={toggleDarkMode}
+                onClick={handleThemeToggle}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#334155] rounded-lg transition-colors cursor-pointer border border-gray-200 dark:border-gray-700"
                 title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               >
