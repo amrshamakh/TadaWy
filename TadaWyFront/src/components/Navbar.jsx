@@ -61,7 +61,8 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
     const nextTheme = isDarkMode ? "light" : "dark";
     toggleDarkMode();
 
-    if (isLoggedIn) {
+    const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
+    if (hasToken) {
       try {
         const currentSettings = await getSettings();
         await updateSettings({
@@ -88,8 +89,8 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
       document.documentElement.setAttribute('lang', 'en');
     }
 
-    // Sync with backend if user is logged in
-    if (isLoggedIn) {
+    const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
+    if (hasToken) {
       try {
         const currentSettings = await getSettings();
         await updateSettings({

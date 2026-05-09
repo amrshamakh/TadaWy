@@ -49,6 +49,7 @@ export function AuthProvider({ children }) {
       const rawToken = TokenService.getToken() || localStorage.getItem("userToken");
       const claims = decodeToken(rawToken);
       const userRole = getRoleFromClaims(claims);
+      const userId = claims["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || claims.sub || claims.id;
       setRole(userRole);
 
       let profileData = null;
@@ -83,6 +84,7 @@ export function AuthProvider({ children }) {
         // Normalize keys for Navbar (supports both camelCase and PascalCase from API)
         const normalizedUser = {
           ...profileData,
+          id: profileData.id || profileData.Id || userId,
           firstName: profileData.firstName || profileData.FirstName || profileData.firstNameEn || profileData.FirstNameEn || "",
           lastName: profileData.lastName || profileData.LastName || profileData.lastNameEn || profileData.LastNameEn || "",
           firstNameEn: profileData.firstNameEn || profileData.FirstNameEn || "",
@@ -95,7 +97,7 @@ export function AuthProvider({ children }) {
         setUser(normalizedUser);
       } else {
         // Fallback for roles without profile endpoints or if fetch failed
-        setUser({ email: claims.email || "", role: userRole });
+        setUser({ id: userId, email: claims.email || "", role: userRole });
       }
     } catch (err) {
       console.error("Failed to fetch user profile", err);
