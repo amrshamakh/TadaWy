@@ -309,7 +309,7 @@ export default function DiscoverPage() {
                     <img
                       src={doctor.imageUrl || CLINIC_PLACEHOLDER}
                       alt={doctor.doctorName}
-                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="p-4">
