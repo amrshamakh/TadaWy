@@ -136,6 +136,14 @@ export default function MedicalChecksChat() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading]);
 
+  // When user logs out, silently close the chat — no "Please login first" popup
+  useEffect(() => {
+    if (!user) {
+      setIsOpen(false);
+      setShowAuthModal(false);
+    }
+  }, [user]);
+
 
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
