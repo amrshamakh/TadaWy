@@ -8,8 +8,9 @@ import { clinicsData, ratings, locations } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../components/Pagination";
 import { getDoctors } from "../modules/patient/api/doctorDiscoveryApi";
-import { getAllSpecializations } from "../modules/doctor/api/lookupApi";
+import { getAllSpecializations, getStates, getCitiesByState } from "../modules/doctor/api/lookupApi";
 import { useEffect } from "react";
+import { useLocalizedField } from "../hooks/useLocalizedField";
 import Footer from "../components/Landing/Footer";
 
 const CLINIC_PLACEHOLDER = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500&h=300&fit=crop";
@@ -25,8 +26,11 @@ export default function DiscoverPage() {
   const [selectedRating, setSelectedRating] = useState("");
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
+  const [selectedStateId, setSelectedStateId] = useState("");
   
   const [specializations, setSpecializations] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -36,6 +40,8 @@ export default function DiscoverPage() {
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  const getLocalized = useLocalizedField();
 
   // Fetch specializations
   useEffect(() => {
@@ -49,6 +55,36 @@ export default function DiscoverPage() {
     };
     fetchSpecializations();
   }, []);
+
+  // Fetch states
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const data = await getStates();
+        setStates(data);
+      } catch (err) {
+        console.error("Failed to fetch states:", err);
+      }
+    };
+    fetchStates();
+  }, []);
+
+  // Fetch cities when state changes
+  useEffect(() => {
+    if (!selectedStateId) {
+      setCities([]);
+      return;
+    }
+    const fetchCities = async () => {
+      try {
+        const data = await getCitiesByState(selectedStateId);
+        setCities(data);
+      } catch (err) {
+        console.error("Failed to fetch cities:", err);
+      }
+    };
+    fetchCities();
+  }, [selectedStateId]);
 
   // Fetch doctors
   useEffect(() => {
@@ -92,7 +128,7 @@ export default function DiscoverPage() {
     return parts.join(", ");
   };
 
-  const getSpecialtyLabel = (s) => s.name;
+  const getSpecialtyLabel = (s) => getLocalized(s, "name");
 
   const getRatingLabel = (value) =>
     value === "" ? t("discover.ratings.All Ratings") : t(`discover.ratings.${value}`, { defaultValue: value });
@@ -176,30 +212,47 @@ export default function DiscoverPage() {
 
             {/* State Filter */}
             <div className="relative flex-1 min-w-50">
-              <input
-                type="text"
-                placeholder={t("auth.signup.state") || "State"}
-                value={selectedState}
+              <select
+                value={selectedStateId}
                 onChange={(e) => {
-                  setSelectedState(e.target.value);
+                  const stateId = e.target.value;
+                  setSelectedStateId(stateId);
+                  const stateObj = states.find(s => s.id.toString() === stateId);
+                  setSelectedState(stateObj ? stateObj.nameEn : ""); // Use nameEn as value for backend filter
+                  setSelectedCity("");
                   setCurrentPage(1);
                 }}
-                className="w-full px-4 py-2 border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
+                className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="">{t("auth.signup.state") || "State"}</option>
+                {states.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {getLocalized(s, "name")}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
             {/* City Filter */}
             <div className="relative flex-1 min-w-50">
-              <input
-                type="text"
-                placeholder={t("auth.signup.city") || "City"}
+              <select
                 value={selectedCity}
                 onChange={(e) => {
                   setSelectedCity(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full px-4 py-2 border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
-              />
+                disabled={!selectedStateId}
+                className="w-full px-4 py-2 pr-10 appearance-none border dark:border-[#334155] outline-0 dark:text-gray-400 border-white rounded-lg dark:bg-gray-800 bg-gray-100 focus:ring-2 focus:ring-teal-500 disabled:opacity-50"
+              >
+                <option value="">{t("auth.signup.city") || "City"}</option>
+                {cities.map((c) => (
+                  <option key={c.id} value={c.nameEn}>
+                    {getLocalized(c, "name")}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
 
             {/* View Mode Toggle */}
@@ -262,7 +315,7 @@ export default function DiscoverPage() {
                 >
                   <div className="relative h-48 w-full overflow-hidden">
                     <img
-                      src={CLINIC_PLACEHOLDER}
+                      src={doctor.imageUrl || CLINIC_PLACEHOLDER}
                       alt={doctor.doctorName}
                       className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
                     />

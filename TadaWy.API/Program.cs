@@ -205,8 +205,11 @@ using (var scope = app.Services.CreateScope())
     
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var context = scope.ServiceProvider.GetRequiredService<TadaWyDbContext>();
     await RoleSeeder.SeedRolesAsync(roleManager);
     await AdminSeeder.SeedAdminAsync(userManager);
+    await LocationSeeder.SeedLocationsAsync(context);
+    await SpecializationSeeder.SeedSpecializationsAsync(context);
 }
 
 // Configure the HTTP request pipeline.

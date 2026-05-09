@@ -2,6 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, CheckCircle2, Bell, XCircle } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
+import { arEG, enUS } from 'date-fns/locale';
 
 const NotificationItem = ({ id, type, title, message, createdAt, isRead, appointmentId, onRead }) => {
   const { t, i18n } = useTranslation();
@@ -41,10 +44,11 @@ const NotificationItem = ({ id, type, title, message, createdAt, isRead, appoint
     iconColor: 'text-gray-500 dark:text-gray-400',
   };
 
-  const time = new Date(createdAt).toLocaleTimeString(i18n.language, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+  const userTimeZone = 'Africa/Cairo';
+  const dateLocale = i18n.language === 'ar' ? arEG : enUS;
+  const dateStr = createdAt && !createdAt.endsWith('Z') ? `${createdAt}Z` : createdAt;
+  const zonedDate = toZonedTime(dateStr, userTimeZone);
+  const time = format(zonedDate, 'p', { locale: dateLocale });
 
   return (
     <div 

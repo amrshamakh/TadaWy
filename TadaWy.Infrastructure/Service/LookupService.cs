@@ -66,5 +66,29 @@ namespace TadaWy.Infrastructure.Service
             _context.Allergies.Add(new Allergy { NameEn = nameEn, NameAr = nameAr });
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<StateDto>> GetStatesAsync()
+        {
+            return await _context.States
+                .Select(s => new StateDto
+                {
+                    Id = s.Id,
+                    NameEn = s.NameEn,
+                    NameAr = s.NameAr
+                }).ToListAsync();
+        }
+
+        public async Task<List<CityDto>> GetCitiesByStateAsync(int stateId)
+        {
+            return await _context.Cities
+                .Where(c => c.StateId == stateId)
+                .Select(c => new CityDto
+                {
+                    Id = c.Id,
+                    NameEn = c.NameEn,
+                    NameAr = c.NameAr,
+                    StateId = c.StateId
+                }).ToListAsync();
+        }
     }
 }

@@ -3,9 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TadaWy.Applicaation.IService;
 using TadaWy.Applicaation.IServices;
-using TadaWy.Domain.Entities;
 using TadaWy.Infrastructure.Presistence;
-using TadaWy.Infrastructure.service;
 using TadaWy.Infrastructure.Service;
 using TadaWy.Infrastructure.Services;
 

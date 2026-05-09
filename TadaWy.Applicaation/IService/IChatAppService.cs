@@ -11,7 +11,7 @@ namespace TadaWy.Applicaation.IService
     {
         Task<MessageDto> SendMessageAsync(string senderUserId, SendMessageDto dto);
 
-        Task<List<MessageDto>> GetChatHistoryAsync(string userId, string otherUserId, DateTime? lastCreatedAt);
+        Task<ChatHistoryResponseDto> GetChatHistoryAsync(string userId, string otherUserId, DateTime? lastCreatedAt);
 
         Task<List<ConversationDto>> GetConversationsAsync(string userId, string? search);
 

@@ -49,5 +49,19 @@ namespace TadaWy.API.Controllers
             await _lookupService.AddAllergyAsync(nameEn, nameAr);
             return Ok(new { message = "Allergy added to the list" });
         }
+
+        [HttpGet("states")]
+        public async Task<IActionResult> GetStates()
+        {
+            var states = await _lookupService.GetStatesAsync();
+            return Ok(states);
+        }
+
+        [HttpGet("states/{stateId}/cities")]
+        public async Task<IActionResult> GetCities(int stateId)
+        {
+            var cities = await _lookupService.GetCitiesByStateAsync(stateId);
+            return Ok(cities);
+        }
     }
 }

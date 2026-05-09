@@ -1,23 +1,13 @@
-﻿using Azure;
-using Hangfire;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Numerics;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using TadaWy.Applicaation.DTO.AddressDto;
 using TadaWy.Applicaation.DTO.AuthDTO;
 using TadaWy.Applicaation.DTO.ChangePasswordDTO;
@@ -32,7 +22,7 @@ using TadaWy.Domain.ValueObjects;
 using TadaWy.Infrastructure.Presistence;
 
 
-namespace TadaWy.Infrastructure.service
+namespace TadaWy.Infrastructure.Service
 {
     public class AuthService : IAuthService
     {
@@ -100,6 +90,42 @@ namespace TadaWy.Infrastructure.service
 
             return result.Succeeded;
         }
+
+        private async Task EnsureLocationExistsAsync(AddressDto addressDto)
+        {
+            if (string.IsNullOrEmpty(addressDto.State) || addressDto.State == "UnKnown") return;
+
+            var state = await _tadaWyDbContext.States
+                .FirstOrDefaultAsync(s => s.NameEn == addressDto.State);
+
+            if (state == null)
+            {
+                state = new State
+                {
+                    NameEn = addressDto.State,
+                    NameAr = addressDto.StateAr ?? addressDto.State
+                };
+                _tadaWyDbContext.States.Add(state);
+                await _tadaWyDbContext.SaveChangesAsync();
+            }
+
+            if (string.IsNullOrEmpty(addressDto.City) || addressDto.City == "UnKnown") return;
+
+            var city = await _tadaWyDbContext.Cities
+                .FirstOrDefaultAsync(c => c.NameEn == addressDto.City && c.StateId == state.Id);
+
+            if (city == null)
+            {
+                city = new City
+                {
+                    NameEn = addressDto.City,
+                    NameAr = addressDto.CityAr ?? addressDto.City,
+                    StateId = state.Id
+                };
+                _tadaWyDbContext.Cities.Add(city);
+                await _tadaWyDbContext.SaveChangesAsync();
+            }
+        }
     
         public async Task<AuthModel> RegisterDoctorAsync(AuthRegisterDoctorDTO authRegisterDoctorDTO)
         {
@@ -121,6 +147,10 @@ namespace TadaWy.Infrastructure.service
             };
             var addressDto = await geocodingService.GetAddressAsync(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude);
 
+            if (addressDto != null)
+            {
+                await EnsureLocationExistsAsync(addressDto);
+            }
 
             var filePath = await fileStorage.SaveFileAsync(authRegisterDoctorDTO.FileStream, authRegisterDoctorDTO.FileName);
 
@@ -152,7 +182,14 @@ namespace TadaWy.Infrastructure.service
                 UserID = user.Id,
                 Status = Domain.Enums.DoctorStatus.Pending,
                 Location = new GeoLocation(authRegisterDoctorDTO.Latitude, authRegisterDoctorDTO.Longitude),
-                Address = new Address(addressDto.Street ?? "UnKnown", addressDto.City ?? "UnKnown", addressDto.State ?? "UnKnown"),
+                Address = new Address(
+                    addressDto.Street ?? "UnKnown", 
+                    addressDto.City ?? "UnKnown", 
+                    addressDto.State ?? "UnKnown",
+                    addressDto.StreetAr ?? addressDto.Street ?? "غير معروف",
+                    addressDto.CityAr ?? addressDto.City ?? "غير معروف",
+                    addressDto.StateAr ?? addressDto.State ?? "غير معروف"
+                ),
                 AddressDescriptionEn = authRegisterDoctorDTO.AddressDescriptionEn,
                 AddressDescriptionAr = authRegisterDoctorDTO.AddressDescriptionAr,
                 SpecializationId = authRegisterDoctorDTO.SpecializationId,
@@ -198,6 +235,8 @@ namespace TadaWy.Infrastructure.service
                 addressDto = await geocodingService.GetAddressAsync(RegisterPatientAsync.Latitude, RegisterPatientAsync.Longitude);
                 if (addressDto is null)
                     throw new Exception("Could not resolve address.");// will be handeled later in the exception handling middleware
+                
+                await EnsureLocationExistsAsync(addressDto);
             }
 
             var result = await _userManager.CreateAsync(user, RegisterPatientAsync.password);
@@ -219,7 +258,14 @@ namespace TadaWy.Infrastructure.service
                 DateOfBirth = RegisterPatientAsync.DateOfBirth,
                 Gendre = RegisterPatientAsync.Gendre,
                 Location = new GeoLocation(RegisterPatientAsync.Latitude, RegisterPatientAsync.Longitude),
-                Address=new Address(addressDto.Street?? "UnKnown",addressDto.City?? "UnKnown",addressDto.State?? "UnKnown")
+                                Address = new Address(
+                    addressDto.Street ?? "UnKnown", 
+                    addressDto.City ?? "UnKnown", 
+                    addressDto.State ?? "UnKnown",
+                    addressDto.StreetAr ?? addressDto.Street ?? "غير معروف",
+                    addressDto.CityAr ?? addressDto.City ?? "غير معروف",
+                    addressDto.StateAr ?? addressDto.State ?? "غير معروف"
+                )
                 
             };
             _tadaWyDbContext.Add(patient);

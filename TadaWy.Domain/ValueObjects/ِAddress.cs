@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 namespace TadaWy.Domain.ValueObjects
 {
     public record Address(
-    string Street,
-    string City,
-    string State
-);
+        string Street,
+        string City,
+        string State,
+        string? StreetAr = null,
+        string? CityAr = null,
+        string? StateAr = null
+    );
 }
