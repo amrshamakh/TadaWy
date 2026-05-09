@@ -195,11 +195,20 @@ namespace TadaWy.API.Controllers
             }
 
             var email = authenticateResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email))
+            {
+                return Redirect($"http://localhost:5173/auth/callback?error=email_not_found");
+            }
 
             var authModel = await _authService.LoginWithGoogleAsync(email);
+            if (!authModel.IsAuthenticated)
+            {
+                return Redirect($"http://localhost:5173/auth/callback?error={Uri.EscapeDataString(authModel.Messege ?? "login_failed")}");
+            }
+
 
             var token = authModel.Token;
-            var role = authModel.Role; 
+            var role = authModel.Role != null && authModel.Role.Any() ? authModel.Role.First() : "";
 
             var redirectUrl = $"http://localhost:5173/auth/callback?token={token}&role={role}";
 
