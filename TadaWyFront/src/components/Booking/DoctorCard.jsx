@@ -19,9 +19,13 @@ export default function DoctorCard({ doctor }) {
     ? (doctor.aboutAr || doctor.bioAr || doctor.bio || doctor.about)
     : (doctor.aboutEn || doctor.bioEn || doctor.bio || doctor.about);
 
-  const location = doctor.address
+  const addressDesc = isAr
+    ? (doctor.addressDescriptionAr || doctor.addressDescription || doctor.location_description)
+    : (doctor.addressDescriptionEn || doctor.addressDescription || doctor.location_description);
+
+  const location = (doctor.address
     ? [doctor.address.city, doctor.address.state].filter(p => p && p !== "UnKnown").join(", ")
-    : [doctor.city, doctor.state].filter(Boolean).join(", ");
+    : [doctor.city, doctor.state].filter(Boolean).join(", ")) + (addressDesc ? ` - ${addressDesc}` : "");
 
   const rating = (doctor.rating ?? doctor.rate ?? 0).toFixed(1);
   const reviewsCount = doctor.reviewsCount ?? (Array.isArray(doctor.reviews) ? doctor.reviews.length : 0);
@@ -81,7 +85,7 @@ export default function DoctorCard({ doctor }) {
             <MapPin size={14} />
             <span>{t("booking.locationCard.title")}</span>
           </div>
-          <p className="text-gray-900 dark:text-white text-base font-extrabold m-0">{location || "—"}</p>
+          <p className="text-gray-900 dark:text-white text-base font-extrabold m-0 truncate" title={location}>{location || "—"}</p>
         </div>
       </div>
 
