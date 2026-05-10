@@ -22,13 +22,13 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
   const isCancelled = status === "cancelled";
   const isConfirmed = status === "completed";
   const isMissed = status === "missed";
-  
+
   const isPastAppointment = rawDate && new Date(rawDate) < new Date();
 
-  const statusLabel = isPending 
-    ? t("calendar.status.pending") 
-    : isCancelled 
-      ? t("calendar.status.cancelled") 
+  const statusLabel = isPending
+    ? t("calendar.status.pending")
+    : isCancelled
+      ? t("calendar.status.cancelled")
       : isMissed
         ? t("calendar.status.missed")
         : t("calendar.status.confirmed");
@@ -107,18 +107,45 @@ export default function AppointmentCard({ id, clinic, doctor, specialty, date, t
     if (!receiptRef.current || isPrinting) return;
     try {
       setIsPrinting(true);
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 2,
+      // Wait for any animations to finish
+      await new Promise(resolve => setTimeout(resolve, 400));
+      
+      const element = receiptRef.current;
+      
+      // Capture with specific options to handle fixed positioning and transformations
+      const canvas = await html2canvas(element, {
+        scale: 3, // High quality
         useCORS: true,
+        allowTaint: true,
         backgroundColor: "#ffffff",
+        logging: false,
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        scrollX: 0,
+        scrollY: -window.scrollY, // Adjust for page scroll
+        onclone: (clonedDoc) => {
+          // You can perform any cleanup on the cloned document if needed
+          const clonedElement = clonedDoc.querySelector('[ref="receiptRef"]') || clonedDoc.body.querySelector('.rounded-2xl.border.border-gray-200');
+          if (clonedElement) {
+             clonedElement.style.transform = 'none';
+             clonedElement.style.position = 'relative';
+             clonedElement.style.top = '0';
+             clonedElement.style.left = '0';
+          }
+        }
       });
+
+      const dataUrl = canvas.toDataURL("image/png", 1.0);
       const link = document.createElement("a");
-      link.download = `receipt-${id}.png`;
-      link.href = canvas.toDataURL("image/png");
+      link.download = `TadaWy-Receipt-${id}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      
     } catch (error) {
-      console.error("Failed to export receipt image", error);
-      toast.error("Failed to print receipt");
+      console.error("Critical error during receipt export:", error);
+      toast.error(t("calendar.printError") || "Failed to print receipt");
     } finally {
       setIsPrinting(false);
     }

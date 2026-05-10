@@ -41,17 +41,6 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
     return () => clearTimeout(t);
   }, [showLegend]);
 
-  useEffect(() => {
-    if (!showLegend) return;
-    const close = (e) => {
-      if (legendWrapRef.current && !legendWrapRef.current.contains(e.target)) {
-        setShowLegend(false);
-      }
-    };
-    document.addEventListener("mousedown", close);
-    return () => document.removeEventListener("mousedown", close);
-  }, [showLegend]);
-
   const isDaySelected = (day) =>
     selectedDate &&
     selectedDate.year === year &&
@@ -69,10 +58,10 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
   };
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-3">
+    <div className="w-full h-full flex flex-col">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 relative" ref={legendWrapRef}>
-          <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white m-0">
             {new Date(year, monthIndex).toLocaleDateString(i18n.language, {
               month: "long",
               year: "numeric",
@@ -81,67 +70,68 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
           <button
             type="button"
             onClick={() => setShowLegend((p) => !p)}
-            className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#334155]"
+            className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#334155]"
             aria-label="Calendar legend"
           >
             <img src={infoIcon} alt="" className="w-4 h-4 dark:invert-[.9] dark:sepia-[.9] dark:hue-rotate-[130deg] dark:saturate-[500%]" />
           </button>
           {showLegend && (
             <div
-              className={`absolute top-0 z-30 bg-white dark:bg-[#1E293B] border-2 border-[#14B8A6] rounded-xl px-4 py-3 shadow-lg min-w-[200px] ${
-                i18n.language === "ar" ? "right-[calc(100%+8px)]" : "left-[calc(100%+8px)]"
+              className={`absolute top-8 z-30 bg-white dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-xl p-3 shadow-lg min-w-[200px] ${
+                i18n.language === "ar" ? "right-0" : "left-0"
               }`}
             >
-              <div className="flex items-center gap-3 mb-2.5">
-                <span className="inline-flex w-5 h-5 shrink-0 rounded-md border-2 border-[#14B8A6] bg-white dark:bg-[#0F172A]" />
-                <span className="text-sm font-semibold text-gray-800 dark:text-white">{t("calendar.legend.today")}</span>
-              </div>
-              <div className="flex items-center gap-3 mb-2.5">
-                <span className="inline-flex w-5 h-5 shrink-0 rounded-md bg-[#14B8A6]" />
-                <span className="text-sm font-semibold text-gray-800 dark:text-white">{t("calendar.legend.pressedOn")}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="relative inline-flex w-5 h-5 shrink-0 rounded-md border-2 border-[#14B8A6] bg-white dark:bg-[#0F172A]">
-                  <span className="absolute bottom-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-[#14B8A6]" />
-                </span>
-                <span className="text-sm font-semibold text-gray-800 dark:text-white">{t("calendar.legend.appointment")}</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded border-2 border-[#00BBA7] bg-[#E6FFFA] dark:bg-[#00BBA7]/20" />
+                  <span className="text-xs text-gray-700 dark:text-white">{t("calendar.legend.today")}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-4 h-4 rounded border-2 border-[#00BBA7] bg-[#00BBA7]" />
+                  <span className="text-xs text-gray-700 dark:text-white">{t("calendar.legend.pressedOn")}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="relative w-4 h-4 rounded border-2 border-transparent bg-transparent flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#EF4444]" />
+                  </div>
+                  <span className="text-xs text-gray-700 dark:text-white">{t("calendar.legend.appointment")}</span>
+                </div>
               </div>
             </div>
           )}
         </div>
+
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={handlePrevMonth}
-            aria-label="Previous month"
-            className="w-9 h-9 rounded-lg border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] flex items-center justify-center hover:bg-gray-50 dark:hover:bg-[#334155] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#334155]"
           >
-            <ChevronLeft size={20} className="text-gray-700 dark:text-white" />
+            <ChevronLeft size={20} className="text-gray-600 dark:text-white" />
           </button>
           <button
             type="button"
             onClick={handleNextMonth}
-            aria-label="Next month"
-            className="w-9 h-9 rounded-lg border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] flex items-center justify-center hover:bg-gray-50 dark:hover:bg-[#334155] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#334155]"
           >
-            <ChevronRight size={20} className="text-gray-700 dark:text-white" />
+            <ChevronRight size={20} className="text-gray-600 dark:text-white" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-x-1.5 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-1">
         {Array.from({ length: 7 }).map((_, i) => {
           const date = new Date(2023, 0, 1 + i);
           const dayName = date.toLocaleDateString(i18n.language, { weekday: "short" });
           return (
-            <div key={i} className="text-center text-sm font-medium text-gray-500 dark:text-[#94A3B8]">
+            <div key={i} className="text-center text-xs font-medium text-gray-400 dark:text-[#94A3B8]">
               {dayName}
             </div>
           );
         })}
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5">
+      <div className="grid grid-cols-7 gap-1 flex-1">
         {days.map((day, index) => {
           if (day === null) {
             return <div key={index} className="w-full aspect-[1.2/1]" />;

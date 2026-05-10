@@ -484,6 +484,7 @@
     "cancelAppointment": "Yes, cancel",
     "cancelSuccess": "Appointment canceled successfully",
     "cancelError": "Failed to cancel appointment",
+    "printError": "Failed to print receipt",
     "receipt": {
       "title": "Receipt Details"
     },

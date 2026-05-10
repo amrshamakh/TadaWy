@@ -491,6 +491,7 @@
     "cancelAppointment": "نعم، إلغاء",
     "cancelSuccess": "تم إلغاء الموعد بنجاح",
     "cancelError": "فشل في إلغاء الموعد",
+    "printError": "فشل في طباعة الوصل",
     "receipt": {
       "title": "تفاصيل الوصل"
     },

@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Calendar as CalendarIcon, Clock, User } from "lucide-react";
+import { Calendar as CalendarIcon, Clock, User, Filter, MoreHorizontal } from "lucide-react";
 import CalendarGrid from "./CalendarGrid";
 import AppointmentCard from "./AppointmentCard";
 import { useTranslation } from "react-i18next";
@@ -72,7 +72,6 @@ export default function Calender() {
         const month = currentDate.getMonth() + 1;
         const year = currentDate.getFullYear();
         const data = await getCalendarAppointments(month, year);
-        // data: [{ date: "2026-04-25T00:00:00", hasAppointments: true }, ...]
         if (Array.isArray(data)) {
           const dates = data
             .filter((d) => d.hasAppointments)
@@ -82,7 +81,7 @@ export default function Calender() {
                 year: dt.getFullYear(),
                 month: dt.getMonth(),
                 day: dt.getDate(),
-                status: "pending", // Generic dot
+                status: "pending",
               };
             });
           setAppointmentDates(dates);
@@ -168,14 +167,13 @@ export default function Calender() {
           doctorId: apt.doctorId || apt.doctorID || apt.DoctorId,
         };
       });
-      
+
     return list.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
   }, [allAppointments, currentDate, activeStatus, i18n.language]);
 
   const localizedDayAppointments = useMemo(() => {
     const list = appointmentsForSelectedDay.map((apt) => {
       const d = new Date(apt.date);
-      // Map API fields to what UI expects
       return {
         id: apt.id,
         clinic: apt.specialty || "Clinic",
@@ -188,7 +186,7 @@ export default function Calender() {
         doctorId: apt.doctorId || apt.doctorID || apt.DoctorId,
       };
     });
-    
+
     return list.sort((a, b) => new Date(a.rawDate) - new Date(b.rawDate));
   }, [appointmentsForSelectedDay, i18n.language]);
 
@@ -218,7 +216,7 @@ export default function Calender() {
     <div className="relative bg-white dark:bg-[#0F172A] flex flex-col flex-1 pt-2 px-6 pb-6 w-full box-border overflow-x-hidden">
       <style>{scrollbarStyles}</style>
 
-      <div className={`w-full max-w-[950px] flex flex-col gap-4 ${isSidebarOpen ? (i18n.language === "ar" ? "mr-4" : "ml-4") : "mx-auto"}`}>
+      <div className={`w-full max-w-6xl flex flex-col gap-4 ${isSidebarOpen ? (i18n.language === "ar" ? "mr-4" : "ml-4") : "mx-auto"}`}>
         <div className="flex justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-1">
@@ -241,7 +239,7 @@ export default function Calender() {
             />
           </div>
 
-          <div className="w-full h-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col shadow-sm overflow-hidden">
+          <div className="w-full h-fit lg:h-full max-h-[350px] sm:max-h-[450px] lg:max-h-none rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col shadow-sm overflow-hidden">
             <p className="text-xl font-semibold text-gray-800 dark:text-white mb-3 flex-shrink-0">
               {selectedDate ? formatSelectedDate(selectedDate, i18n.language) : t("calendar.selectDate")}
             </p>
@@ -289,74 +287,73 @@ export default function Calender() {
           </div>
         </div>
 
-      <div className="relative w-full">
-        <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pr-4">
-            <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
-              {t("calendar.allAppointments")}
-            </h2>
-            <div className="relative flex items-center gap-2 w-full sm:w-auto" ref={paymentLegendRef}>
-              <div className="flex-1 sm:flex-none inline-flex items-center rounded-full overflow-x-auto sm:overflow-hidden border border-[#CBD5E1] dark:border-[#334155] custom-scrollbar no-scrollbar">
-                {statusTabs.map((tab) => (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => setActiveStatus(tab.key)}
-                    className={`${getStatusTabClass(tab.key)} whitespace-nowrap`}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowPaymentLegend((p) => !p)}
-                className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#334155]"
-                aria-label="Payment legend"
-              >
-                <img src={infoIcon} alt="" className="w-5 h-5 dark:invert-[.9] dark:sepia-[.9] dark:hue-rotate-[130deg] dark:saturate-[500%]" />
-              </button>
-              {showPaymentLegend && (
-                <div 
-                  className={`absolute top-10 z-20 min-w-[140px] border-2 border-[#A7F3D0] bg-white dark:bg-[#1E293B] rounded-xl px-4 py-3 shadow-lg ${
-                    i18n.language === "ar" ? "left-0" : "right-0"
-                  }`}
-                >
-                  <p className="m-0 text-[#00BBA7] font-semibold text-sm">✓ {t("calendar.legend.paid")}</p>
-                  <p className="m-0 text-[#EF4444] font-semibold text-sm mt-1">✕ {t("calendar.legend.notPaid")}</p>
+        <div className="relative w-full">
+          <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pr-4">
+              <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
+                {t("calendar.allAppointments")}
+              </h2>
+              <div className="relative flex items-center gap-2 w-full sm:w-auto" ref={paymentLegendRef}>
+                <div className="flex-1 sm:flex-none inline-flex items-center rounded-full overflow-x-auto sm:overflow-hidden border border-[#CBD5E1] dark:border-[#334155] custom-scrollbar no-scrollbar">
+                  {statusTabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setActiveStatus(tab.key)}
+                      className={`${getStatusTabClass(tab.key)} whitespace-nowrap`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPaymentLegend((p) => !p)}
+                  className="p-0.5 rounded-full hover:bg-gray-100 dark:hover:bg-[#334155]"
+                  aria-label="Payment legend"
+                >
+                  <img src={infoIcon} alt="" className="w-5 h-5 dark:invert-[.9] dark:sepia-[.9] dark:hue-rotate-[130deg] dark:saturate-[500%]" />
+                </button>
+                {showPaymentLegend && (
+                  <div
+                    className={`absolute top-10 z-20 min-w-[140px] border-2 border-[#A7F3D0] bg-white dark:bg-[#1E293B] rounded-xl px-4 py-3 shadow-lg ${i18n.language === "ar" ? "left-0" : "right-0"
+                      }`}
+                  >
+                    <p className="m-0 text-[#00BBA7] font-semibold text-sm">✓ {t("calendar.legend.paid")}</p>
+                    <p className="m-0 text-[#EF4444] font-semibold text-sm mt-1">✕ {t("calendar.legend.notPaid")}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+              {filteredAppointments.length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center py-4">
+                  {t("calendar.noCurrentAppointments") || "No current appointments"}
+                </p>
+              ) : (
+                filteredAppointments.map((apt, i) => (
+                  <AppointmentCard
+                    key={`${apt.id}-${i}`}
+                    id={apt.id}
+                    clinic={apt.clinic}
+                    doctor={apt.doctor}
+                    specialty={apt.specialty}
+                    date={apt.date}
+                    time={apt.time}
+                    rawDate={apt.rawDate}
+                    status={apt.status}
+                    paid={apt.paid}
+                    doctorId={apt.doctorId}
+                    onCancel={() => {
+                      setAppointmentsForSelectedDay((prev) => prev.filter((p) => p.id !== apt.id));
+                      setAllAppointments((prev) => prev.filter((p) => p.id !== apt.id));
+                    }}
+                  />
+                ))
               )}
             </div>
           </div>
-
-          <div className="flex flex-col gap-3">
-            {filteredAppointments.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center py-4">
-                {t("calendar.noCurrentAppointments") || "No current appointments"}
-              </p>
-            ) : (
-              filteredAppointments.map((apt, i) => (
-                <AppointmentCard
-                  key={`${apt.id}-${i}`}
-                  id={apt.id}
-                  clinic={apt.clinic}
-                  doctor={apt.doctor}
-                  specialty={apt.specialty}
-                  date={apt.date}
-                  time={apt.time}
-                  rawDate={apt.rawDate}
-                  status={apt.status}
-                  paid={apt.paid}
-                  doctorId={apt.doctorId}
-                  onCancel={() => {
-                    setAppointmentsForSelectedDay((prev) => prev.filter((p) => p.id !== apt.id));
-                    setAllAppointments((prev) => prev.filter((p) => p.id !== apt.id));
-                  }}
-                />
-              ))
-            )}
-          </div>
-        </div>
         </div>
       </div>
     </div>
