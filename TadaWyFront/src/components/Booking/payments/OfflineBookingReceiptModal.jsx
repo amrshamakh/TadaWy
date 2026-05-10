@@ -21,15 +21,17 @@ export default function OfflineBookingReceiptModal({ receiptRef, receiptData, is
   const formattedDate = date ? new Date(date).toLocaleString(i18n.language) : "";
   const formattedReceiptDate = receiptDate ? new Date(receiptDate).toLocaleString(i18n.language) : "";
 
-  const label = "block text-[0.78rem] text-gray-400 mb-0.5";
-  const value = "block text-[0.92rem] font-semibold text-gray-800 mb-1";
+  const label = "block text-[0.78rem] text-gray-400 dark:text-gray-500 mb-0.5";
+  const value = "block text-[0.92rem] font-semibold text-gray-800 dark:text-gray-100 mb-1";
+  const divider = "border-dashed border-gray-200 dark:border-slate-700 my-3";
 
   const innerContent = (
-    <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-[0_20px_60px_rgba(15,23,42,0.2)]" ref={receiptRef}>
+    <>
+      <div id="receipt-content" className="rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.2)]" ref={receiptRef}>
       {/* Header */}
-      <div className="bg-teal-400 flex items-center justify-between px-4 py-3">
+      <div className="bg-teal-400 dark:bg-teal-600 flex items-center justify-between px-4 py-3">
         <div className="w-16 h-16 flex items-center justify-center shrink-0">
-          <img className="w-16 h-16" src={assets.logo} alt="logo" />
+          <img className="w-16 h-16 brightness-100 dark:brightness-110" src={assets.logo} alt="logo" />
         </div>
         <div className="text-center flex-1 text-white shrink-0">
           <h4 className="m-0 text-[1.55rem] font-bold">{t("booking.modals.receipt.title")}</h4>
@@ -46,7 +48,7 @@ export default function OfflineBookingReceiptModal({ receiptRef, receiptData, is
           <span className={label}>{t("booking.modals.receipt.patientEmail")}</span>
           <span className={value}>{patientEmail}</span>
         </div>
-        <hr className="border-dashed border-gray-200 my-3" />
+        <hr className={divider} />
         <div className="grid grid-cols-2 gap-3 mb-2">
           <div>
             <span className={label}>{t("booking.modals.receipt.doctorName")}</span>
@@ -63,14 +65,14 @@ export default function OfflineBookingReceiptModal({ receiptRef, receiptData, is
         </div>
         <span className={label}>{t("booking.modals.receipt.locationDetails")}</span>
         <span className={value}>{doctorLocationDetails || t("booking.modals.receipt.locationDetailsPlaceholder")}</span>
-        <hr className="border-dashed border-gray-200 my-3" />
+        <hr className={divider} />
         <div>
           <span className={label}>{t("booking.modals.receipt.appointmentDate")}</span>
           <span className={value}>{formattedDate}</span>
           <div className="grid grid-cols-2 gap-3 mt-2.5">
             <div>
               <span className={label}>{t("booking.modals.receipt.paymentMethod")}</span>
-              <span className="block text-[0.92rem] font-semibold text-yellow-400 mb-1">{t("booking.modals.receipt.payAtClinic")}</span>
+              <span className="block text-[0.92rem] font-semibold text-yellow-400 dark:text-yellow-500 mb-1">{t("booking.modals.receipt.payAtClinic")}</span>
             </div>
           </div>
           <div className="mt-2.5">
@@ -78,27 +80,23 @@ export default function OfflineBookingReceiptModal({ receiptRef, receiptData, is
             <span className={value}>{formattedReceiptDate}</span>
           </div>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className="px-4 pb-3.5 pt-0.5">
-        <p className="flex items-center justify-end gap-2 text-sm text-gray-500 mb-2">
-          <span className="text-[1.15rem] font-semibold">{t("booking.modals.receipt.price")}</span>
-          <strong className="text-[1.75rem] text-gray-800 font-semibold">{price} {t("booking.sidebar.currency")}</strong>
+        <p className="flex items-center justify-end gap-2 text-sm mt-4 mb-2">
+          <span className="text-[1.15rem] font-semibold text-gray-500 dark:text-gray-400">{t("booking.modals.receipt.price")}</span>
+          <strong className="text-[1.75rem] text-gray-800 dark:text-gray-100 font-semibold">{price} {t("booking.sidebar.currency")}</strong>
         </p>
-        <div className="grid grid-cols-2 gap-2.5">
-          <button type="button" onClick={onPrintReceipt} disabled={isPrinting}
-            className="h-10 rounded-lg border border-gray-300 bg-white text-gray-800 text-[0.9rem] font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:-translate-y-px hover:brightness-95 transition-all disabled:opacity-60">
-            <Printer size={16} />
-            {isPrinting ? t("booking.modals.receipt.exporting") : t("booking.modals.receipt.printBtn")}
-          </button>
-          <button type="button" onClick={onDone}
-            className="h-10 rounded-lg border-none bg-teal-400 text-white text-[0.9rem] font-semibold flex items-center justify-center cursor-pointer hover:bg-teal-500 transition-colors">
-            {t("booking.modals.receipt.doneBtn")}
-          </button>
+
+        {/* Actions (Inside the card but ignored by printing) */}
+        <div className="mt-6 pt-5 border-t border-gray-100 dark:border-slate-700" data-html2canvas-ignore="true">
+          <div className="flex gap-2.5 justify-end">
+            <button type="button" onClick={onDone}
+              className="h-10 px-8 rounded-lg border-none bg-teal-400 text-white text-[0.9rem] font-semibold flex items-center justify-center cursor-pointer hover:bg-teal-500 transition-colors">
+              {t("booking.modals.receipt.doneBtn")}
+            </button>
+          </div>
         </div>
       </div>
     </div>
+    </>
   );
 
   if (isInline) return <div className="w-[450px] max-w-full">{innerContent}</div>;
