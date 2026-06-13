@@ -717,6 +717,7 @@
         "receiptDate": "تاريخ الوصل",
         "price": "السعر",
         "printBtn": "طباعة الوصل",
+        "downloadBtn": "تحميل PNG",
         "exporting": "جاري التصدير...",
         "doneBtn": "تم"
       },

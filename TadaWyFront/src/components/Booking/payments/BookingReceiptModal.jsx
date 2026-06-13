@@ -1,6 +1,7 @@
-import { Printer } from "lucide-react";
+import { Printer, Download } from "lucide-react";
 import { assets } from "../../../assets/assets";
 import { useTranslation } from "react-i18next";
+import { toPng } from "html-to-image";
 
 export default function BookingReceiptModal({ receiptRef, receiptNumber, patientName, patientEmail, doctor, appointmentDateValue, appointmentCost, isPrinting, onPrintReceipt, onDone, isOnline = false, isInline = false }) {
   const { t, i18n } = useTranslation();
@@ -8,6 +9,30 @@ export default function BookingReceiptModal({ receiptRef, receiptNumber, patient
   const label = "block text-[0.78rem] text-gray-400 dark:text-gray-500 mb-0.5";
   const value = "block text-[0.92rem] font-semibold text-gray-800 dark:text-gray-100 mb-1";
   const divider = "border-dashed border-gray-200 dark:border-slate-700 my-3";
+
+  const handleDownloadPNG = async () => {
+    if (!receiptRef.current) return;
+
+    try {
+      const dataUrl = await toPng(receiptRef.current, {
+        quality: 1.0,
+        pixelRatio: 2,
+        backgroundColor: i18n.language === 'dark' ? '#0f172a' : '#ffffff',
+        filter: (node) => {
+          if (node.dataset && node.dataset.html2canvasIgnore === "true") {
+            return false;
+          }
+          return true;
+        }
+      });
+      const link = document.createElement("a");
+      link.download = `receipt-${receiptNumber}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Error generating receipt image:", error);
+    }
+  };
 
   const innerContent = (
     <div id="receipt-content" className="rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden bg-white dark:bg-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.2)]" ref={receiptRef}>
@@ -85,6 +110,11 @@ export default function BookingReceiptModal({ receiptRef, receiptNumber, patient
         {/* Actions (Inside the card but ignored by printing) */}
         <div className="mt-6 pt-5 border-t border-gray-100 dark:border-slate-700" data-html2canvas-ignore="true">
           <div className="flex gap-2.5 justify-end">
+            <button type="button" onClick={handleDownloadPNG}
+              className="h-10 px-4 rounded-lg border border-teal-400 bg-transparent text-teal-400 text-[0.9rem] font-semibold flex items-center gap-2 cursor-pointer hover:bg-teal-50/50 dark:hover:bg-teal-900/20 transition-colors">
+              <Download size={18} />
+              {t("booking.modals.receipt.downloadBtn") || "Download PNG"}
+            </button>
             <button type="button" onClick={onDone}
               className="h-10 px-8 rounded-lg border-none bg-teal-400 text-white text-[0.9rem] font-semibold flex items-center justify-center cursor-pointer hover:bg-teal-500 transition-colors">
               {t("booking.modals.receipt.doneBtn")}

@@ -709,6 +709,7 @@
         "receiptDate": "Receipt Date",
         "price": "Price",
         "printBtn": "Print Receipt",
+        "downloadBtn": "Download PNG",
         "exporting": "Exporting...",
         "doneBtn": "Done"
       },

@@ -8,22 +8,22 @@ import infoIcon from "../../assets/info.svg";
 
 const scrollbarStyles = `
   .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #00BBA7;
+    background: #CBD5E1;
     border-radius: 10px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #009e8f;
+    background: #00BBA7;
   }
   /* For Firefox */
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #00BBA7 transparent;
+    scrollbar-color: #CBD5E1 transparent;
   }
 `;
 import {
@@ -213,22 +213,20 @@ export default function Calender() {
   };
 
   return (
-    <div className="relative bg-white dark:bg-[#0F172A] flex flex-col flex-1 pt-2 px-6 pb-6 w-full box-border overflow-x-hidden">
+    <div className="relative bg-white dark:bg-[#0F172A] flex flex-col flex-1 pt-1 px-4 pb-1 w-full box-border overflow-x-hidden">
       <style>{scrollbarStyles}</style>
 
-      <div className={`w-full max-w-6xl flex flex-col gap-4 ${isSidebarOpen ? (i18n.language === "ar" ? "mr-4" : "ml-4") : "mx-auto"}`}>
-        <div className="flex justify-between mb-4">
+      <div className={`w-full max-w-6xl flex flex-col gap-2 ${isSidebarOpen ? (i18n.language === "ar" ? "mr-4" : "ml-4") : "mx-auto"}`}>
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-1">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-0.5">
               {t("calendar.title")}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 m-0">
               {t("calendar.subtitle")}
             </p>
           </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_330px] gap-4 items-stretch lg:h-[550px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_330px] gap-3 items-stretch lg:h-[400px]">
           <div className="w-full h-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col overflow-hidden">
             <CalendarGrid
               currentDate={currentDate}
@@ -239,7 +237,7 @@ export default function Calender() {
             />
           </div>
 
-          <div className="w-full h-fit lg:h-full max-h-[350px] sm:max-h-[450px] lg:max-h-none rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col shadow-sm overflow-hidden">
+          <div className="w-full h-fit lg:h-full max-h-[250px] sm:max-h-[300px] lg:max-h-none rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col shadow-sm overflow-hidden">
             <p className="text-xl font-semibold text-gray-800 dark:text-white mb-3 flex-shrink-0">
               {selectedDate ? formatSelectedDate(selectedDate, i18n.language) : t("calendar.selectDate")}
             </p>
@@ -288,7 +286,7 @@ export default function Calender() {
         </div>
 
         <div className="relative w-full">
-          <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-4 flex flex-col gap-3">
+          <div className="w-full rounded-2xl border border-gray-200 dark:border-[#334155] bg-white dark:bg-[#1E293B] p-3 flex flex-col gap-2">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pr-4">
               <h2 className="text-lg font-medium text-gray-800 dark:text-white m-0">
                 {t("calendar.allAppointments")}
@@ -326,7 +324,7 @@ export default function Calender() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <div className="flex flex-col gap-3 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar">
               {filteredAppointments.length === 0 ? (
                 <p className="text-sm text-gray-500 dark:text-[#94A3B8] text-center py-4">
                   {t("calendar.noCurrentAppointments") || "No current appointments"}

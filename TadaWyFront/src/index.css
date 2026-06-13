@@ -2,6 +2,10 @@
 @variant dark (&:where(.dark, .dark *));
 @import "leaflet/dist/leaflet.css";
 
+button {
+  cursor: pointer;
+}
+
 /* Toastify Styling */
 .Toastify__toast {
   border-radius: 12px !important;

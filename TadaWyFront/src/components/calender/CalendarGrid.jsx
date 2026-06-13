@@ -61,7 +61,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
     <div className="w-full h-full flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2 relative" ref={legendWrapRef}>
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white m-0">
+          <h2 className="text-lg font-semibold text-gray-800 dark:text-white m-0">
             {new Date(year, monthIndex).toLocaleDateString(i18n.language, {
               month: "long",
               year: "numeric",
@@ -101,22 +101,20 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
           )}
         </div>
 
-        <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={handlePrevMonth}
-            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#334155]"
+            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#334155]"
           >
-            <ChevronLeft size={20} className="text-gray-600 dark:text-white" />
+            <ChevronLeft size={16} className="text-gray-600 dark:text-white" />
           </button>
           <button
             type="button"
             onClick={handleNextMonth}
-            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-[#334155]"
+            className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-[#334155]"
           >
-            <ChevronRight size={20} className="text-gray-600 dark:text-white" />
+            <ChevronRight size={16} className="text-gray-600 dark:text-white" />
           </button>
-        </div>
       </div>
 
       <div className="grid grid-cols-7 gap-1 mb-1">
@@ -134,7 +132,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
       <div className="grid grid-cols-7 gap-1 flex-1">
         {days.map((day, index) => {
           if (day === null) {
-            return <div key={index} className="w-full aspect-[1.2/1]" />;
+            return <div key={index} className="w-7 h-7 sm:w-8 sm:h-8" />;
           }
 
           const today = new Date();
@@ -147,18 +145,12 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
           const showDot = Boolean(status);
 
           let cellClass =
-            "relative w-full aspect-[1.2/1] rounded-xl border-2 flex items-center justify-center cursor-pointer text-base font-medium transition-colors ";
+            "relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg border flex items-center justify-center cursor-pointer text-xs font-medium transition-colors ";
 
           if (isSelected) {
             cellClass += "bg-[#E6FFFA] dark:bg-[#00BBA7]/20 border-[#00BBA7] text-gray-800 dark:text-white ";
           } else if (isToday) {
             cellClass += "bg-transparent border-[#00BBA7] text-gray-800 dark:text-white ";
-          } else if (status === "pending") {
-            cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
-          } else if (status === "cancelled") {
-            cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
-          } else if (status === "confirmed") {
-            cellClass += "bg-transparent border-transparent text-gray-800 dark:text-white ";
           } else {
             cellClass +=
               "bg-transparent border-transparent text-gray-700 dark:text-[#94A3B8] hover:bg-gray-100 dark:hover:bg-[#334155] ";
@@ -177,7 +169,7 @@ export default function CalendarGrid({ selectedDate, onSelectDay, appointmentDat
                 {showDot && (
                   <span
                     aria-hidden
-                    className={`absolute bottom-[3px] sm:bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${dotClass}`}
+                    className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full ${dotClass}`}
                   />
                 )}
               </button>
