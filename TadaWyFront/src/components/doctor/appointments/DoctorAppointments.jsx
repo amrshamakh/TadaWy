@@ -10,7 +10,9 @@ import {
   confirmAppointment, 
   cancelAppointment 
 } from "@/modules/doctor/api/appointmentsDoctorApi";
-import LoadingSpinner from "@/components/LoadingSpinner";
+
+
+import { TableSkeleton } from "@/components/Skeleton";
 
 export default function DoctorAppointments() {
   const { i18n } = useTranslation();
@@ -95,12 +97,9 @@ export default function DoctorAppointments() {
     return acc;
   }, {});
 
-  if (loading && appointments.length === 0) {
-    return <LoadingSpinner />;
-  }
 
   return (
-    <div className="min-h-screen  p-6">
+    <div className="min-h-screen p-6">
       <StatsRow stats={stats} />
       <DayFilter
         activeDay={activeDay}
@@ -119,7 +118,9 @@ export default function DoctorAppointments() {
         onPaymentChange={setActivePayment}
       />
 
-      {Object.keys(grouped).length > 0 ? (
+      {loading ? (
+        <TableSkeleton />
+      ) : Object.keys(grouped).length > 0 ? (
         Object.entries(grouped).map(([date, apts]) => (
           <DateGroup 
             key={date} 

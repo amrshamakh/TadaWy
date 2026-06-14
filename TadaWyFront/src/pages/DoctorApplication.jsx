@@ -521,14 +521,7 @@ const DoctorApplication = () => {
                   disabled={isSubmitting}
                   className={`flex-[2] bg-teal-500 hover:bg-teal-600 text-white font-bold py-3.5 rounded-xl transition duration-200 shadow-lg hover:shadow-teal-500/30 flex justify-center items-center gap-2 ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                      {t('common.processing', 'Processing...')}
-                    </>
-                  ) : (
-                    t('auth.doctor.signUp', 'Submit Application')
-                  )}
+                  {isSubmitting ? t('common.processing', 'Processing...') : t('auth.doctor.signUp', 'Submit Application')}
                 </button>
               </div>
             </>

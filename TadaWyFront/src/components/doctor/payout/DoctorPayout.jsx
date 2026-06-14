@@ -6,6 +6,8 @@ import RecentPayments from './RecentPayments';
 import { getWalletDashboard } from '../../../services/doctorWalletService';
 import { toast } from 'react-toastify';
 
+import { TableSkeleton as PayoutSkeleton } from "@/components/Skeleton";
+
 export default function DoctorPayout() {
   const { t } = useTranslation();
   const [walletData, setWalletData] = useState(null);
@@ -28,13 +30,7 @@ export default function DoctorPayout() {
     fetchWalletData();
   }, []);
 
-  if (loading && !walletData) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-500"></div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 font-inter animate-in fade-in duration-500">
@@ -47,13 +43,19 @@ export default function DoctorPayout() {
         </p>
       </div>
 
-      <PayoutCards 
-        totalBalance={walletData?.totalBalance} 
-        availableBalance={walletData?.availableBalance}
-        onlineEarnings={walletData?.onlineEarningsThisMonth}
-      />
-      <PayoutMethod onWithdrawSuccess={fetchWalletData} />
-      <RecentPayments payments={walletData?.recentOnlinePayments} />
+      {loading ? (
+        <PayoutSkeleton />
+      ) : (
+        <>
+          <PayoutCards 
+            totalBalance={walletData?.totalBalance} 
+            availableBalance={walletData?.availableBalance}
+            onlineEarnings={walletData?.onlineEarningsThisMonth}
+          />
+          <PayoutMethod onWithdrawSuccess={fetchWalletData} />
+          <RecentPayments payments={walletData?.recentOnlinePayments} />
+        </>
+      )}
     </div>
   );
 }

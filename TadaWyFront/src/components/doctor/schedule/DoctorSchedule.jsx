@@ -4,7 +4,6 @@ import DurationCard from "./DurationCard";
 import FeeCard from "./FeeCard";
 import WeeklyAvailability from "./Weeklyavailability";
 import WeeklySummary     from "./WeeklySummary";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import { getDoctorSchedule, updateDoctorSchedule } from "@/modules/doctor/api/scheduleDoctorApi";
 
 const INITIAL_SCHEDULE = {
@@ -53,6 +52,8 @@ const parseAMPMToTimeSpan = (timeStr) => {
   let m = minutes.toString().padStart(2, '0');
   return `${h}:${m}:00`;
 };
+
+import { ProfileSkeleton as ScheduleSkeleton } from "@/components/Skeleton";
 
 export default function DoctorSchedule() {
   const { t } = useTranslation();
@@ -275,16 +276,13 @@ export default function DoctorSchedule() {
     return acc + dayAppointments;
   }, 0);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+
 
   return (
     <div className="min-h-screen p-7 font-sans relative">
       {/* Save Indicator */}
       {isSaving && (
         <div className="absolute top-4 right-7 flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 opacity-75">
-          <span className="w-4 h-4 border-2 border-teal-500 border-t-transparent rounded-full animate-spin"></span>
           <span>Saving...</span>
         </div>
       )}
@@ -297,36 +295,41 @@ export default function DoctorSchedule() {
         </p>
       </div>
 
-      {/* Top row: Duration + Fee */}
-      <div className="flex flex-wrap gap-4 mb-5">
-        <DurationCard duration={duration} onChange={setDuration} />
-        <FeeCard      fee={fee}           onChange={setFee} />
-      </div>
-
-      {/* Weekly availability */}
-      <div className="mb-5">
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-md border border-red-200">
-            {error}
+      {loading ? (
+        <ScheduleSkeleton />
+      ) : (
+        <>
+          <div className="flex flex-wrap gap-4 mb-5">
+            <DurationCard duration={duration} onChange={setDuration} />
+            <FeeCard      fee={fee}           onChange={setFee} />
           </div>
-        )}
-        <WeeklyAvailability
-          schedule={schedule}
-          scheduleErrors={scheduleErrors}
-          onToggle={toggleDay}
-          onUpdateSlot={updateSlot}
-          onAddSlot={addSlot}
-          onRemoveSlot={removeSlot}
-        />
-      </div>
 
-      {/* Weekly summary */}
-      <WeeklySummary
-        workingDays={workingDays}
-        totalAppts={totalAppts}
-        duration={duration}
-        fee={fee}
-      />
+          {/* Weekly availability */}
+          <div className="mb-5">
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-md border border-red-200">
+                {error}
+              </div>
+            )}
+            <WeeklyAvailability
+              schedule={schedule}
+              scheduleErrors={scheduleErrors}
+              onToggle={toggleDay}
+              onUpdateSlot={updateSlot}
+              onAddSlot={addSlot}
+              onRemoveSlot={removeSlot}
+            />
+          </div>
+
+          {/* Weekly summary */}
+          <WeeklySummary
+            workingDays={workingDays}
+            totalAppts={totalAppts}
+            duration={duration}
+            fee={fee}
+          />
+        </>
+      )}
     </div>
   );
 }

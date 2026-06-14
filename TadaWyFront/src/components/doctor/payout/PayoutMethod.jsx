@@ -121,11 +121,7 @@ export default function PayoutMethod({ onWithdrawSuccess }) {
             onClick={handleWithdraw}
             className="w-full bg-teal-500 hover:bg-teal-600 active:bg-teal-700 text-white font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-teal-500/20 hover:shadow-teal-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isWithdrawing ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            ) : (
-              <Banknote className="w-5 h-5" />
-            )}
+            {!isWithdrawing && <Banknote className="w-5 h-5" />}
             <span>{isWithdrawing ? t("common.processing", "Processing...") : t("doctorDashboard.payout.payoutMethod.withdrawBtn", "Withdraw Funds")}</span>
           </button>
           <span className="text-xs font-medium text-slate-500 dark:text-slate-400">

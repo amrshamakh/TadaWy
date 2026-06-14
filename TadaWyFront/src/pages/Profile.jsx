@@ -5,7 +5,7 @@ import PersonalInfo from "../components/PersonalInfo";
 import MedicalInfo from "../components/MedicalInfo";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { ProfileSkeleton } from "../components/Skeleton";
 import {
   getPatientProfile,
   updatePatientProfile,
@@ -254,10 +254,7 @@ const Profile = () => {
     }
   };
 
-  // ─── Loading state ────────────────────────────────────────
-  if (authLoading || loading) {
-    return <LoadingSpinner className="h-96" />;
-  }
+
 
   if (!user) return null; // will redirect via useEffect
 
@@ -288,70 +285,74 @@ const Profile = () => {
         >
           <span className="inline-flex items-center gap-2">
             {isEditing ? <FiCheck size={16} /> : <FiEdit2 size={16} />}
-          {saving
-            ? t("profile.saving", "Saving...")
-            : isEditing
-            ? t("profile.save", "Save")
-            : t("profile.edit", "Edit")}
+            {saving
+              ? t("profile.saving", "Saving...")
+              : isEditing
+                ? t("profile.save", "Save")
+                : t("profile.edit", "Edit")}
           </span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 min-h-[450px]">
-        <PersonalInfo
-          data={profileData.personalInfo}
-          isEditing={isEditing}
-          onChange={(key, value) =>
-            setProfileData((prev) => {
-              const newPersonalInfo = { ...prev.personalInfo, [key]: value };
-              if (key === "dateOfBirth") {
-                newPersonalInfo.age = calcAge(value);
-              }
-              return {
-                ...prev,
-                personalInfo: newPersonalInfo,
-              };
-            })
-          }
-        />
+      {loading ? (
+        <ProfileSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 min-h-[450px]">
+          <PersonalInfo
+            data={profileData.personalInfo}
+            isEditing={isEditing}
+            onChange={(key, value) =>
+              setProfileData((prev) => {
+                const newPersonalInfo = { ...prev.personalInfo, [key]: value };
+                if (key === "dateOfBirth") {
+                  newPersonalInfo.age = calcAge(value);
+                }
+                return {
+                  ...prev,
+                  personalInfo: newPersonalInfo,
+                };
+              })
+            }
+          />
 
-        <MedicalInfo
-          data={profileData.medicalInfo}
-          isEditing={isEditing}
-          allAllergies={allAllergies}
-          allDiseases={allDiseases}
-          onBloodChange={(v) =>
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: { ...p.medicalInfo, bloodType: v },
-            }))
-          }
-          toggleAllergy={(a) =>
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: {
-                ...p.medicalInfo,
-                allergies: {
-                  ...p.medicalInfo.allergies,
-                  [a]: !p.medicalInfo.allergies[a],
+          <MedicalInfo
+            data={profileData.medicalInfo}
+            isEditing={isEditing}
+            allAllergies={allAllergies}
+            allDiseases={allDiseases}
+            onBloodChange={(v) =>
+              setProfileData((p) => ({
+                ...p,
+                medicalInfo: { ...p.medicalInfo, bloodType: v },
+              }))
+            }
+            toggleAllergy={(a) =>
+              setProfileData((p) => ({
+                ...p,
+                medicalInfo: {
+                  ...p.medicalInfo,
+                  allergies: {
+                    ...p.medicalInfo.allergies,
+                    [a]: !p.medicalInfo.allergies[a],
+                  },
                 },
-              },
-            }))
-          }
-          toggleDisease={(d) =>
-            setProfileData((p) => ({
-              ...p,
-              medicalInfo: {
-                ...p.medicalInfo,
-                chronicDiseases: {
-                  ...p.medicalInfo.chronicDiseases,
-                  [d]: !p.medicalInfo.chronicDiseases[d],
+              }))
+            }
+            toggleDisease={(d) =>
+              setProfileData((p) => ({
+                ...p,
+                medicalInfo: {
+                  ...p.medicalInfo,
+                  chronicDiseases: {
+                    ...p.medicalInfo.chronicDiseases,
+                    [d]: !p.medicalInfo.chronicDiseases[d],
+                  },
                 },
-              },
-            }))
-          }
-        />
-      </div>
+              }))
+            }
+          />
+        </div>
+      )}
     </div>
   );
 };

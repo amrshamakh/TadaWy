@@ -8,6 +8,7 @@ import DangerZone from "../components/settings/DangerZone";
 import { useTranslation } from 'react-i18next';
 import { getSettings, updateSettings } from "../services/settingService";
 import { toast } from "react-toastify";
+import { ProfileSkeleton } from "../components/Skeleton";
 
 const Settings = () => {
   const { t } = useTranslation();
@@ -61,16 +62,14 @@ const Settings = () => {
         </p>
       </div>
 
-      {loading || !settings ? (
-        <div className="flex justify-center items-center py-10">
-          <p className="text-gray-500 dark:text-gray-400">Loading settings...</p>
-        </div>
+      {loading ? (
+        <ProfileSkeleton />
       ) : (
         <>
-          <AppearanceSettings settings={settings} onUpdate={handleUpdateSetting} />
-          <LanguageSettings settings={settings} onUpdate={handleUpdateSetting} />
-          <NotificationSettings settings={settings} onUpdate={handleUpdateSetting} />
-          <AccountInfo settings={settings} />
+          <AppearanceSettings settings={settings || {}} onUpdate={handleUpdateSetting} />
+          <LanguageSettings settings={settings || {}} onUpdate={handleUpdateSetting} />
+          <NotificationSettings settings={settings || {}} onUpdate={handleUpdateSetting} />
+          <AccountInfo settings={settings || {}} />
           <DangerZone />
         </>
       )}

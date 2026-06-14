@@ -1,6 +1,7 @@
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
 import { useForgotPassword } from "../hooks/useForgotPassword";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const ForgotPassword = () => {
   const { t } = useTranslation();
@@ -41,9 +42,9 @@ const ForgotPassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg flex justify-center items-center gap-2"
           >
-            {loading ? t("forgotPassword.sending") || "Sending…" : t("forgotPassword.sendButton")}
+            {loading ? t("forgotPassword.sending") : t("forgotPassword.sendButton")}
           </button>
         </form>
       </div>

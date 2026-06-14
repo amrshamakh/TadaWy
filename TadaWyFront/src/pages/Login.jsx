@@ -125,12 +125,7 @@ dark:to-[#020617] dark:to-99% flex items-center justify-center p-4">
             disabled={loading}
             className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg flex justify-center items-center gap-2"
           >
-            {loading ? (
-              <>
-                <LoadingSpinner small size="h-4 w-4" color="border-white" />
-                <span>{t('auth.login.loading', 'Loading...')}</span>
-              </>
-            ) : t('auth.login.signIn', 'Sign In')}
+            {loading ? t('auth.login.loading', 'Loading...') : t('auth.login.signIn', 'Sign In')}
           </button>
         </form>
 

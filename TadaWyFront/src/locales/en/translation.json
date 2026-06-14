@@ -778,6 +778,7 @@
     "email": "Email",
     "emailPlaceholder": "name@example.com",
     "sendButton": "Send Reset Link",
+    "sending": "Sending...",
     "sentSuccess": "A password reset link has been sent to your email address."
   },
   "resetPassword": {
@@ -791,6 +792,7 @@
     "confirmPasswordPlaceholder": "Re-enter your new password",
     "passwordHint": "Password must be at least 8 characters and include letters and numbers.",
     "confirm": "Reset Password",
+    "resetting": "Resetting...",
     "success": "Password has been reset successfully.",
     "errors": {
       "weakPassword": "Password must be at least 6 characters.",

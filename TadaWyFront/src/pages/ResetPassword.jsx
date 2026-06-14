@@ -1,6 +1,7 @@
 import { assets } from "../assets/assets";
 import { useTranslation } from "react-i18next";
 import { useResetPassword } from "../hooks/useResetPassword";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 
 const ResetPassword = () => {
@@ -66,9 +67,9 @@ const ResetPassword = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg flex justify-center items-center gap-2"
           >
-            {loading ? "Resetting…" : t("resetPassword.confirm")}
+            {loading ? t("resetPassword.resetting") : t("resetPassword.confirm")}
           </button>
         </form>
       </div>
