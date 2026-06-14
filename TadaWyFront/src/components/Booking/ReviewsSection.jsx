@@ -74,7 +74,7 @@ export default function ReviewsSection({ doctor }) {
         <div 
           ref={scrollRef}
           onScroll={checkScroll}
-          className="flex gap-4 overflow-x-auto scrollbar-none snap-x snap-mandatory pb-2 scroll-smooth"
+          className="flex gap-4 overflow-x-auto reviews-scrollbar snap-x snap-mandatory pb-3 scroll-smooth"
         >
           {reviews.map((review, idx) => (
             <div 

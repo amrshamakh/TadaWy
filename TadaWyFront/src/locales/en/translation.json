@@ -682,6 +682,11 @@
       "notAvailable": "Not Available Now",
       "notAvailableDesc": "This doctor has no available times or days currently."
     },
+    "heroSubtitle": "Pick a day & time that works best for you",
+    "badge": {
+      "instant": "Instant Confirmation",
+      "secure": "Secure Booking"
+    },
     "modals": {
       "payment": {
         "title": "Choose your payment method:",

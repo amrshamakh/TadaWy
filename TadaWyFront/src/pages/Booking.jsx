@@ -42,9 +42,10 @@ export default function Booking() {
   return (
     <div className="min-h-screen">
       <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 pb-12 mt-3 flex flex-col gap-3">
+        <BookingSidebar doctor={doctor} onBookingSuccess={() => fetchDoctor(false)} />
         <DoctorCard doctor={doctor} />
         <ReviewsSection doctor={doctor} />
-        <BookingSidebar doctor={doctor} onBookingSuccess={() => fetchDoctor(false)} />
+
       </div>
     </div>
   );

@@ -45,5 +45,31 @@ button {
 .dark .Toastify__toast--warning {
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
+/* ── Reviews carousel custom scrollbar ─────────────────────── */
+.reviews-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #14b8a6 transparent;
+}
 
+.reviews-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  border-radius: 99px;
+}
 
+.reviews-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 99px;
+}
+
+.reviews-scrollbar::-webkit-scrollbar-thumb {
+  background: #14b8a6;
+  border-radius: 99px;
+}
+
+.dark .reviews-scrollbar {
+  scrollbar-color: #0d9488 transparent;
+}
+
+.dark .reviews-scrollbar::-webkit-scrollbar-thumb {
+  background: #0d9488;
+}

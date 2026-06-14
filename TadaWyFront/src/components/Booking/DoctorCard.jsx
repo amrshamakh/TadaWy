@@ -85,7 +85,7 @@ export default function DoctorCard({ doctor }) {
             <MapPin size={14} />
             <span>{t("booking.locationCard.title")}</span>
           </div>
-          <p className="text-gray-900 dark:text-white text-base font-extrabold m-0 truncate" title={location}>{location || "—"}</p>
+          <p className="text-gray-900 dark:text-white text-base font-extrabold m-0 break-words whitespace-normal">{location || "—"}</p>
         </div>
       </div>
 

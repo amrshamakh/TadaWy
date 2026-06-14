@@ -113,6 +113,17 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
           toast.info("Opening payment page...");
           setTimeout(() => { window.open(url, "_blank"); }, 500);
         }
+        // Refresh slots immediately so the booked slot disappears on this tab
+        if (onBookingSuccess) onBookingSuccess();
+
+        // Also refresh once the user tabs back from the payment gateway
+        const handleVisibility = () => {
+          if (document.visibilityState === "visible") {
+            document.removeEventListener("visibilitychange", handleVisibility);
+            if (onBookingSuccess) onBookingSuccess();
+          }
+        };
+        document.addEventListener("visibilitychange", handleVisibility);
       } catch (error) {
         toast.error("Failed to initiate payment");
       }
