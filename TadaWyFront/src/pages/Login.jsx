@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { loginPatient } from "../modules/patient/api/loginPatientAPi";
 import { useAuth } from "../context/AuthContext";
 import { assets } from "../assets/assets";
+import { ENV } from "@/config/env";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const Login = () => {
@@ -25,8 +26,8 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Redirect to backend endpoint for Google Login
-    window.location.href = `https://localhost:7262/api/Auth/google-login`;
+    // Redirect to backend endpoint for Google Login using global API URL
+    window.location.href = `${ENV.API_URL}/Auth/google-login`;
   };
 
   const handleSubmit = async (e) => {
