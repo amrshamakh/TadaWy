@@ -17,6 +17,7 @@ import DoctorApplication from "./pages/DoctorApplication";
 import DiscoverPage from "./pages/DiscoverPage";
 import ApplicationPending from "./pages/ApplicationPending";
 import Booking from "./pages/Booking";
+import GoogleCallback from "./pages/GoogleCallback";
 import AdminLayout from "./admin/AdminLayout";
 import AdminDoctors from "./admin/AdminDoctors";
 import DoctorLayout from "./components/doctor/DoctorLayout";
@@ -66,6 +67,16 @@ const App = () => {
     document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
   }, [i18n.language]);
 
+  // Scroll to top on every navigation
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    // Also scroll internal containers used in Layouts
+    const scrollContainers = document.querySelectorAll('.overflow-y-auto');
+    scrollContainers.forEach(container => {
+      container.scrollTo(0, 0);
+    });
+  }, [pathname]);
+
   return (
     <div>
       <Routes>
@@ -77,6 +88,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/online-payment" element={<OnlinePayment />} />
+        <Route path="/auth/callback" element={<GoogleCallback />} />
 
         <Route path="/" element={<Layout />}>
           <Route index element={<LandingPage />} />

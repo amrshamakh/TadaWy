@@ -10,6 +10,7 @@ import {
   confirmAppointment, 
   cancelAppointment 
 } from "@/modules/doctor/api/appointmentsDoctorApi";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 export default function DoctorAppointments() {
   const { i18n } = useTranslation();
@@ -95,7 +96,7 @@ export default function DoctorAppointments() {
   }, {});
 
   if (loading && appointments.length === 0) {
-    return <div className="p-6 text-center">{i18n.language === "ar" ? "جاري التحميل..." : "Loading..."}</div>;
+    return <LoadingSpinner />;
   }
 
   return (

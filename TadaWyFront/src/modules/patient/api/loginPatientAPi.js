@@ -6,3 +6,10 @@ export function loginPatient(formData) {
     password: formData.password,
   });
 }
+
+export function externalLogin(idToken) {
+  return ApiClient.post("/Auth/ExternalLogin", {
+    idToken: idToken,
+    provider: "Google"
+  });
+}

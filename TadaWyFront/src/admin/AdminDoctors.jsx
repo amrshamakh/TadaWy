@@ -4,6 +4,7 @@ import DoctorCard from "../components/AdminDoctorCard";
 import { useTranslation } from "react-i18next";
 import { assets } from "../assets/assets";
 import { useAdminDoctors } from "../hooks/useAdminDoctors";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const AdminDoctors = () => {
   const { t } = useTranslation();
@@ -63,9 +64,8 @@ const AdminDoctors = () => {
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 min-h-[50vh]">
         {loading ? (
-          <div className="col-span-full flex flex-col items-center justify-center py-24 gap-4">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-teal-500/20 border-t-teal-500"></div>
-            <p className="text-gray-500 dark:text-gray-400 animate-pulse">{t("admin.doctors.loading", "Loading...")}</p>
+          <div className="col-span-full">
+            <LoadingSpinner />
           </div>
         ) : doctors.length > 0 ? (
           doctors.map((doctor) => (

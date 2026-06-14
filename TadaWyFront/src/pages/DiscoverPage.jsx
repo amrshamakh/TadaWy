@@ -12,6 +12,7 @@ import { getDoctors } from "../modules/patient/api/doctorDiscoveryApi";
 import { getAllSpecializations, getStates, getCitiesByState } from "../modules/doctor/api/lookupApi";
 import { useLocalizedField } from "../hooks/useLocalizedField";
 import Footer from "../components/Landing/Footer";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const CLINIC_PLACEHOLDER = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=500&h=300&fit=crop";
 
@@ -290,9 +291,7 @@ export default function DiscoverPage() {
         {/* Clinic Grid / List */}
         <div className="min-h-[500px]">
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-            </div>
+            <LoadingSpinner />
           ) : doctors.length === 0 ? (
             <div className="text-center py-12 dark:bg-gray-800 bg-white rounded-lg">
               <p className="text-gray-500 text-lg">{t("discover.noResults")}</p>

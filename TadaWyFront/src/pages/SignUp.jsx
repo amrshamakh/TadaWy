@@ -13,6 +13,7 @@ import L from "leaflet";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 /* Fix Leaflet marker icon */
 delete L.Icon.Default.prototype._getIconUrl;
@@ -374,9 +375,14 @@ dark:to-[#020617] flex items-center justify-center p-4 py-8"
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6"
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md hover:shadow-lg mt-6 flex justify-center items-center gap-2"
           >
-            {loading ? "Loading..." : t("auth.signup.signUp", "Sign Up")}
+            {loading ? (
+              <>
+                <LoadingSpinner small size="h-4 w-4" color="border-white" />
+                <span>{t("auth.signup.loading", "Loading...")}</span>
+              </>
+            ) : t("auth.signup.signUp", "Sign Up")}
           </button>
           <span className="block text-center my-0.5 font-medium text-black dark:text-gray-400">
             OR

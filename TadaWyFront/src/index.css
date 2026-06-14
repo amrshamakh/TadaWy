@@ -48,28 +48,42 @@ button {
 /* ── Reviews carousel custom scrollbar ─────────────────────── */
 .reviews-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #14b8a6 transparent;
+  scrollbar-color: #14b8a6 #f1f5f9;
 }
 
 .reviews-scrollbar::-webkit-scrollbar {
-  height: 6px;
-  border-radius: 99px;
+  height: 8px;
+  width: 8px;
 }
 
 .reviews-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 99px;
+  background: #f1f5f9;
+  border-radius: 10px;
 }
 
 .reviews-scrollbar::-webkit-scrollbar-thumb {
   background: #14b8a6;
-  border-radius: 99px;
+  border-radius: 10px;
+  border: 2px solid #f1f5f9;
+}
+
+.reviews-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0d9488;
 }
 
 .dark .reviews-scrollbar {
-  scrollbar-color: #0d9488 transparent;
+  scrollbar-color: #0d9488 #1e293b;
+}
+
+.dark .reviews-scrollbar::-webkit-scrollbar-track {
+  background: #1e293b;
 }
 
 .dark .reviews-scrollbar::-webkit-scrollbar-thumb {
   background: #0d9488;
+  border: 2px solid #1e293b;
+}
+
+.dark .reviews-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #0f766e;
 }

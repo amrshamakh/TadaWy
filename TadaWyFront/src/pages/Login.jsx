@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { assets } from "../assets/assets";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { loginPatient } from "../modules/patient/api/loginPatientAPi";
 import { useAuth } from "../context/AuthContext";
+import { assets } from "../assets/assets";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const Login = () => {
   const { t } = useTranslation();
@@ -21,6 +22,11 @@ const Login = () => {
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleGoogleLogin = () => {
+    // Redirect to backend endpoint for Google Login
+    window.location.href = `https://localhost:7262/api/Auth/google-login`;
   };
 
   const handleSubmit = async (e) => {
@@ -116,11 +122,36 @@ dark:to-[#020617] dark:to-99% flex items-center justify-center p-4">
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg"
+            className="w-full bg-teal-500 hover:bg-teal-600 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md hover:shadow-lg flex justify-center items-center gap-2"
           >
-            {loading ? "Loading..." : t('auth.login.signIn', 'Sign In')}
+            {loading ? (
+              <>
+                <LoadingSpinner small size="h-4 w-4" color="border-white" />
+                <span>{t('auth.login.loading', 'Loading...')}</span>
+              </>
+            ) : t('auth.login.signIn', 'Sign In')}
           </button>
         </form>
+
+        {/* Google Login Component */}
+        <div className="mt-6 flex flex-col items-center gap-4">
+          <div className="relative w-full flex items-center justify-center">
+            <div className="border-t border-gray-200 dark:border-[#475569] w-full"></div>
+            <span className="bg-white dark:bg-[#1E293B] px-3 text-sm text-gray-500 absolute uppercase font-bold tracking-widest">
+              {t('auth.login.or', 'or')}
+            </span>
+          </div>
+          <div className="w-full flex justify-center">
+            <button
+              type="button"
+              onClick={handleGoogleLogin}
+              className="w-full flex items-center justify-center gap-3 bg-white dark:bg-[#334155] border border-gray-200 dark:border-[#475569] hover:bg-gray-50 dark:hover:bg-[#3d4b5f] text-gray-700 dark:text-white font-semibold py-3 px-4 rounded-lg transition duration-200 shadow-sm"
+            >
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+              {t('auth.login.googleSignIn', 'Sign in with Google')}
+            </button>
+          </div>
+        </div>
 
         {/* Sign Up Link */}
         <p className="text-center text-gray-600 dark:text-gray-400 mt-6">

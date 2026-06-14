@@ -4,6 +4,7 @@ import DurationCard from "./DurationCard";
 import FeeCard from "./FeeCard";
 import WeeklyAvailability from "./Weeklyavailability";
 import WeeklySummary     from "./WeeklySummary";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { getDoctorSchedule, updateDoctorSchedule } from "@/modules/doctor/api/scheduleDoctorApi";
 
 const INITIAL_SCHEDULE = {
@@ -275,11 +276,7 @@ export default function DoctorSchedule() {
   }, 0);
 
   if (loading) {
-    return (
-      <div className="min-h-screen p-7 font-sans flex justify-center items-center">
-        <p className="text-gray-500">Loading schedule...</p>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (

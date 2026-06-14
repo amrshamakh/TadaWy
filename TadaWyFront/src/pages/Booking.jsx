@@ -4,6 +4,7 @@ import { getDoctorById } from "../modules/patient/api/doctorDiscoveryApi";
 import DoctorCard from "../components/Booking/DoctorCard";
 import ReviewsSection from "../components/Booking/ReviewsSection";
 import BookingSidebar from "../components/Booking/BookingSidebar";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Booking() {
   const { id } = useParams();
@@ -30,11 +31,7 @@ export default function Booking() {
   useEffect(() => { fetchDoctor(true); }, [fetchDoctor]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-slate-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-400"></div>
-      </div>
-    );
+    return <LoadingSpinner className="min-h-screen" />;
   }
 
   if (error || !doctor) return <Navigate to="/discover" replace />;
@@ -42,9 +39,10 @@ export default function Booking() {
   return (
     <div className="min-h-screen">
       <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 pb-12 mt-3 flex flex-col gap-3">
-        <BookingSidebar doctor={doctor} onBookingSuccess={() => fetchDoctor(false)} />
+
         <DoctorCard doctor={doctor} />
         <ReviewsSection doctor={doctor} />
+        <BookingSidebar doctor={doctor} onBookingSuccess={() => fetchDoctor(false)} />
 
       </div>
     </div>

@@ -188,7 +188,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
 
                 {/* Dropdown */}
                 {open && (
-                  <div className="absolute right-0 top-12 w-64 bg-white dark:bg-[#1e293b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                  <div className={`absolute ${isRtl ? 'left-0' : 'right-0'} top-12 w-64 bg-white dark:bg-[#1e293b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50`}>
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium dark:text-white">{displayName}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">{displayEmail}</p>
@@ -305,7 +305,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                 </button>
 
                 {open && (
-                  <div className="absolute right-0 top-12 w-64 bg-white dark:bg-[#1e293b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                  <div className={`absolute ${isRtl ? 'left-0' : 'right-0'} top-12 w-64 bg-white dark:bg-[#1e293b] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50`}>
                     {/* Header */}
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium dark:text-white">Admin</p>

@@ -5,6 +5,7 @@ import PersonalInfo from "../components/PersonalInfo";
 import MedicalInfo from "../components/MedicalInfo";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 import {
   getPatientProfile,
   updatePatientProfile,
@@ -255,11 +256,7 @@ const Profile = () => {
 
   // ─── Loading state ────────────────────────────────────────
   if (authLoading || loading) {
-    return (
-      <div className="flex justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-      </div>
-    );
+    return <LoadingSpinner className="h-96" />;
   }
 
   if (!user) return null; // will redirect via useEffect

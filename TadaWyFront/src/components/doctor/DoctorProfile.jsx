@@ -3,6 +3,7 @@ import { FiEdit2, FiCheck } from "react-icons/fi";
 import { UserIcon, MapPin, Phone, Mail, DollarSign, Calendar } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useDoctorProfile } from "../../hooks/useDoctorProfile";
+import LoadingSpinner from "../LoadingSpinner";
 
 const Field = ({
   label,
@@ -66,11 +67,7 @@ const DoctorProfile = () => {
   const localizedSpecialty = isRtl ? form.specializationAr : form.specializationEn;
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-64px)]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
-      </div>
-    );
+    return <LoadingSpinner className="min-h-[60vh]" />;
   }
 
   return (

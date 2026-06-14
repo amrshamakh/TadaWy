@@ -60,16 +60,16 @@ export default function DoctorCard({ doctor }) {
         </div>
       </div>
 
-      {/* 3-column info row */}
-      <div className="grid grid-cols-3 border-t border-b border-gray-100 dark:border-slate-700 divide-x divide-gray-100 dark:divide-slate-700">
-        <div className="px-6 py-5">
+      {/* 3-column info row - Replaced grid with flex for better responsiveness of long text */}
+      <div className="flex flex-wrap border-t border-b border-gray-100 dark:border-slate-700 divide-x divide-gray-100 dark:divide-slate-700 rtl:divide-x-reverse">
+        <div className="flex-1 min-w-[120px] px-6 py-5">
           <div className="flex items-center gap-2 text-teal-500 dark:text-teal-400 text-[0.85rem] font-bold uppercase tracking-widest mb-2">
             <Phone size={14} />
             <span>{t("booking.doctorCard.phone")}</span>
           </div>
           <p className="text-gray-900 dark:text-white text-base font-extrabold m-0">{phone || t("booking.doctorCard.notAvailable")}</p>
         </div>
-        <div className="px-6 py-5">
+        <div className="flex-1 min-w-[120px] px-6 py-5">
           <div className="flex items-center gap-2 text-teal-500 dark:text-teal-400 text-[0.85rem] font-bold uppercase tracking-widest mb-2">
             <Clock size={14} />
             <span>{t("booking.doctorCard.experience")}</span>
@@ -80,12 +80,14 @@ export default function DoctorCard({ doctor }) {
               : t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
           </p>
         </div>
-        <div className="px-6 py-5">
+        <div className="flex-[2] min-w-[200px] px-6 py-5">
           <div className="flex items-center gap-2 text-teal-500 dark:text-teal-400 text-[0.85rem] font-bold uppercase tracking-widest mb-2">
             <MapPin size={14} />
             <span>{t("booking.locationCard.title")}</span>
           </div>
-          <p className="text-gray-900 dark:text-white text-base font-extrabold m-0 break-words whitespace-normal">{location || "—"}</p>
+          <p className="text-gray-900 dark:text-white text-base font-extrabold m-0 break-words whitespace-normal leading-snug">
+            {location || "—"}
+          </p>
         </div>
       </div>
 
