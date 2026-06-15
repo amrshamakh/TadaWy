@@ -17,7 +17,15 @@ export const useForgotPassword = () => {
     setLoading(true);
     try {
       await forgotPasswordApi(email);
-      toast.success(t("forgotPassword.sentSuccess"));
+      toast.success(t("forgotPassword.sentSuccess"), {
+        style: {
+          background: "#0f766e",
+          color: "#fff",
+          borderRadius: "10px",
+          fontWeight: "bold",
+        },
+        icon: "✉️",
+      });
       setEmail("");
     } catch (err) {
       console.error("Forgot-password error:", err?.response ?? err);
@@ -35,7 +43,15 @@ export const useForgotPassword = () => {
         message = Array.isArray(firstField) ? firstField[0] : String(firstField);
       }
 
-      toast.error(message);
+      toast.error(message, {
+        style: {
+          background: "#0f766e",
+          color: "#fff",
+          borderRadius: "10px",
+          fontWeight: "bold",
+        },
+        icon: "❌",
+      });
     } finally {
       setLoading(false);
     }

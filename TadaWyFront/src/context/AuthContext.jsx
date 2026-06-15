@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getPatientProfile } from '../modules/patient/api/profilePatientAPi';
 import { getDoctorProfile } from '../modules/doctor/api/profileDoctorApi';
 import { TokenService } from '../services/tokenService';
@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const { setDarkMode } = useTheme();
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const hasToken = TokenService.hasToken() || localStorage.getItem("userToken");
       if (!hasToken) {
@@ -118,19 +118,19 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [setDarkMode]);
 
   useEffect(() => {
     fetchUser();
   }, []);
 
-  const login = async (token) => {
+  const login = useCallback(async (token) => {
     TokenService.setToken(token);
     localStorage.setItem("userToken", token);
     await fetchUser();
-  };
+  }, [fetchUser]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       const token = TokenService.getToken() || localStorage.getItem("userToken");
       if (token) {
@@ -153,7 +153,7 @@ export function AuthProvider({ children }) {
       document.documentElement.setAttribute('dir', guestLang === 'ar' ? 'rtl' : 'ltr');
       document.documentElement.setAttribute('lang', guestLang);
     }
-  };
+  }, [setDarkMode]);
 
   return (
     <AuthContext.Provider value={{ user, role, loading, login, logout, fetchUser }}>

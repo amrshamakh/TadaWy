@@ -12,6 +12,7 @@ import {
 import L from "leaflet";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -108,7 +109,10 @@ const SignUp = () => {
       }));
     } catch (error) {
       console.error("Geocoding error:", error);
-      alert("Failed to get location details");
+      toast.error(t("auth.signup.locationError", "Failed to get location details"), {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "❌",
+      });
     }
   };
 
@@ -136,7 +140,10 @@ const SignUp = () => {
         await reverseGeocode(lat, lng);
         setShowMap(false);
       },
-      () => alert("Location permission denied"),
+      () => toast.error(t("auth.signup.locationDenied", "Location permission denied"), {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "📍",
+      }),
     );
   };
 
@@ -146,7 +153,10 @@ const SignUp = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error(t("auth.signup.passwordMismatch", "Passwords do not match!"), {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "🔒",
+      });
       return;
     }
 
@@ -160,7 +170,27 @@ const SignUp = () => {
       }
     } catch (error) {
       console.error("Signup error:", error);
-      alert("Failed to sign up");
+      const data = error?.response?.data;
+      let message = t("auth.signup.failed", "Failed to sign up");
+
+      if (typeof data === "string" && data.trim()) {
+        message = data;
+      } else if (Array.isArray(data?.errors)) {
+        const errObj = data.errors[0];
+        message = typeof errObj === "string" ? errObj : (errObj?.description || errObj?.code || message);
+      } else if (data?.errors && typeof data.errors === "object") {
+        const firstField = Object.values(data.errors)[0];
+        message = Array.isArray(firstField) ? firstField[0] : String(firstField);
+      } else if (data?.message && typeof data.message === "string") {
+        message = data.message;
+      } else if (data?.title && typeof data.title === "string") {
+        message = data.title;
+      }
+
+      toast.error(message, {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "❌",
+      });
     } finally {
       setLoading(false);
     }

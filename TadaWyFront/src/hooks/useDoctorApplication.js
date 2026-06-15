@@ -157,18 +157,27 @@ export const useDoctorApplication = () => {
         await reverseGeocode(lat, lng);
         setShowMap(false);
       },
-      () => alert("Location permission denied")
+      () => toast.error("Location permission denied", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "📍",
+      })
     );
   };
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "🔒",
+      });
       return;
     }
     if (!formData.specializationId) {
-      alert("Please select a specialization");
+      toast.error("Please select a specialization", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "⚕️",
+      });
       return;
     }
 
@@ -179,7 +188,10 @@ export const useDoctorApplication = () => {
     } catch (err) {
       console.error("Application failed:", err);
       const message = extractApiError(err, "Submission failed. Please check your data and try again.");
-      toast.error(message);
+      toast.error(message, {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "❌",
+      });
     } finally {
       setIsSubmitting(false);
     }
