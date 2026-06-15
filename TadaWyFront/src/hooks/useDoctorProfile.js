@@ -79,7 +79,10 @@ export const useDoctorProfile = () => {
       });
     } catch (err) {
       console.error("Error loading profile:", err);
-      toast.error(t("profile.loadError") || "Failed to load profile");
+      toast.error(t("profile.loadError") || "Failed to load profile", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "❌",
+      });
     } finally {
       setLoading(false);
     }
@@ -106,13 +109,19 @@ export const useDoctorProfile = () => {
         careerStartDate: form.careerStartDate || null
       };
       await updateDoctorProfile(updateDto);
-      toast.success(t("profile.updatedSuccess") || "Profile updated successfully");
+      toast.success(t("profile.updatedSuccess") || "Profile updated successfully", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "✅",
+      });
       setIsEditing(false);
       await fetchUser();
       await loadProfile();
     } catch (err) {
       console.error("Error saving profile:", err);
-      toast.error(t("profile.saveError") || "Failed to save profile");
+      toast.error(t("profile.saveError") || "Failed to save profile", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "❌",
+      });
     } finally {
       setSaving(false);
     }
@@ -124,11 +133,17 @@ export const useDoctorProfile = () => {
       setUploadingImage(true);
       const res = await uploadDoctorImage(file);
       setForm(prev => ({ ...prev, imageUrl: res.imageUrl }));
-      toast.success(t("profile.imageUpdated") || "Image updated successfully");
+      toast.success(t("profile.imageUpdated") || "Image updated successfully", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "✅",
+      });
       await fetchUser();
     } catch (err) {
       console.error("Error uploading image:", err);
-      toast.error(t("profile.imageUploadError") || "Failed to upload image");
+      toast.error(t("profile.imageUploadError") || "Failed to upload image", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "❌",
+      });
     } finally {
       setUploadingImage(false);
     }

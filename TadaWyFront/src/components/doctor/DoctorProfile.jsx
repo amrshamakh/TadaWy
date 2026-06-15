@@ -148,7 +148,7 @@ const DoctorProfile = () => {
                     ) : (
                       <FiEdit2 size={16} />
                     )}
-                    {saving ? t("doctorDashboard.profile.saving", "Saving...") : isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
+                    {isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
                   </button>
                 </div>
 
