@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useDoctors } from "../context/doctorContext";
 import { useTranslation } from "react-i18next";
 
-export const useAdminDoctors = (itemsPerPage = 6) => {
-  const [filter, setFilter] = useState("Approved");
+export const useAdminDoctors = (itemsPerPage = 8) => {
+  const [filter, setFilter] = useState("Pending");
   const [search, setSearch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
