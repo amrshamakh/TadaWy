@@ -5,10 +5,20 @@ import { toPng } from "html-to-image";
 
 export default function BookingReceiptModal({ receiptRef, receiptNumber, patientName, patientEmail, doctor, appointmentDateValue, appointmentCost, isPrinting, onPrintReceipt, onDone, isOnline = false, isInline = false }) {
   const { t, i18n } = useTranslation();
+  const isAr = i18n.language === "ar";
+
+  const getCityState = () => {
+    const address = doctor?.address || doctor?.doctorLocation || doctor;
+    if (!address) return "City, Government, Country";
+    if (typeof address === 'string') return address;
+    const city = isAr ? address.cityAr || address.city : address.city;
+    const state = isAr ? address.stateAr || address.state : address.state;
+    return [city, state].filter(p => p && p.toLowerCase() !== 'unknown').join(', ') || "City, Government, Country";
+  };
 
   const label = "block text-[0.78rem] text-gray-400 dark:text-gray-500 mb-0.5";
   const value = "block text-[0.92rem] font-semibold text-gray-800 dark:text-gray-100 mb-1";
-  const divider = "border-dashed border-gray-200 dark:border-slate-700 my-3";
+  const divider = "border-dashed border-gray-200 dark:border-slate-600 my-3";
 
   const handleDownloadPNG = async () => {
     if (!receiptRef.current) return;
@@ -39,13 +49,13 @@ export default function BookingReceiptModal({ receiptRef, receiptNumber, patient
       {/* Header */}
       <div className="bg-teal-400 dark:bg-teal-600 flex items-center justify-between px-4 py-3">
         <div className="w-16 h-16 flex items-center justify-center shrink-0">
-          <img className="w-16 h-16 brightness-100 dark:brightness-110" src={assets.logo} alt="logo" />
+          <img className="w-16 h-16 brightness-100 dark:brightness-110" src={assets.logo} alt="TadaWy Logo" aria-hidden="true" />
         </div>
         <div className="text-center flex-1 text-white shrink-0">
-          <h4 className="m-0 text-[1.55rem] font-bold">{t("booking.modals.receipt.title")}</h4>
+          <h4 id="receipt-title" className="m-0 text-[1.55rem] font-bold">{t("booking.modals.receipt.title")}</h4>
           <p className="mt-0.5 text-[0.72rem] opacity-95">{t("booking.modals.receipt.receiptNo")} {receiptNumber}</p>
         </div>
-        <div className="w-16 h-16 shrink-0" />
+        <div className="w-16 h-16 shrink-0" aria-hidden="true" />
       </div>
 
       {/* Body */}
@@ -56,28 +66,24 @@ export default function BookingReceiptModal({ receiptRef, receiptNumber, patient
           <span className={label}>{t("booking.modals.receipt.patientEmail")}</span>
           <span className={value}>{patientEmail}</span>
         </div>
-        <hr className={divider} />
+        <hr className={divider} aria-hidden="true" />
         <div className="grid grid-cols-2 gap-3 mb-2">
           <div>
             <span className={label}>{t("booking.modals.receipt.doctorName")}</span>
-            <span className={value}>{doctor?.name || "John Doe"}</span>
+            <span className={value}>{doctor?.name || doctor?.doctorName || "John Doe"}</span>
             <span className={label}>{t("booking.modals.receipt.doctorLocation")}</span>
-            <span className={value}>
-              {doctor?.address
-                ? [doctor.address.city, doctor.address.state].filter(p => p && p.toLowerCase() !== 'unknown').join(', ') || "City, Government, Country"
-                : "City, Government, Country"}
-            </span>
+            <span className={value}>{getCityState()}</span>
           </div>
           <div>
             <span className={label}>{t("booking.modals.receipt.specialization")}</span>
-            <span className={value}>{doctor?.specialization || "Cardiology"}</span>
+            <span className={value}>{doctor?.specialization || doctor?.specialty || "Cardiology"}</span>
             <span className={label}>{t("booking.modals.receipt.phone")}</span>
             <span className={value}>{doctor?.phoneNumber || doctor?.phone || "+201111111111"}</span>
           </div>
         </div>
         <span className={label}>{t("booking.modals.receipt.locationDetails")}</span>
-        <span className={value}>{doctor?.addressDescription || doctor?.location_description || t("booking.modals.receipt.locationDetailsPlaceholder")}</span>
-        <hr className={divider} />
+        <span className={value}>{doctor?.addressDescription || doctor?.location_description || doctor?.doctorLocationDetails || t("booking.modals.receipt.locationDetailsPlaceholder")}</span>
+        <hr className={divider} aria-hidden="true" />
         <div>
           <span className={label}>{t("booking.modals.receipt.appointmentDate")}</span>
           <span className={value}>{appointmentDateValue}</span>
@@ -128,7 +134,13 @@ export default function BookingReceiptModal({ receiptRef, receiptNumber, patient
   if (isInline) return <div className="w-[450px] max-w-full">{innerContent}</div>;
 
   return (
-    <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: "min(90vw, 450px)", zIndex: 101 }} role="dialog" aria-modal="true">
+    <div 
+      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" 
+      style={{ width: "min(90vw, 450px)", zIndex: 101 }} 
+      role="dialog" 
+      aria-modal="true"
+      aria-labelledby="receipt-title"
+    >
       {innerContent}
     </div>
   );

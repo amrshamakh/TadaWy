@@ -3,8 +3,10 @@ import { Star, ChevronLeft, ChevronRight, MessageSquareOff } from "lucide-react"
 import { useTranslation } from "react-i18next";
 
 export default function ReviewsSection({ doctor }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language === "ar" || document.documentElement.dir === "rtl";
   const scrollRef = useRef(null);
+  const ticking = useRef(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -16,8 +18,25 @@ export default function ReviewsSection({ doctor }) {
   const checkScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      setCanScrollLeft(scrollLeft > 0);
-      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+      const absScrollLeft = Math.abs(scrollLeft);
+
+      if (isRtl) {
+        setCanScrollLeft(absScrollLeft < scrollWidth - clientWidth - 5);
+        setCanScrollRight(absScrollLeft > 5);
+      } else {
+        setCanScrollLeft(scrollLeft > 5);
+        setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+      }
+    }
+  };
+
+  const handleScroll = () => {
+    if (!ticking.current) {
+      window.requestAnimationFrame(() => {
+        checkScroll();
+        ticking.current = false;
+      });
+      ticking.current = true;
     }
   };
 
@@ -25,7 +44,7 @@ export default function ReviewsSection({ doctor }) {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
-  }, [reviews]);
+  }, [reviews, isRtl]);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -48,6 +67,7 @@ export default function ReviewsSection({ doctor }) {
               onClick={() => scroll('left')}
               disabled={!canScrollLeft}
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-teal-50 dark:hover:bg-teal-900/30 border border-gray-200 dark:border-slate-600 flex items-center justify-center disabled:opacity-20 transition-all shadow-sm active:scale-90"
+              aria-label={t("booking.reviewsSection.scrollLeft") || "Scroll left"}
             >
               <ChevronLeft size={20} className="text-gray-600 dark:text-gray-300" />
             </button>
@@ -55,6 +75,7 @@ export default function ReviewsSection({ doctor }) {
               onClick={() => scroll('right')}
               disabled={!canScrollRight}
               className="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-teal-50 dark:hover:bg-teal-900/30 border border-gray-200 dark:border-slate-600 flex items-center justify-center disabled:opacity-20 transition-all shadow-sm active:scale-90"
+              aria-label={t("booking.reviewsSection.scrollRight") || "Scroll right"}
             >
               <ChevronRight size={20} className="text-gray-600 dark:text-gray-300" />
             </button>
@@ -73,7 +94,7 @@ export default function ReviewsSection({ doctor }) {
       ) : (
         <div 
           ref={scrollRef}
-          onScroll={checkScroll}
+          onScroll={handleScroll}
           className="flex gap-4 overflow-x-auto reviews-scrollbar snap-x snap-mandatory pb-3 scroll-smooth"
         >
           {reviews.map((review, idx) => (
@@ -93,8 +114,11 @@ export default function ReviewsSection({ doctor }) {
                       </p>
                     )}
                   </div>
-                  <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 px-3 py-1.5 rounded-full text-sm font-black border border-teal-100 dark:border-teal-800 shadow-sm">
-                    <Star size={14} fill="currentColor" />
+                  <div 
+                    className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 px-3 py-1.5 rounded-full text-sm font-black border border-teal-100 dark:border-teal-800 shadow-sm"
+                    aria-label={t("booking.reviewsSection.ratingAria", { rating: review.rating || review.rate }) || `Rating: ${review.rating || review.rate} stars`}
+                  >
+                    <Star size={14} fill="currentColor" aria-hidden="true" />
                     <span>{review.rating || review.rate}</span>
                   </div>
                 </div>

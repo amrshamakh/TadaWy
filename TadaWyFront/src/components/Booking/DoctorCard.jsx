@@ -39,7 +39,7 @@ export default function DoctorCard({ doctor }) {
         <div className="w-[140px] h-[140px] rounded-full overflow-hidden border-4 border-teal-400 flex-shrink-0 bg-gray-100 dark:bg-slate-700">
           <img
             src={doctor.imageUrl || UserIcon}
-            alt="Doctor"
+            alt={name || t("booking.doctorCard.doctor")}
             className={`w-full h-full ${doctor.imageUrl ? "object-cover object-top" : "object-contain p-1"}`}
           />
         </div>
@@ -51,38 +51,43 @@ export default function DoctorCard({ doctor }) {
         </div>
         {/* Rating */}
         <div className="flex-shrink-0 text-right">
-          <div className="flex items-center gap-1 justify-end mb-1">
-            {[1,2,3,4,5].map(i => (
+          <div className="flex items-center gap-1 justify-end mb-1" aria-hidden="true">
+            {[1, 2, 3, 4, 5].map(i => (
               <Star key={i} size={16} className={i <= Math.round(Number(rating)) ? "fill-teal-400 text-teal-400" : "fill-gray-200 dark:fill-slate-600 text-gray-200 dark:text-slate-600"} />
             ))}
           </div>
-          <p className="text-gray-600 dark:text-gray-400 text-sm font-bold">{rating}/5 · {reviewsCount} {t("common.reviews")}</p>
+          <p 
+            className="text-gray-600 dark:text-gray-400 text-sm font-bold"
+            aria-label={`${rating} out of 5 stars from ${reviewsCount} reviews`}
+          >
+            {rating}/5 · {reviewsCount} {t("common.reviews")}
+          </p>
         </div>
       </div>
 
-      {/* 3-column info row - Replaced grid with flex for better responsiveness of long text */}
-      <div className="flex flex-wrap border-t border-b border-gray-100 dark:border-slate-700 divide-x divide-gray-100 dark:divide-slate-700 rtl:divide-x-reverse">
-        <div className="flex-1 min-w-[120px] px-6 py-5">
+      {/* 3-column info row - Replaced flex-wrap with CSS Grid for clean responsiveness */}
+      <div className="grid grid-cols-1 md:grid-cols-4 border-t border-b border-gray-100 dark:border-slate-700 divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-slate-700 rtl:divide-x-reverse">
+        <div className="md:col-span-1 px-6 py-5">
           <div className="flex items-center gap-2 text-teal-500 dark:text-teal-400 text-[0.85rem] font-bold uppercase tracking-widest mb-2">
-            <Phone size={14} />
+            <Phone size={14} aria-hidden="true" />
             <span>{t("booking.doctorCard.phone")}</span>
           </div>
           <p className="text-gray-900 dark:text-white text-base font-extrabold m-0">{phone || t("booking.doctorCard.notAvailable")}</p>
         </div>
-        <div className="flex-1 min-w-[120px] px-6 py-5">
+        <div className="md:col-span-1 px-6 py-5">
           <div className="flex items-center gap-2 text-teal-500 dark:text-teal-400 text-[0.85rem] font-bold uppercase tracking-widest mb-2">
-            <Clock size={14} />
+            <Clock size={14} aria-hidden="true" />
             <span>{t("booking.doctorCard.experience")}</span>
           </div>
           <p className="text-gray-900 dark:text-white text-base font-extrabold m-0">
             {experience !== undefined
               ? t("doctorDashboard.profile.experienceSubtitle", { count: experience })
-              : t("doctorDashboard.profile.experienceSubtitle", { count: 4 })}
+              : t("booking.doctorCard.notAvailable")}
           </p>
         </div>
-        <div className="flex-[2] min-w-[200px] px-6 py-5">
+        <div className="md:col-span-2 px-6 py-5">
           <div className="flex items-center gap-2 text-teal-500 dark:text-teal-400 text-[0.85rem] font-bold uppercase tracking-widest mb-2">
-            <MapPin size={14} />
+            <MapPin size={14} aria-hidden="true" />
             <span>{t("booking.locationCard.title")}</span>
           </div>
           <p className="text-gray-900 dark:text-white text-base font-extrabold m-0 break-words whitespace-normal leading-snug">
@@ -92,8 +97,8 @@ export default function DoctorCard({ doctor }) {
       </div>
 
       {/* About */}
-      <div className="px-8 py-6">
-        <p className="text-gray-400 dark:text-gray-500 text-[0.85rem] font-bold uppercase tracking-widest mb-3">
+      <div className="px-6 py-6">
+        <p className="text-gray-400 dark:text-slate-400 text-[0.85rem] font-bold uppercase tracking-widest mb-3">
           {t("booking.doctorCard.about")}
         </p>
         <p className="text-gray-700 dark:text-gray-300 text-[1.05rem] font-medium leading-relaxed m-0">

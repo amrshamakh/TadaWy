@@ -30,7 +30,7 @@ export default function DiscoverPage() {
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedStateId, setSelectedStateId] = useState("");
-  
+
   const [specializations, setSpecializations] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);

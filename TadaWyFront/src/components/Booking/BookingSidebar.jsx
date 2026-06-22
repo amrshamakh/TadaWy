@@ -7,9 +7,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import PaymentMethodModal from "./payments/PaymentMethodModal";
-import OfflineBookingReceiptModal from "./payments/OfflineBookingReceiptModal";
+import BookingReceiptModal from "./payments/BookingReceiptModal";
 import BookingSuccessModal from "./payments/BookingSuccessModal";
-import { toReadableDateTime } from "./utils/bookingDate";
 import { bookOfflineAppointment, bookOnlineAppointment } from "../../modules/patient/api/appointmentApi";
 import AuthRequiredModal from "../AuthRequiredModal";
 
@@ -187,17 +186,18 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                 <img src={infoIcon} alt="" className="w-4 h-4 dark:invert opacity-60" />
               </div>
 
-              <div className="flex items-center gap-2" style={{ direction: "ltr" }}>
+              <div className="flex items-center gap-2" style={{ direction: isAr ? "rtl" : "ltr" }}>
                 <button
                   type="button"
                   onClick={handlePrev}
                   disabled={selectedDayIndex === 0}
                   className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-600 text-gray-400 dark:text-gray-500 hover:border-teal-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all disabled:opacity-25 disabled:cursor-not-allowed bg-white dark:bg-slate-700"
+                  aria-label={t("booking.sidebar.prevDay") || "Previous Day"}
                 >
-                  <ArrowLeft size={17} />
+                  {isAr ? <ArrowRight size={17} aria-hidden="true" /> : <ArrowLeft size={17} aria-hidden="true" />}
                 </button>
 
-                <div className="flex gap-2 flex-1 overflow-hidden">
+                <div className="flex gap-2 flex-1 overflow-hidden" role="listbox" aria-label={t("booking.sidebar.selectDay")}>
                   {availability.slice(startIndex, startIndex + visibleDaysCount).map((item, localIndex) => {
                     const index = startIndex + localIndex;
                     const date = new Date(item.date);
@@ -215,6 +215,9 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                             ? "bg-teal-500 text-white shadow-[0_6px_16px_rgba(20,184,166,0.4)] border-2 border-teal-400"
                             : "border-2 border-gray-100 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-500 dark:text-gray-400 hover:border-teal-300 hover:bg-teal-50/50 dark:hover:bg-slate-600"
                           }`}
+                        role="option"
+                        aria-selected={isSelected}
+                        aria-label={`${dayName} ${dayNum} ${month}`}
                       >
                         <span className={`text-[0.75rem] font-bold tracking-wider ${isSelected ? "text-teal-100" : "text-gray-400 dark:text-gray-500"}`}>{dayName}</span>
                         <span className={`text-2xl font-black leading-none ${isSelected ? "text-white" : "text-gray-800 dark:text-white"}`}>{dayNum}</span>
@@ -229,19 +232,20 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                   onClick={handleNext}
                   disabled={selectedDayIndex + 1 >= availability.length && startIndex + visibleDaysCount >= availability.length}
                   className="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-xl border border-gray-200 dark:border-slate-600 text-gray-400 dark:text-gray-500 hover:border-teal-400 hover:text-teal-500 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all disabled:opacity-25 disabled:cursor-not-allowed bg-white dark:bg-slate-700"
+                  aria-label={t("booking.sidebar.nextDay") || "Next Day"}
                 >
-                  <ArrowRight size={17} />
+                  {isAr ? <ArrowLeft size={17} aria-hidden="true" /> : <ArrowRight size={17} aria-hidden="true" />}
                 </button>
               </div>
             </div>
 
-            <div className="hidden lg:block w-px bg-gray-100 dark:bg-slate-700 self-stretch" />
+            <div className="hidden lg:block w-px bg-gray-100 dark:bg-slate-700 self-stretch" aria-hidden="true" />
 
             <div className="flex-1">
               <p className="text-gray-400 dark:text-gray-500 text-sm font-bold uppercase tracking-widest mb-4 m-0">
                 {t("booking.sidebar.availableTime")}
               </p>
-              <div className="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-5 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-4 xl:grid-cols-5 gap-2" role="listbox" aria-label={t("booking.sidebar.availableTime")}>
                 {TIME_OPTIONS.map((time) => {
                   const isSelected = selectedTime === time;
                   return (
@@ -254,9 +258,11 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
                           ? "bg-teal-500 text-white border-teal-500 shadow-[0_4px_12px_rgba(20,184,166,0.3)]"
                           : "border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-600 dark:text-gray-300 hover:border-teal-300 hover:bg-teal-50/50 dark:hover:bg-slate-600"
                         }`}
+                      role="option"
+                      aria-selected={isSelected}
                     >
                       {isSelected && (
-                        <span className="absolute inset-0 bg-white/10 animate-pulse rounded-xl" />
+                        <span className="absolute inset-0 bg-white/10 animate-pulse rounded-xl" aria-hidden="true" />
                       )}
                       {time}
                     </button>
@@ -302,12 +308,24 @@ export default function BookingSidebar({ doctor, onBookingSuccess }) {
       {showAuthModal && <AuthRequiredModal onLogin={() => navigate("/login", { state: { from: location.pathname } })} onCancel={() => setShowAuthModal(false)} />}
       {activeModal === "payment" && <PaymentMethodModal onSelectMethod={handlePaymentSelection} />}
       {activeModal === "receipt" && (
-        <OfflineBookingReceiptModal
+        <BookingReceiptModal
           receiptRef={receiptRef}
-          receiptData={receiptData}
+          receiptNumber={receiptData?.receiptNumber || `RX-${Date.now().toString().slice(-10)}`}
+          patientName={receiptData?.patientName}
+          patientEmail={receiptData?.patientEmail}
+          doctor={{
+            name: receiptData?.doctorName,
+            specialization: receiptData?.specialty,
+            address: receiptData?.doctorLocation,
+            phoneNumber: receiptData?.phoneNumber,
+            addressDescription: receiptData?.doctorLocationDetails
+          }}
+          appointmentDateValue={receiptData?.date ? new Date(receiptData.date).toLocaleString(i18n.language) : ""}
+          appointmentCost={receiptData?.price}
           isPrinting={isPrinting}
           onPrintReceipt={handlePrintReceipt}
           onDone={() => { setActiveModal(null); setReceiptData(null); }}
+          isOnline={false}
         />
       )}
       {activeModal === "success" && <BookingSuccessModal />}
