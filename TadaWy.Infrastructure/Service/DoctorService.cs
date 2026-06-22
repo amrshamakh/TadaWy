@@ -120,14 +120,33 @@ namespace TadaWy.Infrastructure.Service
         public async Task<DoctorDetailsDto?> GetDoctorByIdAsync(int id)
         {
             var doctor = await _context.Doctors
+                .AsNoTracking()
                 .Include(d => d.Specialization)
                 .Include(d => d.Schedules).ThenInclude(s => s.TimeSlots)
-                .Include(d => d.Reviews).ThenInclude(r => r.Patient)
                 .Include(d => d.Appointments.Where(a => a.Date >= DateTime.Today && a.Date < DateTime.Today.AddDays(7)))
                 .FirstOrDefaultAsync(d => d.Id == id && d.Status == DoctorStatus.Approved);
 
             if (doctor == null)
                 throw new NotFoundException("Doctor not found");
+
+            // Load reviews count server-side, only fetch latest 20 reviews
+            var reviewsCount = await _context.DoctorReviews
+                .CountAsync(r => r.DoctorId == id);
+
+            var latestReviews = await _context.DoctorReviews
+                .AsNoTracking()
+                .Where(r => r.DoctorId == id)
+                .OrderByDescending(r => r.Id)
+                .Take(20)
+                .Include(r => r.Patient)
+                .Select(r => new DoctorReviewDto
+                {
+                    Id = r.Id,
+                    PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
+                    Rating = r.Rating,
+                    Comment = r.Comment
+                })
+                .ToListAsync();
 
             var yearsOfExperience = 0;
             if (doctor.CareerStartDate.HasValue)
@@ -149,21 +168,14 @@ namespace TadaWy.Infrastructure.Service
                 PhoneNumber = doctor.PhoneNumber,
                 Rating = Math.Round(doctor.Rating, 1),
                 YearsOfExperience = yearsOfExperience,
-                ReviewsCount = doctor.Reviews.Count,
+                ReviewsCount = reviewsCount,
                 Price = doctor.Price,
                 AboutEn = doctor.BioEn,
                 AboutAr = doctor.BioAr,
                 ImageUrl = doctor.ImageUrl,
 
                 AvailableDaysSlots = GenerateNextSevenDaysSlots(doctor),
-                Reviews = doctor.Reviews
-                    .Select(r => new DoctorReviewDto
-                    {
-                        Id = r.Id,
-                        PatientName = $"{r.Patient.FirstName} {r.Patient.LastName}",
-                        Rating = r.Rating,
-                        Comment = r.Comment
-                    }).ToList()
+                Reviews = latestReviews
             };
         }
 
@@ -233,18 +245,25 @@ namespace TadaWy.Infrastructure.Service
         public async Task<DoctorProfileDto> GetDoctorProfileAsync(string userId)
         {
             var doctor = await _context.Doctors
+                .AsNoTracking()
                 .Include(d => d.Specialization)
                 .Include(d => d.Reviews)
                     .ThenInclude(r => r.Patient)
-                .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(d => d.UserID == userId);
 
             if (doctor == null)
                 throw new NotFoundException("Doctor not found");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
                 throw new NotFoundException("User not found");
+
+            // Server-side count instead of loading ALL appointments
+            var patientsCount = await _context.Appointments
+                .Where(a => a.DoctorId == doctor.Id)
+                .Select(a => a.PatientId)
+                .Distinct()
+                .CountAsync();
 
             var yearsOfExperience = 0;
             if (doctor.CareerStartDate.HasValue)
@@ -274,7 +293,7 @@ namespace TadaWy.Infrastructure.Service
                 ImageUrl = doctor.ImageUrl,
                 Rating = Math.Round(doctor.Rating, 1),
                 ReviewsCount = doctor.Reviews.Count,
-                PatientsCount = doctor.Appointments.Select(a => a.PatientId).Distinct().Count(),
+                PatientsCount = patientsCount,
                 YearsOfExperience = yearsOfExperience,
                 Reviews = doctor.Reviews.Select(r => new DoctorReviewDto
                 {
@@ -556,11 +575,11 @@ namespace TadaWy.Infrastructure.Service
 
         public async Task<DoctorAppointmentsDto> GetDoctorAppointmentsAsync(string userId, GetDoctorAppointmentsRequest request)
         {
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(d => d.UserID == userId);
+            var doctor = await _context.Doctors.AsNoTracking().FirstOrDefaultAsync(d => d.UserID == userId);
             if (doctor == null) throw new NotFoundException("Doctor not found");
 
             var query = _context.Appointments
-                .Include(a => a.Patient)
+                .AsNoTracking()
                 .Include(a => a.Payment)
                 .Where(a => a.DoctorId == doctor.Id);
 
@@ -576,28 +595,37 @@ namespace TadaWy.Infrastructure.Service
                 query = query.Where(a => a.Payment != null && a.Payment.Method == request.PaymentMethod.Value);
             }
 
-            var appointments = await query.ToListAsync();
+            var appointments = await query.OrderBy(a => a.Date).ToListAsync();
 
+            // Batch: load all patients in one query with dictionary for O(1) lookup
             var userIds = appointments.Select(a => a.PatientId).Distinct().ToList();
-            var patients = await _context.Patients
+            var patientsDict = await _context.Patients
+                .AsNoTracking()
                 .Where(p => userIds.Contains(p.UserID))
-                .ToListAsync();
+                .ToDictionaryAsync(p => p.UserID);
+
+            // Batch: load user phone numbers in one query
+            var usersDict = await _context.Users
+                .AsNoTracking()
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.PhoneNumber);
 
             var appointmentList = appointments.Select(a =>
             {
-                var patient = patients.FirstOrDefault(p => p.UserID == a.PatientId);
+                patientsDict.TryGetValue(a.PatientId, out var patient);
+                usersDict.TryGetValue(a.PatientId, out var phone);
                 return new AppointmentListItemDto
                 {
                     Id = a.Id,
                     PatientId = patient?.Id ?? 0,
                     PatientName = patient != null ? $"{patient.FirstName} {patient.LastName}" : "Unknown",
-                    PatientPhone = a.Patient?.PhoneNumber ?? "N/A",
+                    PatientPhone = phone ?? "N/A",
                     PaymentMethod = a.Payment?.Method ?? PaymentMethod.Offline,
                     DurationMinutes = doctor.AppointmentDurationMinutes ?? 20,
                     AppointmentDate = a.Date,
                     Status = a.Status
                 };
-            }).OrderBy(a => a.AppointmentDate).ToList();
+            }).ToList();
 
             return new DoctorAppointmentsDto
             {

@@ -85,11 +85,10 @@ namespace TadaWy.Infrastructure.Service
             };
 
             _tadaWyDbContext.Appointments.Add(appointment);
-            await _tadaWyDbContext.SaveChangesAsync();
 
             var payment = new Payment
             {
-                AppointmentId = appointment.Id,
+                Appointment = appointment,
                 DoctorId = doctor.UserID,
                 Amount = request.Amount,
                 Method = PaymentMethod.Offline,
@@ -126,12 +125,11 @@ namespace TadaWy.Infrastructure.Service
             };
 
             _tadaWyDbContext.Appointments.Add(appointment);
-            await _tadaWyDbContext.SaveChangesAsync();
 
 
             var payment = new Payment
             {
-                AppointmentId = appointment.Id,
+                Appointment = appointment,
                 DoctorId = doctor.UserID,
                 Amount = request.Amount,
                 Method = PaymentMethod.Online,
@@ -165,20 +163,11 @@ namespace TadaWy.Infrastructure.Service
             var now = DateTime.UtcNow;
             var cutoff = now.AddHours(-24);
 
-            var toMiss = await _tadaWyDbContext.Appointments
-                .Where(a =>a.Payment.Method==PaymentMethod.Offline && a.Status == AppointmentStatus.Upcoming &&
+            await _tadaWyDbContext.Appointments
+                .Where(a => a.Payment.Method == PaymentMethod.Offline &&
+                            a.Status == AppointmentStatus.Upcoming &&
                             a.Date < cutoff)
-                .ToListAsync();
-
-            if (!toMiss.Any())
-                return;
-
-            foreach (var appt in toMiss)
-            {
-                appt.Status = AppointmentStatus.Missed;
-            }
-
-            await _tadaWyDbContext.SaveChangesAsync();
+                .ExecuteUpdateAsync(a => a.SetProperty(x => x.Status, AppointmentStatus.Missed));
         }
     }
 }

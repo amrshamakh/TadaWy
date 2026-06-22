@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,13 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
             builder.Property(p => p.ExternalTransactionId)
                    .HasMaxLength(100);
 
-            builder.HasIndex(p => p.ExternalOrderId); 
+            builder.HasIndex(p => p.ExternalOrderId);
+
+            // Index for wallet dashboard queries (earnings by doctor + method + status)
+            builder.HasIndex(p => new { p.DoctorId, p.Method, p.Status });
+
+            // Index for balance release batch job
+            builder.HasIndex(p => new { p.Status, p.IsReleasedToWallet });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TadaWy.Applicaation.IService;
@@ -17,6 +17,8 @@ namespace TadaWy.Infrastructure.Extensions
             {
                 obtions.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddMemoryCache();
+            services.AddResponseCaching();
             services.AddHttpClient();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IFileStorageService, FileStorageService>();

@@ -182,9 +182,11 @@ namespace TadaWy.Infrastructure.Service
             var isArabic = CultureInfo.CurrentUICulture.Name.StartsWith("ar");
             // Check if user is Patient or Doctor
             var patient = await _context.Patients
+                .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.UserID == userId);
 
             var doctor = await _context.Doctors
+                .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.UserID == userId);
 
             var conversations = new List<ConversationDto>();
@@ -200,23 +202,29 @@ namespace TadaWy.Infrastructure.Service
                     .Distinct()
                     .ToListAsync();
 
-                //Get ALL messages in ONE query
-                var messages = await _context.Messages
+                // Server-side: get last message + unread count per conversation partner
+                var conversationSummaries = await _context.Messages
                     .Where(m =>
                         (m.SenderUserId == userId && doctorUserIds.Contains(m.ReceiverUserId)) ||
                         (doctorUserIds.Contains(m.SenderUserId) && m.ReceiverUserId == userId)
                     )
+                    .GroupBy(m => m.SenderUserId == userId ? m.ReceiverUserId : m.SenderUserId)
+                    .Select(g => new
+                    {
+                        OtherUserId = g.Key,
+                        LastMessageContent = g.OrderByDescending(m => m.CreatedAt).Select(m => m.Content).FirstOrDefault(),
+                        LastMessageImageUrl = g.OrderByDescending(m => m.CreatedAt).Select(m => m.ImageUrl).FirstOrDefault(),
+                        LastMessageDate = g.Max(m => m.CreatedAt),
+                        LastMessageIsSeen = g.OrderByDescending(m => m.CreatedAt).Select(m => m.IsSeen).FirstOrDefault(),
+                        UnreadCount = g.Count(m => m.SenderUserId != userId && !m.IsSeen)
+                    })
                     .ToListAsync();
 
-                //Group in memory
-                var grouped = messages
-                    .GroupBy(m =>
-                        m.SenderUserId == userId ? m.ReceiverUserId : m.SenderUserId
-                    )
-                    .ToDictionary(g => g.Key, g => g.ToList());
+                var summaryDict = conversationSummaries.ToDictionary(s => s.OtherUserId);
 
                 //Get doctors in ONE query
                 var doctors = await _context.Doctors
+                    .AsNoTracking()
                     .Include(d => d.Specialization)
                     .Where(d => doctorUserIds.Contains(d.UserID))
                     .ToListAsync();
@@ -231,18 +239,7 @@ namespace TadaWy.Infrastructure.Service
                         !fullName.ToLower().Contains(search.ToLower()))
                         continue;
 
-                    grouped.TryGetValue(doc.UserID, out var chatMessages);
-
-                    var lastMessage = chatMessages?
-                        .OrderByDescending(m => m.CreatedAt)
-                        .FirstOrDefault();
-
-                    var unreadCount = chatMessages?
-                        .Count(m =>
-                            m.SenderUserId == doc.UserID &&
-                            m.ReceiverUserId == userId &&
-                            !m.IsSeen
-                        ) ?? 0;
+                    summaryDict.TryGetValue(doc.UserID, out var summary);
 
                     conversations.Add(new ConversationDto
                     {
@@ -250,10 +247,10 @@ namespace TadaWy.Infrastructure.Service
                         FullName = fullName,
                         ImageUrl = doc.ImageUrl,
                         SpecializationName = isArabic ? doc.Specialization.NameAr : doc.Specialization.NameEn,
-                        LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? (isArabic ? "صورة" : "Image") : null),
-                        LastMessageDate = lastMessage?.CreatedAt,
-                        IsSeen = lastMessage?.IsSeen ?? true,
-                        UnreadCount = unreadCount
+                        LastMessage = summary?.LastMessageContent ?? (summary?.LastMessageImageUrl != null ? (isArabic ? "صورة" : "Image") : null),
+                        LastMessageDate = summary?.LastMessageDate,
+                        IsSeen = summary?.LastMessageIsSeen ?? true,
+                        UnreadCount = summary?.UnreadCount ?? 0
                     });
                 }
             }
@@ -268,23 +265,29 @@ namespace TadaWy.Infrastructure.Service
                     .Distinct()
                     .ToListAsync();
 
-                // One query for messages
-                var messages = await _context.Messages
+                // Server-side: get last message + unread count per conversation partner
+                var conversationSummaries = await _context.Messages
                     .Where(m =>
                         (m.SenderUserId == userId && patientUserIds.Contains(m.ReceiverUserId)) ||
                         (patientUserIds.Contains(m.SenderUserId) && m.ReceiverUserId == userId)
                     )
+                    .GroupBy(m => m.SenderUserId == userId ? m.ReceiverUserId : m.SenderUserId)
+                    .Select(g => new
+                    {
+                        OtherUserId = g.Key,
+                        LastMessageContent = g.OrderByDescending(m => m.CreatedAt).Select(m => m.Content).FirstOrDefault(),
+                        LastMessageImageUrl = g.OrderByDescending(m => m.CreatedAt).Select(m => m.ImageUrl).FirstOrDefault(),
+                        LastMessageDate = g.Max(m => m.CreatedAt),
+                        LastMessageIsSeen = g.OrderByDescending(m => m.CreatedAt).Select(m => m.IsSeen).FirstOrDefault(),
+                        UnreadCount = g.Count(m => m.SenderUserId != userId && !m.IsSeen)
+                    })
                     .ToListAsync();
 
-                // Group
-                var grouped = messages
-                    .GroupBy(m =>
-                        m.SenderUserId == userId ? m.ReceiverUserId : m.SenderUserId
-                    )
-                    .ToDictionary(g => g.Key, g => g.ToList());
+                var summaryDict = conversationSummaries.ToDictionary(s => s.OtherUserId);
 
                 // Get patients in one query
                 var patients = await _context.Patients
+                    .AsNoTracking()
                     .Where(p => patientUserIds.Contains(p.UserID))
                     .ToListAsync();
 
@@ -296,18 +299,7 @@ namespace TadaWy.Infrastructure.Service
                         !fullName.ToLower().Contains(search.ToLower()))
                         continue;
 
-                    grouped.TryGetValue(pat.UserID, out var chatMessages);
-
-                    var lastMessage = chatMessages?
-                        .OrderByDescending(m => m.CreatedAt)
-                        .FirstOrDefault();
-
-                    var unreadCount = chatMessages?
-                        .Count(m =>
-                            m.SenderUserId == pat.UserID &&
-                            m.ReceiverUserId == userId &&
-                            !m.IsSeen
-                        ) ?? 0;
+                    summaryDict.TryGetValue(pat.UserID, out var summary);
 
                     conversations.Add(new ConversationDto
                     {
@@ -315,10 +307,10 @@ namespace TadaWy.Infrastructure.Service
                         FullName = fullName,
                         ImageUrl = null,
                         SpecializationName = null,
-                        LastMessage = lastMessage?.Content ?? (lastMessage?.ImageUrl != null ? (isArabic ? "صورة" : "Image") : null),
-                        LastMessageDate = lastMessage?.CreatedAt,
-                        IsSeen = lastMessage?.IsSeen ?? true,
-                        UnreadCount = unreadCount
+                        LastMessage = summary?.LastMessageContent ?? (summary?.LastMessageImageUrl != null ? (isArabic ? "صورة" : "Image") : null),
+                        LastMessageDate = summary?.LastMessageDate,
+                        IsSeen = summary?.LastMessageIsSeen ?? true,
+                        UnreadCount = summary?.UnreadCount ?? 0
                     });
                 }
             }
@@ -359,21 +351,14 @@ namespace TadaWy.Infrastructure.Service
         ///Seen Messages (Mark as Seen)/////////
         ////////////////////////////////////////
         public async Task MarkMessagesAsSeenAsync(string userId, string otherUserId)
-        {
-            var messages = await _context.Messages
+        {            // Bulk update — no data loading needed
+            await _context.Messages
                 .Where(m =>
                     m.SenderUserId == otherUserId &&
                     m.ReceiverUserId == userId &&
                     !m.IsSeen
                 )
-                .ToListAsync();
-
-            foreach (var message in messages)
-            {
-                message.IsSeen = true;
-            }
-
-            await _context.SaveChangesAsync();
+                .ExecuteUpdateAsync(m => m.SetProperty(x => x.IsSeen, true));
         }
     }
 }

@@ -67,6 +67,7 @@ namespace TadaWy.Infrastructure.Service
             return await _context.Notifications
                 .Where(n => n.UserId == userId)
                 .OrderByDescending(n => n.CreatedAt)
+                .Take(50)
                 .Select(n => new NotificationDto
                 {
                     Id = n.Id,

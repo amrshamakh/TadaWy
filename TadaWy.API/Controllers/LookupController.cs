@@ -9,6 +9,7 @@ namespace TadaWy.API.Controllers
     {
         
         [HttpGet("chronic-diseases")]
+        [ResponseCache(Duration = 300, VaryByHeader = "Accept-Language")]
         public async Task<IActionResult> GetChronicDiseases()
         {
             var diseases = await _lookupService.GetChronicDiseasesAsync();
@@ -23,6 +24,7 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpGet("specializations")]
+        [ResponseCache(Duration = 300, VaryByHeader = "Accept-Language")]
         public async Task<IActionResult> GetSpecializations()
         {
             var specializations = await _lookupService.GetSpecializationsAsync();
@@ -37,6 +39,7 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpGet("allergies")]
+        [ResponseCache(Duration = 300, VaryByHeader = "Accept-Language")]
         public async Task<IActionResult> GetAllergies()
         {
             var allergies = await _lookupService.GetAllergiesAsync();
@@ -51,6 +54,7 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpGet("states")]
+        [ResponseCache(Duration = 300, VaryByHeader = "Accept-Language")]
         public async Task<IActionResult> GetStates()
         {
             var states = await _lookupService.GetStatesAsync();
@@ -58,6 +62,7 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpGet("states/{stateId}/cities")]
+        [ResponseCache(Duration = 300, VaryByHeader = "Accept-Language")]
         public async Task<IActionResult> GetCities(int stateId)
         {
             var cities = await _lookupService.GetCitiesByStateAsync(stateId);

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -29,12 +29,14 @@ namespace TadaWy.API.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(Duration = 60, VaryByQueryKeys = new[] { "*" })]
         public async Task<IActionResult> GetDoctors([FromQuery] GetDoctorsRequest request)
         {
             var result = await _doctorService.GetDoctorsAsync(request);
             return Ok(result);
         }
         [HttpGet("{id}")]
+        [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetDoctorById(int id)
         {
             var doctor = await _doctorService.GetDoctorByIdAsync(id);

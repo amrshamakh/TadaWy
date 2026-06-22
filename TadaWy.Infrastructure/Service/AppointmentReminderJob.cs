@@ -31,17 +31,29 @@ namespace TadaWy.Infrastructure.Service
                 .Include(a => a.Doctor)
                 .Where(a => a.Status == AppointmentStatus.Upcoming &&
                             a.Date <= twelveHoursFromNow &&
-                            a.Date > now.AddHours(11)) // Looking for appointments in the next hour's window (11-12h away)
+                            a.Date > now.AddHours(11))
                 .ToListAsync();
 
-            foreach (var app in app12h)
+            if (app12h.Any())
             {
-                bool alreadySent = await _context.Notifications.AnyAsync(n => 
-                    n.AppointmentId == app.Id && (n.Type == NotificationType.AppointmentReminder12h));
+                // Batch: get all already-sent 12h reminder IDs in one query
+                var app12hIds = app12h.Select(a => a.Id).ToList();
+                var sentIds12h = await _context.Notifications
+                    .Where(n => n.AppointmentId.HasValue &&
+                                app12hIds.Contains(n.AppointmentId.Value) &&
+                                n.Type == NotificationType.AppointmentReminder12h)
+                    .Select(n => n.AppointmentId.Value)
+                    .ToListAsync();
 
-                if (!alreadySent)
+                // Batch: get all patient settings in one query
+                var patientIds12h = app12h.Select(a => a.PatientId).Distinct().ToList();
+                var settingsMap12h = await _context.UserSettings
+                    .Where(s => patientIds12h.Contains(s.UserId))
+                    .ToDictionaryAsync(s => s.UserId);
+
+                foreach (var app in app12h.Where(a => !sentIds12h.Contains(a.Id)))
                 {
-                    var settings = await _context.UserSettings.FirstOrDefaultAsync(s => s.UserId == app.PatientId);
+                    settingsMap12h.TryGetValue(app.PatientId, out var settings);
                     var isArabic = settings?.Language == "ar";
 
                     await _notificationService.SendNotificationAsync(
@@ -62,17 +74,29 @@ namespace TadaWy.Infrastructure.Service
                 .Include(a => a.Doctor)
                 .Where(a => a.Status == AppointmentStatus.Upcoming &&
                             a.Date <= twoHoursFromNow &&
-                            a.Date > now) // Any pending appointment in the next 2 hours
+                            a.Date > now)
                 .ToListAsync();
 
-            foreach (var app in app2h)
+            if (app2h.Any())
             {
-                bool alreadySent = await _context.Notifications.AnyAsync(n => 
-                    n.AppointmentId == app.Id && (n.Type == NotificationType.AppointmentReminder2h));
+                // Batch: get all already-sent 2h reminder IDs in one query
+                var app2hIds = app2h.Select(a => a.Id).ToList();
+                var sentIds2h = await _context.Notifications
+                    .Where(n => n.AppointmentId.HasValue &&
+                                app2hIds.Contains(n.AppointmentId.Value) &&
+                                n.Type == NotificationType.AppointmentReminder2h)
+                    .Select(n => n.AppointmentId.Value)
+                    .ToListAsync();
 
-                if (!alreadySent)
+                // Batch: get all patient settings in one query
+                var patientIds2h = app2h.Select(a => a.PatientId).Distinct().ToList();
+                var settingsMap2h = await _context.UserSettings
+                    .Where(s => patientIds2h.Contains(s.UserId))
+                    .ToDictionaryAsync(s => s.UserId);
+
+                foreach (var app in app2h.Where(a => !sentIds2h.Contains(a.Id)))
                 {
-                    var settings = await _context.UserSettings.FirstOrDefaultAsync(s => s.UserId == app.PatientId);
+                    settingsMap2h.TryGetValue(app.PatientId, out var settings);
                     var isArabic = settings?.Language == "ar";
 
                     await _notificationService.SendNotificationAsync(

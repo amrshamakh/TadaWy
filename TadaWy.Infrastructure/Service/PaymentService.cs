@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
@@ -22,11 +22,13 @@ namespace TadaWy.Infrastructure.Service
 
         private readonly TadaWyDbContext _context;
         private readonly PaymobSettings _settings;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public PaymentService(TadaWyDbContext tadaWyDbContext, IOptions<PaymobSettings> options)
+        public PaymentService(TadaWyDbContext tadaWyDbContext, IOptions<PaymobSettings> options, IHttpClientFactory httpClientFactory)
         {
             _context = tadaWyDbContext;
             _settings = options.Value;
+            _httpClientFactory = httpClientFactory;
         }
         public bool IsValidHmac(PaymobCallbackDto callback)
         {
@@ -129,7 +131,7 @@ namespace TadaWy.Infrastructure.Service
         }
         public async Task<string> GetAuthToken()  //send Api key(Scure) to paymob and recive token to use it to make orders
         {
-            using var client = new HttpClient();
+            var client = _httpClientFactory.CreateClient();
 
             var body = new
             {
@@ -152,7 +154,7 @@ namespace TadaWy.Infrastructure.Service
 
             var token = await GetAuthToken();
 
-            using var client = new HttpClient();
+            var client = _httpClientFactory.CreateClient();
 
             var body = new
             {
@@ -178,7 +180,7 @@ namespace TadaWy.Infrastructure.Service
         {
             var token = await GetAuthToken();
 
-            using var client = new HttpClient();
+            var client = _httpClientFactory.CreateClient();
 
             var body = new
             {
@@ -234,7 +236,7 @@ namespace TadaWy.Infrastructure.Service
 
             var token = await GetAuthToken();
 
-            using var client = new HttpClient();
+            var client = _httpClientFactory.CreateClient();
 
             var body = new
             {
@@ -314,16 +316,24 @@ namespace TadaWy.Infrastructure.Service
             if (!payments.Any())
                 return;
 
+            // Batch: pre-load all needed doctors in one query
+            var doctorUserIds = payments.Select(p => p.DoctorId).Distinct().ToList();
+            var doctorsDict = await _context.Doctors
+                .Where(d => doctorUserIds.Contains(d.UserID))
+                .ToDictionaryAsync(d => d.UserID);
+
+            // Batch: pre-load all needed wallets in one query
+            var doctorIds = doctorsDict.Values.Select(d => d.Id).ToList();
+            var walletsDict = await _context.DoctorWallets
+                .Where(w => doctorIds.Contains(w.DoctorId))
+                .ToDictionaryAsync(w => w.DoctorId);
+
             foreach (var payment in payments)
             {
-                var doctor = await _context.Doctors
-                    .FirstOrDefaultAsync(d => d.UserID == payment.DoctorId)
-                    ?? throw new Exception("Doctor not found");
+                if (!doctorsDict.TryGetValue(payment.DoctorId, out var doctor))
+                    continue;
 
-                var wallet = await _context.DoctorWallets
-                    .FirstOrDefaultAsync(w => w.DoctorId == doctor.Id);
-
-                if (wallet == null)
+                if (!walletsDict.TryGetValue(doctor.Id, out var wallet))
                 {
                     wallet = new DoctorWallet
                     {
@@ -332,6 +342,7 @@ namespace TadaWy.Infrastructure.Service
                         AvailableBalance = 0
                     };
                     _context.DoctorWallets.Add(wallet);
+                    walletsDict[doctor.Id] = wallet;
                 }
 
                 var amount = payment.DoctorAmount;

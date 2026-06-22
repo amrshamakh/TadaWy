@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -269,8 +269,8 @@ namespace TadaWy.Infrastructure.Service
                 
             };
             _tadaWyDbContext.Add(patient);
-            _tadaWyDbContext.SaveChanges();
-            ;
+            await _tadaWyDbContext.SaveChangesAsync();
+
 
             var JWTSecurityToken = await CreateJwtToken(user);
             var stringtoken = new JwtSecurityTokenHandler().WriteToken(JWTSecurityToken);
@@ -380,7 +380,7 @@ namespace TadaWy.Infrastructure.Service
             authModel.IsAuthenticated = true;
             authModel.Username = User.UserName;
             authModel.Token = stringtoken;
-            authModel.Role = (await _userManager.GetRolesAsync(User)).ToList();
+            authModel.Role = roles.ToList();
             authModel.ExpireOn = JWTSecurityToken.ValidTo;
 
             if (User.RefreshTokens.Any(t => t.IsActive))

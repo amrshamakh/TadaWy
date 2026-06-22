@@ -1,4 +1,4 @@
-﻿using Hangfire;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -208,8 +208,10 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<TadaWyDbContext>();
     await RoleSeeder.SeedRolesAsync(roleManager);
     await AdminSeeder.SeedAdminAsync(userManager);
-    await LocationSeeder.SeedLocationsAsync(context);
+  
     await SpecializationSeeder.SeedSpecializationsAsync(context);
+
+  
 }
 
 // Configure the HTTP request pipeline.
@@ -230,6 +232,7 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 app.UseCors("AllowReactApp");
+app.UseResponseCaching();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/Dashboard");
@@ -259,6 +262,6 @@ using (var scope = app.Services.CreateScope())
         Cron.Daily() 
     );
 }
-RecurringJob.RemoveIfExists("expire-pending-appointment-payments");
+
 
 app.Run();

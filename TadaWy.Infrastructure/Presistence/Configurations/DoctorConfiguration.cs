@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
 using System.Collections.Generic;
@@ -56,6 +56,12 @@ namespace TadaWy.Infrastructure.Presistence.Configurations
 
             builder.Property(d => d.Status)
                    .IsRequired();
+
+            // Index for approved doctor listing (most queried filter)
+            builder.HasIndex(d => d.Status);
+
+            // Index for specialization filtering
+            builder.HasIndex(d => d.SpecializationId);
 
             builder.Property(d => d.Rating)
                    .HasDefaultValue(0);
