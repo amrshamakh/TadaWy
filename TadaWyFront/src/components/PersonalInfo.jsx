@@ -1,5 +1,6 @@
 import { User, MapPin, Search, Crosshair } from "lucide-react";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import {
   MapContainer,
@@ -114,7 +115,10 @@ const [position, setPosition] = useState(
         await reverseGeocode(lat, lng);
         setShowMap(false);
       },
-      () => alert("Location permission denied"),
+      () => toast.error("Location permission denied", {
+        style: { background: "#0f766e", color: "#fff", borderRadius: "10px", fontWeight: "bold" },
+        icon: "📍",
+      }),
     );
   };
   useEffect(() => {

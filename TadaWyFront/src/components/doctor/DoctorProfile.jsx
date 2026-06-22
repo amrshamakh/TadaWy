@@ -44,7 +44,7 @@ const Field = ({
 const DoctorProfile = () => {
   const { t, i18n } = useTranslation();
   const isRtl = i18n.language === "ar";
-  
+
   const {
     form,
     isEditing,
@@ -82,7 +82,7 @@ const DoctorProfile = () => {
                 ) : (
                   <UserIcon className="w-[110px] h-[110px] sm:w-[124px] sm:h-[124px] stroke-1 drop-shadow-sm text-[#00BBA7]" />
                 )}
-                
+
                 {!disabled && (
                   <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                     {uploadingImage ? (
@@ -114,7 +114,8 @@ const DoctorProfile = () => {
               </div>
             </div>
           </div>
-          {/* Body */}
+
+          {/* Body */}
           <div className="px-6 sm:px-10 pb-10 pt-3 sm:pt-4">
             {loading ? (
               <DoctorProfileSkeleton isRtl={isRtl} />
@@ -135,8 +136,8 @@ const DoctorProfile = () => {
                       self-center sm:self-start
                       px-5 py-2.5 rounded-xl text-sm font-medium
                       transition-all duration-200 shadow-sm flex items-center gap-2 cursor-pointer
-                      ${isEditing 
-                        ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500" 
+                      ${isEditing
+                        ? "bg-[#00BBA7] text-white border border-[#00BBA7] hover:bg-teal-600 dark:hover:bg-teal-500"
                         : "border border-[#00BBA7] text-[#00BBA7] bg-white hover:bg-teal-50 dark:bg-transparent dark:text-[#00BBA7] dark:border-[#00BBA7] dark:hover:bg-teal-950/30"
                       }
                       ${saving ? "opacity-50 cursor-not-allowed" : ""}
@@ -147,7 +148,7 @@ const DoctorProfile = () => {
                     ) : (
                       <FiEdit2 size={16} />
                     )}
-                    {saving ? t("doctorDashboard.profile.saving", "Saving...") : isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
+                    {isEditing ? t("doctorDashboard.profile.save") : t("doctorDashboard.profile.edit")}
                   </button>
                 </div>
 
@@ -243,9 +244,9 @@ const DoctorProfile = () => {
                   {/* Contact & Professional Info */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                     <div className="md:col-span-2">
-                       <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
-                         {t("auth.doctor.contactInfo", "Contact & Professional Info")}
-                       </h3>
+                      <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
+                        {t("auth.doctor.contactInfo", "Contact & Professional Info")}
+                      </h3>
                     </div>
                     <Field
                       label={t("doctorDashboard.profile.telephone")}
@@ -267,7 +268,7 @@ const DoctorProfile = () => {
                       value={form.email}
                       disabled={true}
                       icon={Mail}
-                      onChange={() => {}}
+                      onChange={() => { }}
                       type="email"
                     />
                     {(isEditing || form.careerStartDate) && (
@@ -284,23 +285,23 @@ const DoctorProfile = () => {
                       label={t("doctorDashboard.profile.specialty")}
                       value={localizedSpecialty}
                       disabled={true}
-                      onChange={() => {}}
+                      onChange={() => { }}
                     />
                     <Field
                       label={t("doctorDashboard.profile.fullAddress")}
                       value={form.fullLocation}
                       disabled={true}
                       icon={MapPin}
-                      onChange={() => {}}
+                      onChange={() => { }}
                     />
                   </div>
 
                   {/* Address Descriptions */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
-                     <div className="md:col-span-2">
-                       <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
-                         {t("doctorDashboard.profile.locationDetails")}
-                       </h3>
+                    <div className="md:col-span-2">
+                      <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
+                        {t("doctorDashboard.profile.locationDetails")}
+                      </h3>
                     </div>
                     {(isEditing || !isRtl) && (
                       <Field
@@ -324,9 +325,9 @@ const DoctorProfile = () => {
                   {/* Bios */}
                   <div className="grid grid-cols-1 gap-y-5">
                     <div className="md:col-span-1">
-                       <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
-                         {t("doctorDashboard.profile.about")}
-                       </h3>
+                      <h3 className="text-md font-semibold text-teal-600 dark:text-teal-400 border-b border-teal-100 dark:border-teal-900/30 pb-2 mb-2">
+                        {t("doctorDashboard.profile.about")}
+                      </h3>
                     </div>
                     {(isEditing || !isRtl) && (
                       <div className="space-y-2">
@@ -409,7 +410,7 @@ const DoctorProfile = () => {
                 </div>
               </>
             )}
-          </div>>
+          </div>
         </div>
       </div>
     </div>

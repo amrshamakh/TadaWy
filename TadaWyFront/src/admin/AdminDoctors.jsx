@@ -23,7 +23,7 @@ const AdminDoctors = () => {
     updateStatus,
     banDoctor,
     unbanDoctor
-  } = useAdminDoctors();
+  } = useAdminDoctors(8);
 
   const filterOptions = [
     { value: "Approved", label: t("admin.doctors.approvedFilter") },

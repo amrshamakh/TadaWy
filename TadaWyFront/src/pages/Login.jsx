@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
+import { toast } from "react-toastify";
 import { loginPatient } from "../modules/patient/api/loginPatientAPi";
 import { useAuth } from "../context/AuthContext";
 import { assets } from "../assets/assets";
@@ -10,7 +11,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 const Login = () => {
   const { t } = useTranslation();
   const { login } = useAuth();
-  
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -46,10 +47,27 @@ const Login = () => {
           else if (normalizedRole === "admin") navigate("/admin");
           else navigate("/discover");
         }
+        toast.success(t('auth.login.welcomeBack', 'Welcome back!'), {
+          style: {
+            background: "#0f766e",
+            color: "#fff",
+            borderRadius: "10px",
+            fontWeight: "bold",
+          },
+          icon: "👋",
+        });
       }
     } catch (error) {
       console.error("Login failed", error);
-      alert("Login failed");
+      toast.error(t('auth.login.failed', 'Login failed. Please check your credentials.'), {
+        style: {
+          background: "#0f766e",
+          color: "#fff",
+          borderRadius: "10px",
+          fontWeight: "bold",
+        },
+        icon: "❌",
+      });
     } finally {
       setLoading(false);
     }

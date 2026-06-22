@@ -212,7 +212,7 @@ export default function Navbar({ onToggleSidebar, userDisplayName, userEmail }) 
                       </button>
                     )}
                     <button
-                      onClick={() => goTo("/settings")}
+                      onClick={() => goTo(isDoctor ? "/doctor/settings" : "/settings")}
                       className="flex gap-3 items-center w-full px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-[#334155] dark:text-white"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

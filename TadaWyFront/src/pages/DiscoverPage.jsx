@@ -42,7 +42,7 @@ export default function DiscoverPage() {
 
   const [viewMode, setViewMode] = useState("grid");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 12;
 
   const getLocalized = useLocalizedField();
 
@@ -292,7 +292,7 @@ export default function DiscoverPage() {
         <div className="min-h-[500px]">
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
                 <CardSkeleton key={i} />
               ))}
             </div>

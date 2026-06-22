@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDoctors } from "../context/doctorContext";
 import { useTranslation } from "react-i18next";
 
-export const useAdminDoctors = (itemsPerPage = 6) => {
+export const useAdminDoctors = (itemsPerPage = 8) => {
   const [filter, setFilter] = useState("Approved");
   const [search, setSearch] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);

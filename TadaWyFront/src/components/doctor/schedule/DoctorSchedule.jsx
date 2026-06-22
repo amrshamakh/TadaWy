@@ -280,13 +280,6 @@ export default function DoctorSchedule() {
 
   return (
     <div className="min-h-screen p-7 font-sans relative">
-      {/* Save Indicator */}
-      {isSaving && (
-        <div className="absolute top-4 right-7 flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 opacity-75">
-          <span>Saving...</span>
-        </div>
-      )}
-
       {/* Page header */}
       <div className="mb-6">
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">{t("doctorDashboard.schedule.title")}</h1>
